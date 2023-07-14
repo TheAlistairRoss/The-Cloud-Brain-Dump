@@ -16,7 +16,7 @@
             "metadata": {
                 "description": "The location of resources"
             },
-            "defaultValue": "https://raw.githubusercontent.com/TheAlistairRoss/The-Cloud-Brain-Dump/main/Sentinel%20Entities/Mapping"
+            "defaultValue": "https://raw.githubusercontent.com/TheAlistairRoss/The-Cloud-Brain-Dump/main/Sentinel%20Entities/Mapping/"
         }
     },
     "variables": {
