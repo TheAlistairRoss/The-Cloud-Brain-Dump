@@ -5,7 +5,6 @@
         "location": {
             "type": "string"
         },
-
         "workspaceId": {
             "type": "string",
             "metadata": {
