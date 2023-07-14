@@ -5,14 +5,11 @@
         "location": {
             "type": "string"
         },
-        "resourceGroupName": {
-            "type": "string"
-        },
 
-        "workspace": {
+        "workspaceId": {
             "type": "string",
             "metadata": {
-                "description": "Log Analytics Workspace name with Microsoft Sentinel enabled."
+                "description": "Log Analytics Workspace Resource Id with Microsoft Sentinel enabled."
             }
         },
         "_artifactsLocation": {
@@ -23,13 +20,16 @@
             "defaultValue": "https://raw.githubusercontent.com/TheAlistairRoss/The-Cloud-Brain-Dump/main/Sentinel%20Entities/Mapping"
         }
     },
-    "variables": {},
+    "variables": {
+        "workspaceResourceGroup" : "[split(parameters('workspaceId'),'/')[4]]",
+        "workspaceName" : "[split(parameters('workspaceId'),'/')[8]]"
+    },
     "resources": [
         {
             "name": "deploymentDemoEntityMappingAnalyticRule",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
-            "resourceGroup": "[parameters('resourceGroupName')]",
+            "resourceGroup": "[variables('workspaceResourceGroup')]",
             "location": "[parameters('location')]",
             "properties": {
                 "mode": "Incremental",
@@ -39,7 +39,7 @@
                 },
                 "parameters": {
                     "workspace": {
-                        "value": "[parameters('workspace')]"
+                        "value": "[variables('workspaceName')]"
                     }
                 }
             }
