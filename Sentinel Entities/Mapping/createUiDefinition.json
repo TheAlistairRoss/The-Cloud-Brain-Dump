@@ -35,6 +35,7 @@
         "steps": [],
         "outputs": {
             "workspace": "[steps('basics').workspaceSelection.name]",
+            "resourceGroupName": "[split(steps('basics').workspaceSelection.Id,'/')[4]]",
             "location": "[location()]"
         }
     }
