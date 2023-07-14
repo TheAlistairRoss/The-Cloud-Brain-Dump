@@ -30,18 +30,12 @@
                 "description": "Log Analytics Workspace Resource Id with Microsoft Sentinel enabled. Required if deployDemoAnalyticRule is set to true"
             }
         },
-        "workspaceLocation": {
-            "type": "string",
-            "metadata": {
-                "description": "Log Analytics Workspace location. Required if deployDemoAnalyticRule is set to true"
-            }
-        },
         "_artifactsLocation": {
             "type": "string",
             "metadata": {
                 "description": "The location of resources"
             },
-            "defaultValue": "https://raw.githubusercontent.com/TheAlistairRoss/The-Cloud-Brain-Dump/main/Sentinel%20Entities/Automation"
+            "defaultValue": "https://raw.githubusercontent.com/TheAlistairRoss/The-Cloud-Brain-Dump/main/Sentinel%20Entities/Automation/"
         }
 
     },

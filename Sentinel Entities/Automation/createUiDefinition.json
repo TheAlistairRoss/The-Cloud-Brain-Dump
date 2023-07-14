@@ -127,7 +127,6 @@
             "deployIncidentTriggerExample": "[steps('playbookSelection').deployIncidentTriggerExample]",
             "deployAlertTriggerExample": "[steps('playbookSelection').deployAlertTriggerExample]",
             "deployEntityTriggerExample": "[steps('playbookSelection').deployEntityTriggerExample]",
-            "workspaceLocation": "[steps('analyticRuleSelection').workspaceSelection.location]",
             "workspaceId": "[steps('analyticRuleSelection').workspaceSelection.id]",
             "location": "[location()]"
         }
