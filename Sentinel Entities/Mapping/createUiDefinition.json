@@ -4,7 +4,6 @@
     "version": "0.1.2-preview",
     "parameters": {
         "basics": [
-
             {
                 "name": "workspaceSelection",
                 "type": "Microsoft.Solutions.ResourceSelector",
@@ -22,7 +21,8 @@
                     "required": false,
                     "validationMessage": "Please select a Microsoft Sentinel Workspace"
                 }
-            }            {
+            },
+            {
                 "name": "basicsInfoBox",
                 "type": "Microsoft.Common.InfoBox",
                 "visible": true,
@@ -32,8 +32,7 @@
                 }
             }
         ],
-        "steps": [
-        ],
+        "steps": [],
         "outputs": {
             "workspace": "[steps('basics').workspaceSelection.name]",
             "location": "[location()]"
