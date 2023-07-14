@@ -20,15 +20,17 @@
     "resources": [
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2020-06-01",
+            "apiVersion": "2022-09-01",
             "name": "deploymentDemoAnalyticRules",
+            "location": "[parameters('location')]",
+            "resourceGroup": "[parameters('resourceGroupName')]",
             "properties": {
                 "mode": "Incremental",
                 "template": {
                     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
                     "contentVersion": "1.0.0.0",
                     "parameters": {
-                        "workspace" :{
+                        "workspace" : {
                             "type" : "string"
                         }
                     },
