@@ -85,9 +85,6 @@
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "workspace": {
-                        "value": "[variables('workspaceName')]"
-                    },
                     "location": {
                         "value": "[parameters('location')]"
                     }
@@ -110,9 +107,6 @@
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "workspace": {
-                        "value": "[variables('workspaceName')]"
-                    },
                     "location": {
                         "value": "[parameters('location')]"
                     }
@@ -135,9 +129,6 @@
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "workspace": {
-                        "value": "[variables('workspaceName')]"
-                    },
                     "location": {
                         "value": "[parameters('location')]"
                     }
