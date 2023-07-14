@@ -3,7 +3,21 @@
     "handler": "Microsoft.Azure.CreateUIDef",
     "version": "0.1.2-preview",
     "parameters": {
-        "basics": [],
+        "basics": [
+
+              {
+                "name": "resourceGroupName",
+                "type": "Microsoft.Common.TextBox",
+                "label": "Resource Group Name",
+                "toolTip": "Type a Resource Group Name for the playbooks to be deployed to. If one does not exist, it will be created if valid",
+                "placeholder": "Enter a Resource Group Name",
+                "constraints": {
+                  "required": true,
+                  "validations": []
+                },
+                "visible": true
+              }
+        ],
         "steps": [
             {
                 "name": "analyticRuleSelection",
@@ -108,6 +122,7 @@
             }
         ],
         "outputs": {
+            "resourceGroupName": "[basics('resourceGroupName')]",
             "deployDemoAnalyticRule": "[steps('analyticRuleSelection').deployDemoAnalyticRule]",
             "deployIncidentTriggerExample": "[steps('playbookSelection').deployIncidentTriggerExample]",
             "deployAlertTriggerExample": "[steps('playbookSelection').deployAlertTriggerExample]",

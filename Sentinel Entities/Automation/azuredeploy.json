@@ -2,6 +2,9 @@
     "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "resourceGroupName": {
+            "type": "string"
+        },
         "location": {
             "type": "string"
         },
@@ -68,12 +71,21 @@
             }
         },
         {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2022-09-01",
+            "name": "[parameters('resourceGroupName')]",
+            "location": "[parameters('location')]"
+        },
+        {
             "condition": "[parameters('deployIncidentTriggerExample')]",
             "name": "deploymentIncidentTriggerExamplePlaybook",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
-            "resourceGroup": "[resourceGroup().name]",
+            "resourceGroup": "[parameters('resourceGroupName')]",
             "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))]"
+            ],
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
@@ -95,8 +107,11 @@
             "name": "deploymentAlertTriggerExamplePlaybook",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
-            "resourceGroup": "[resourceGroup().name]",
+            "resourceGroup": "[parameters('resourceGroupName')]",
             "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))]"
+            ],
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
@@ -118,8 +133,11 @@
             "name": "deploymentEntityTriggerExamplePlaybook",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-06-01",
-            "resourceGroup": "[resourceGroup().name]",
+            "resourceGroup": "[parameters('resourceGroupName')]",
             "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))]"
+            ],
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
