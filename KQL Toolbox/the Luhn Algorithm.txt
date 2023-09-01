@@ -1,6 +1,7 @@
 // The Luhn Algorithm
 // Author: TheAlistairRoss
-// 
+// Post: https://thealistairross0.wordpress.com/2023/08/29/the-luhn-algorithm-and-kql/
+//
 let luhn_check = (CreditCardNumbers: (cardnumber: string)) {
     let ValidationCheck = CreditCardNumbers 
         | extend cardDigitIdx = range(strlen(cardnumber) - 1, 0, -1) 
