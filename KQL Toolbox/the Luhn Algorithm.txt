@@ -1,0 +1,40 @@
+// The Luhn Algorithm
+// Author: TheAlistairRoss
+// 
+let luhn_check = (CreditCardNumbers: (cardnumber: string)) {
+    let ValidationCheck = CreditCardNumbers 
+        | extend cardDigitIdx = range(strlen(cardnumber) - 1, 0, -1) 
+        | mv-expand with_itemindex=doubleIndex cardDigitIdx to typeof(int)
+        | extend cardDigit = toint(substring(cardnumber, cardDigitIdx, 1)) // Get the card digit at the given index (cardDigitInx)
+        | extend sumDigit = iif(
+                        doubleIndex % 2 != 0,  // Determine if the value should be doubled. This always double odd numbers in the doubleIndex column
+                        iif(                    // TRUE: Double the value
+    (cardDigit * 2) > 9,    // If the doubled value is greater than 9
+    (cardDigit * 2) - 9,    // TRUE: double the value, then minus nine
+    (cardDigit * 2)         // FALSE: double the value only
+),
+                        cardDigit               // FALSE: Value does not require doubling
+                    )
+        | summarize sumOfDigits = sum(sumDigit) by cardnumber // Get the total sum of the sum digits
+        | extend validation = sumOfDigits % 10 == 0 // Validate that the modulo 10 of the sum == 0
+    //| project cardnumber, validation
+    ;
+    CreditCardNumbers
+    | join kind = inner (
+        ValidationCheck
+        )
+        on cardnumber
+    | project-away cardnumber1
+};
+let CreditCardNumbers = datatable(cardcompany: string, cardnumber: string)[
+    "invalid1", "1234567890123456",
+    "invalid2", "1334557896123756",
+    "VISA", "4716677586750780",
+    "Mastercard", "5505434629913583",
+    "AMEX", "379753502925891",
+    "Unionpay", "6222022722487934",
+    "Diners", "3602311567018921",
+    "Discover", "6011858121198779",
+    "Test", "7992738"
+];
+luhn_check(CreditCardNumbers)
