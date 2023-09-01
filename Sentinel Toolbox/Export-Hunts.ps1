@@ -8,7 +8,7 @@
 .NOTES
     There is little error checking in this script for scenarios, such as the ARM template is too large for deployments of any dynamic referencing of Hunt Relation resources.
 .LINK
-    Specify a URI to a help page, this will show when Get-Help -Online is used.
+    https://thealistairross0.wordpress.com/?p=242
 .EXAMPLE
     .\Export-Hunts.ps1 - WorkspaceId "/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/<myResourceGroup>/providers/microsoft.operationalinsights/workspaces/<myWorkspaceName>"
 #>
