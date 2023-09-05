@@ -6,7 +6,7 @@ $ObjectId = "00000000-0000-0000-0000-000000000000" #Use the object id to avoid a
 
 $oPermissions = @(
     @{
-    apiId       = "fc780465-2017-40d4-a0c5-307022471b92" #WindowsDefenderATP 
+    applicationId       = "fc780465-2017-40d4-a0c5-307022471b92" #WindowsDefenderATP 
     permissions = @(
       "Vulnerability.Read.All"
     )
@@ -30,14 +30,14 @@ if (-not $oPrincipalId) {
 #Part 2
 $oApiSPNs = @()
 foreach ($permissions in $oPermissions) {
-  $oApiSPNs += Get-MgServicePrincipal -Filter "appId eq '$($permissions.apiId)'"
+  $oApiSPNs += Get-MgServicePrincipal -Filter "appId eq '$($permissions.applicationId)'"
 }
 
 
 #Part 3 
 foreach ($oApiSPN in $oApiSPNs) { 
   $oAppRoles = @()
-  $oApiPermissions = $oPermissions | Where-Object { $_.apiId -eq $oApiSPN.AppId }
+  $oApiPermissions = $oPermissions | Where-Object { $_.applicationId -eq $oApiSPN.AppId }
 
   $oAppRoles += $oApiSPN.AppRoles | Where-Object { ($_.Value -in $oAapiPermissions.Permissions) -and ($_.AllowedMemberTypes -contains "Application") }
 
