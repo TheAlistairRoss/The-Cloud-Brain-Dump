@@ -1,0 +1,414 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "PlaybookName": {
+            "defaultValue": "Microsoft_365_Defender-Post_Vulnerabilities_to_Teams",
+            "type": "string"
+        },
+        "TeamsTeamId": {
+            "type": "string",
+            "metadata": {
+                "description": "Enter value for the Microsoft Teams Team (Group) Id"
+            }
+        },
+        "TeamsChannelId": {
+            "type": "string",
+            "metadata": {
+                "description": "Enter value for Microsoft Teams Channel Id"
+            }
+        }
+    },
+    "variables": {
+        "TeamsConnectionName": "[concat('Teams-', parameters('PlaybookName'))]"
+    },
+    "resources": [
+        {
+            "properties": {
+                "provisioningState": "Succeeded",
+                "state": "Enabled",
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        },
+                        "TeamsChannelId": {
+                            "type": "string",
+                            "defaultValue": "[parameters('TeamsChannelId')]"
+                        },
+                        "TeamsTeamId": {
+                            "type": "string",
+                            "defaultValue": "[parameters('TeamsTeamId')]"
+                        }
+                    },
+                    "triggers": {
+                        "Recurrence": {
+                            "recurrence": {
+                                "frequency": "Day",
+                                "interval": 1,
+                                "startTime": "2023-08-11T09:00:00Z"
+                            },
+                            "evaluatedRecurrence": {
+                                "frequency": "Day",
+                                "interval": 1,
+                                "startTime": "2023-08-11T09:00:00Z"
+                            },
+                            "type": "Recurrence"
+                        }
+                    },
+                    "actions": {
+                        "Condition": {
+                            "actions": {
+                                "For_each": {
+                                    "foreach": "@body('Parse_JSON')?['value']",
+                                    "actions": {
+                                        "Post_message_in_a_chat_or_channel": {
+                                            "runAfter": {
+                                                "Switch": [
+                                                    "Succeeded"
+                                                ]
+                                            },
+                                            "type": "ApiConnection",
+                                            "inputs": {
+                                                "body": {
+                                                    "messageBody": "<p>@{variables('Vulnerability Icon Colour')}<strong>Name : </strong>@{items('For_each')?['name']}<br>\n<strong>Severity:</strong> @{items('For_each')?['severity']}<br>\n<strong>ExposedMachines</strong>: @{items('For_each')?['exposedMachines']}<br>\n<strong>Cvssv3</strong>: @{items('For_each')?['cvssV3']}<br>\n<strong>PublishedOn:</strong> @{convertFromUtc(item()?['publishedOn'],'GMT Standard Time', 'D' )}<br>\n<strong>Description</strong>:&nbsp;@{items('For_each')?['description']}</p>",
+                                                    "recipient": {
+                                                        "channelId": "@parameters('TeamsChannelId')",
+                                                        "groupId": "@parameters('TeamsTeamId')"
+                                                    }
+                                                },
+                                                "host": {
+                                                    "connection": {
+                                                        "name": "@parameters('$connections')['teams']['connectionId']"
+                                                    }
+                                                },
+                                                "method": "post",
+                                                "path": "/beta/teams/conversation/message/poster/Flow bot/location/@{encodeURIComponent('Channel')}"
+                                            }
+                                        },
+                                        "Switch": {
+                                            "runAfter": {},
+                                            "cases": {
+                                                "Case": {
+                                                    "case": "Critical",
+                                                    "actions": {
+                                                        "Set_variable_-_Critical_Colour": {
+                                                            "runAfter": {},
+                                                            "type": "SetVariable",
+                                                            "inputs": {
+                                                                "name": "Vulnerability Icon Colour",
+                                                                "value": "<div style=\"display: flex; align-items: left;\">\n          <span style=\"width:12px; height:12px; margin: 1px; background-color: rgb(97, 0, 0);\"></span>\n          <span style=\"width:12px; height:12px; margin: 1px; background-color: rgb(97, 0, 0);\"></span>\n          <span style=\"width:12px; height:12px; margin: 1px; background-color: rgb(97, 0, 0);\"></span>\n          <span style=\"width:12px; height:12px; margin: 1px; background-color: rgb(97, 0, 0);\"></span>\n</div>"
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "Case_2": {
+                                                    "case": "High",
+                                                    "actions": {
+                                                        "Set_variable_-_High_Colour": {
+                                                            "runAfter": {},
+                                                            "type": "SetVariable",
+                                                            "inputs": {
+                                                                "name": "Vulnerability Icon Colour",
+                                                                "value": "<div style=\"display: flex; align-items: left;\">\n          <span style=\"width:12px; height:12px; margin: 1px; background-color: rgb(153, 0, 0);\"></span>\n          <span style=\"width:12px; height:12px; margin: 1px; background-color: rgb(153, 0, 0);\"></span>\n          <span style=\"width:12px; height:12px; margin: 1px; background-color: rgb(153,0,0);\"></span>\n          <span style=\"width:12px; height:12px; margin: 1px; background-color: rgb(148, 148, 148);\"></span>\n</div>"
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "Case_3": {
+                                                    "case": "Medium",
+                                                    "actions": {
+                                                        "Set_variable_-_Medium_Colour": {
+                                                            "runAfter": {},
+                                                            "type": "SetVariable",
+                                                            "inputs": {
+                                                                "name": "Vulnerability Icon Colour",
+                                                                "value": "<div style=\"display: flex; align-items: left;\">\n          <span style=\"width:12px; height:12px; margin: 1px; background-color: rgb(230, 0, 0);\"></span>\n          <span style=\"width:12px; height:12px; margin: 1px; background-color: rgb(230, 0, 0);\"></span>\n          <span style=\"width:12px; height:12px; margin: 1px; background-color: rgb(148, 148, 148);\"></span>\n          <span style=\"width:12px; height:12px; margin: 1px; background-color: rgb(148, 148, 148);\"></span>\n</div>"
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "Case_4": {
+                                                    "case": "Low",
+                                                    "actions": {
+                                                        "Set_variable_-_Low_Colour": {
+                                                            "runAfter": {},
+                                                            "type": "SetVariable",
+                                                            "inputs": {
+                                                                "name": "Vulnerability Icon Colour",
+                                                                "value": "<div style=\"display: flex; align-items: left;\">\n          <span style=\"width:12px; height:12px; margin: 1px; background-color: rgb(245, 106, 0);\"></span>\n          <span style=\"width:12px; height:12px; margin: 1px; background-color: rgb(148, 148, 148);\"></span>\n          <span style=\"width:12px; height:12px; margin: 1px; background-color: rgb(148, 148, 148);\"></span>\n          <span style=\"width:12px; height:12px; margin: 1px; background-color: rgb(148, 148, 148);\"></span>\n</div>"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "default": {
+                                                "actions": {
+                                                    "Set_variable_-_Colour_Unknown": {
+                                                        "runAfter": {},
+                                                        "type": "SetVariable",
+                                                        "inputs": {
+                                                            "name": "Vulnerability Icon Colour",
+                                                            "value": "<div style=\"display: flex; align-items: left;\">\n          <span style=\"width:12px; height:12px; margin: 1px; background-color: rgb(148, 148, 148);\"></span>\n          <span style=\"width:12px; hight:12px; margin: 1px; background-color: rgb(148, 148, 148);\"></span>\n          <span style=\"width:12px; height:12px; margin: 1px; background-color: rgb(148, 148, 148);\"></span>\n          <span style=\"width:12px; height:12px; margin: 1px; background-color: rgb(148, 148, 148);\"></span>\n</div>"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "expression": "@items('For_each')?['severity']",
+                                            "type": "Switch",
+                                            "description": "Set severity icon value"
+                                        }
+                                    },
+                                    "runAfter": {},
+                                    "type": "Foreach",
+                                    "description": "For each vulnerability, set to run sequentially (1 at a time)",
+                                    "runtimeConfiguration": {
+                                        "concurrency": {
+                                            "repetitions": 1
+                                        }
+                                    }
+                                }
+                            },
+                            "runAfter": {
+                                "Filter_array": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "else": {
+                                "actions": {
+                                    "Terminate": {
+                                        "runAfter": {},
+                                        "type": "Terminate",
+                                        "inputs": {
+                                            "runStatus": "Succeeded"
+                                        },
+                                        "description": "Use this branch if you want to add in any notifications when there is no new vulnerabilities"
+                                    }
+                                }
+                            },
+                            "expression": {
+                                "and": [
+                                    {
+                                        "equals": [
+                                            "@outputs('HTTP_-_Get_Vulnerabilities')['statusCode']",
+                                            200
+                                        ]
+                                    },
+                                    {
+                                        "equals": [
+                                            "@not(empty(body('Parse_JSON')?['value']))",
+                                            "@true"
+                                        ]
+                                    }
+                                ]
+                            },
+                            "type": "If"
+                        },
+                        "Filter_array": {
+                            "runAfter": {
+                                "Parse_JSON": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Query",
+                            "inputs": {
+                                "from": "@body('Parse_JSON')?['value']",
+                                "where": "@greater(item()?['exposedMachines'], 0)"
+                            },
+                            "description": "This removes any CVE's where there are zero exposed machines in the environment"
+                        },
+                        "HTTP_-_Get_Vulnerabilities": {
+                            "runAfter": {
+                                "Initialize_variable_-_Vulnerability_Icon_Colour": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Http",
+                            "inputs": {
+                                "authentication": {
+                                    "audience": "https://api.securitycenter.microsoft.com",
+                                    "type": "ManagedServiceIdentity"
+                                },
+                                "method": "GET",
+                                "uri": "https://api.securitycenter.microsoft.com/api/Vulnerabilities?$filter=publishedOn gt @{addHours(utcNow(), sub(0, variables('NumberOfHours')))}"
+                            },
+                            "description": "This gets the vulnerabilities from the last 24 hours that impact the organisation"
+                        },
+                        "Initialize_variable": {
+                            "runAfter": {
+                                "HTTP_-_Get_Vulnerabilities": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "Array Test",
+                                        "type": "string",
+                                        "value": "@{length(array(body('HTTP_-_Get_Vulnerabilities')?['value']))}"
+                                    }
+                                ]
+                            }
+                        },
+                        "Initialize_variable_-Filter_Time_Range": {
+                            "runAfter": {},
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "NumberOfHours",
+                                        "type": "integer",
+                                        "value": 24
+                                    }
+                                ]
+                            },
+                            "description": "This is used in the OData filter. This should be the same as the recurrence trigger frequency"
+                        },
+                        "Initialize_variable_-_Vulnerability_Icon_Colour": {
+                            "runAfter": {
+                                "Initialize_variable_-Filter_Time_Range": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "InitializeVariable",
+                            "inputs": {
+                                "variables": [
+                                    {
+                                        "name": "Vulnerability Icon Colour",
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            "description": "This variable is used in a switch to determine which colours the severity icon should be"
+                        },
+                        "Parse_JSON": {
+                            "runAfter": {
+                                "Initialize_variable": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ParseJson",
+                            "inputs": {
+                                "content": "@body('HTTP_-_Get_Vulnerabilities')",
+                                "schema": {
+                                    "properties": {
+                                        "@@odata.context": {
+                                            "type": "string"
+                                        },
+                                        "value": {
+                                            "items": {
+                                                "properties": {
+                                                    "cvssV3": {
+                                                        "type": "number"
+                                                    },
+                                                    "description": {
+                                                        "type": "string"
+                                                    },
+                                                    "exploitInKit": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "exploitTypes": {
+                                                        "type": "array"
+                                                    },
+                                                    "exploitUris": {
+                                                        "type": "array"
+                                                    },
+                                                    "exploitVerified": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "exposedMachines": {
+                                                        "type": "integer"
+                                                    },
+                                                    "firstDetected": {},
+                                                    "id": {
+                                                        "type": "string"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "publicExploit": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "publishedOn": {
+                                                        "type": "string"
+                                                    },
+                                                    "severity": {
+                                                        "type": "string"
+                                                    },
+                                                    "updatedOn": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "id",
+                                                    "name",
+                                                    "description",
+                                                    "severity",
+                                                    "cvssV3",
+                                                    "exposedMachines",
+                                                    "publishedOn",
+                                                    "updatedOn",
+                                                    "firstDetected",
+                                                    "publicExploit",
+                                                    "exploitVerified",
+                                                    "exploitInKit",
+                                                    "exploitTypes",
+                                                    "exploitUris"
+                                                ],
+                                                "type": "object"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "description": "This parses the HTTP request output for use in further steps as dynamic data"
+                        }
+                    },
+                    "outputs": {}
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "teams": {
+                                "connectionId": "[resourceId('Microsoft.Web/connections', variables('TeamsConnectionName'))]",
+                                "connectionName": "[variables('TeamsConnectionName')]",
+                                "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/Teams')]"
+                            }
+                        }
+                    }
+                }
+            },
+            "name": "[parameters('PlaybookName')]",
+            "type": "Microsoft.Logic/workflows",
+            "location": "[resourceGroup().location]",
+            "tags": {},
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "apiVersion": "2017-07-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/connections', variables('TeamsConnectionName'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/connections",
+            "apiVersion": "2016-06-01",
+            "name": "[variables('TeamsConnectionName')]",
+            "location": "[resourceGroup().location]",
+            "kind": "V1",
+            "properties": {
+                "displayName": "[variables('TeamsConnectionName')]",
+                "customParameterValues": {},
+                "api": {
+                    "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/Teams')]"
+                }
+            }
+        }
+    ]
+}
