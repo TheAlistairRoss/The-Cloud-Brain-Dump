@@ -19,7 +19,8 @@ Connect-MgGraph -TenantId $TenantId -Scopes @("AppRoleAssignment.ReadWrite.All",
 #Part 1 - Get the Application Object Id
 if ($ObjectId) {
   Write-Host "Getting Service Principal with the Object Id: $ObjectId"
-  $oPrincipalId = (Get-MgServicePrincipal -ServicePrincipalId $ObjectId).id
+  $oPrincipal = Get-MgServicePrincipal -ServicePrincipalId $ObjectId
+  $oPrincipalId = $oPrincipal.Id
 }
   
 if (-not $oPrincipalId) {
@@ -37,6 +38,7 @@ foreach ($permissions in $oPermissions) {
 #Part 3 
 foreach ($oApiSPN in $oApiSPNs) { 
   $oAppRoles = @()
+    
   $oApiPermissions = $oPermissions | Where-Object { $_.applicationId -eq $oApiSPN.AppId }
 
   $oAppRoles += $oApiSPN.AppRoles | Where-Object { ($_.Value -in $oAapiPermissions.Permissions) -and ($_.AllowedMemberTypes -contains "Application") }
@@ -52,11 +54,8 @@ foreach ($oApiSPN in $oApiSPNs) {
 }
 
 # Verify
-<#
-Get-MgServicePrincipalAppRoleAssignment -ServicePrincipalId $oPrincipalId | Format-Table -AutoSize
-#>
 
-$Link = "https://portal.azure.com/#view/Microsoft_AAD_IAM/ManagedAppMenuBlade/~/Permissions/objectId/$($oMsi.Id)/appId/$($oMsi.AppId)/preferredSingleSignOnMode~/null/servicePrincipalType/ManagedIdentity"
+$Link = "https://portal.azure.com/#view/Microsoft_AAD_IAM/ManagedAppMenuBlade/~/Permissions/objectId/$($oPrincipalId)/appId/$($oPrincipal.AppId)/preferredSingleSignOnMode~/null/servicePrincipalType/ManagedIdentity"
 Write-Host "View permissions in the portal. Follow link here --->  " -ForegroundColor Green -NoNewline
 Write-Host "$Link" -ForegroundColor Cyan
 
