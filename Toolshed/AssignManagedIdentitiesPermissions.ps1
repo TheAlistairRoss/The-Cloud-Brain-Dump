@@ -28,20 +28,27 @@ if (-not $oPrincipalId) {
   exit
 }
 
+if ($oPrincipal){
+  Write-Host "Service Principal found"
+  $oPrincipal 
+}
+
 #Part 2
 $oApiSPNs = @()
 foreach ($permissions in $oPermissions) {
+  Write-Host "Fetching permissons provider"
   $oApiSPNs += Get-MgServicePrincipal -Filter "appId eq '$($permissions.applicationId)'"
+  $oApiSPNs 
 }
 
 
 #Part 3 
-foreach ($oApiSPN in $oApiSPNs) { 
+foreach ($oApiSPN in $oApiSPNs) {
   $oAppRoles = @()
     
   $oApiPermissions = $oPermissions | Where-Object { $_.applicationId -eq $oApiSPN.AppId }
 
-  $oAppRoles += $oApiSPN.AppRoles | Where-Object { ($_.Value -in $oAapiPermissions.Permissions) -and ($_.AllowedMemberTypes -contains "Application") }
+  $oAppRoles += $oApiSPN.AppRoles | Where-Object { ($_.Value -in $oApiPermissions.Permissions) -and ($_.AllowedMemberTypes -contains "Application") }
 
   foreach ($oAppRole in $oAppRoles) {
     New-MgServicePrincipalAppRoleAssignment `
