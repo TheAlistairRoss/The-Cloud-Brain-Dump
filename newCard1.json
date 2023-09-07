@@ -1,0 +1,168 @@
+{
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
+    "version": "1.0",
+    "body": [
+        {
+            "type": "TextBlock",
+            "text": "CVE-2023-40015",
+            "weight": "bolder",
+            "size": "large",
+            "id": "acTitle"
+        },
+		{
+            "type": "TextBlock",
+            "text": "Monday, September 4, 2023",
+            "weight": "bolder",
+            "size": "medium",
+            "id": "acDateTime"
+        },
+		{
+            "type": "Container",
+            "id": "acFactTable",
+            "spacing": "Large",
+            "items": [
+                {
+                    "type": "ColumnSet",
+                    "columns": [
+						{
+                            "type": "Column",
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "weight": "Bolder",
+                                    "text": "Severity"
+                                }
+                            ],
+                            "width": "stretch"
+                        },
+                        {
+                            "type": "Column",
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "weight": "Bolder",
+                                    "text": "Cvssv3"
+                                }
+                            ],
+                            "width": "stretch"
+                        },
+                        {
+                            "type": "Column",
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "weight": "Bolder",
+                                    "text": " Exposed Machines"
+                                }
+                            ],
+                            "width": "stretch"
+                        }
+                    ]
+                }
+            ],
+            "bleed": true
+        },
+        {
+            "type": "ColumnSet",
+            "columns": [
+                {
+                    "type": "Column",
+                    "items": [
+                        {
+                            "type": "TextBlock",
+                            "text": "Low",
+                            "wrap": true,
+                            "id": "acCol1"
+                        }
+                    ],
+                    "width": "stretch"
+                },
+                {
+                    "type": "Column",
+                    "items": [
+                        {
+                            "type": "TextBlock",
+                            "text": "3.7",
+                            "wrap": true,
+                            "id": "acCol2"
+                        }
+                    ],
+                    "width": "stretch"
+                },
+                {
+                    "type": "Column",
+                    "items": [
+                        {
+                            "type": "TextBlock",
+                            "text": "0",
+                            "wrap": true,
+                            "id": "acCol4"
+                        }
+                    ],
+                    "width": "stretch"
+                }
+            ],
+            "$data": "acDataContext"
+        },
+        {
+            "type": "TextBlock",
+            "text": "This vulnerability affects the following vendors: Vyper. To view more details about this vulnerability please visit the vendor website.",
+            "wrap": true,
+            "id": "acDescriptionArea"
+        },
+		{
+			"type": "TextBlock",
+			"text": "Comments",
+			"wrap": true
+		   },
+		   {
+			"type": "Input.Text",
+			"style": "text",
+			"isMultiline": true,
+			"id": "inputComments"
+		   },
+		   {
+			"type": "TextBlock",
+			"text": "Due Date",
+			"wrap": true
+		   },
+		   {
+			"type": "Input.Date",
+			"id": "inputDate",
+			"value": ""
+		   },
+		   {
+			"type": "Input.ChoiceSet",
+			"id": "inputAssignment",
+			"style" :"compact",
+			"label": "Assignment",
+			"isMultiSelect": false,
+			"value": "1",
+			"choices": [
+				{
+					"title": "Team A",
+					"value": "A"
+				  },
+				  {
+					"title": "Team B",
+					"value": "B"
+				  },
+				  {
+					"title": "Team C",
+					"value": "C"
+				  }
+			]
+		   }		  
+    ],
+	"actions": [
+		{
+		  "type": "Action.Submit",
+		  "title": "Submit",
+		  "data": {
+			"x": 13
+		  }
+		}
+	  ],
+    "bleed": true
+}
