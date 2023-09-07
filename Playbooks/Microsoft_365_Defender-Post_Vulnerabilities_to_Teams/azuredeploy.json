@@ -237,23 +237,6 @@
                             },
                             "description": "This gets the vulnerabilities from the last 24 hours that impact the organisation"
                         },
-                        "Initialize_variable": {
-                            "runAfter": {
-                                "HTTP_-_Get_Vulnerabilities": [
-                                    "Succeeded"
-                                ]
-                            },
-                            "type": "InitializeVariable",
-                            "inputs": {
-                                "variables": [
-                                    {
-                                        "name": "Array Test",
-                                        "type": "string",
-                                        "value": "@{length(array(body('HTTP_-_Get_Vulnerabilities')?['value']))}"
-                                    }
-                                ]
-                            }
-                        },
                         "Initialize_variable_-Filter_Time_Range": {
                             "runAfter": {},
                             "type": "InitializeVariable",
