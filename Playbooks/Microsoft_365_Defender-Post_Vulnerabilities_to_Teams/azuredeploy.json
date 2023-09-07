@@ -199,7 +199,7 @@
                                     },
                                     {
                                         "equals": [
-                                            "@not(empty(body('Parse_JSON')?['value']))",
+                                            "@not(empty(body('Filter_array')))",
                                             "@true"
                                         ]
                                     }
