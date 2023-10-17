@@ -15,6 +15,14 @@
         "location": {
             "defaultValue": "[resourceGroup().location]",
             "type": "string"
+        },
+        "BuiltInTableTransformation": {
+            "defaultValue": "source",
+            "type": "string"
+        },
+        "CustomTableTransformation": {
+            "defaultValue": "source",
+            "type": "string"
         }
     },
     "variables": {
@@ -62,7 +70,7 @@
                         "destinations": [
                             "logAnalyticsWorkspace"
                         ],
-                        "transformKql": "source"
+                        "transformKql": "[parameters('BuiltInTableTransformation')]"
                     },
                     {
                         "streams": [
@@ -72,7 +80,7 @@
                         "destinations": [
                             "logAnalyticsWorkspace"
                         ],
-                        "transformKql": "source"
+                        "transformKql": "[parameters('CustomTableTransformation')]"
                     }
                 ]
             }
