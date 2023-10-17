@@ -19,7 +19,7 @@
     },
     "resources": [
         {
-            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces/providers', parameters('workspaceName'), '/', variables('customTableName')))]",
+            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '/tables/', variables('customTableName'))]",
             "name": "[concat(parameters('workspaceName'), '/', variables('customTableName'))]", 
             "type": "Microsoft.OperationalInsights/workspaces/tables",
             "apiVersion": "2021-12-01-preview",
