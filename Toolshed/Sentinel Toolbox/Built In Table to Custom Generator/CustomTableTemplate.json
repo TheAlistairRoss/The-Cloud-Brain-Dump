@@ -11,8 +11,11 @@
         "columns": {
             "defaultValue": [],
             "type": "array"
+        },
+        "location": {
+            "defaultValue": "[resourceGroup().location]",
+            "type": "string"
         }
-
     },
     "variables": {
         "dataCollectionRuleName": "[concat(parameters('tableName'), '_LogSplittingToBasic_DCR')]",
@@ -24,7 +27,7 @@
     "resources": [
         {
             "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '/tables/', variables('customTableName'))]",
-            "name": "[concat(parameters('workspaceName'), '/', variables('customTableName'))]", 
+            "name": "[concat(parameters('workspaceName'), '/', variables('customTableName'))]",
             "type": "Microsoft.OperationalInsights/workspaces/tables",
             "apiVersion": "2021-12-01-preview",
             "properties": {
@@ -35,11 +38,11 @@
                 }
             }
         },
-                {
+        {
             "type": "Microsoft.Insights/dataCollectionRules",
             "apiVersion": "2022-06-01",
             "name": "[variables('dataCollectionRuleName')]",
-            "location": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')),'2022-10-01', 'Full').location]",
+            "location": "[parameters('location')]",
             "kind": "WorkspaceTransforms",
             "properties": {
                 "dataSources": {},
