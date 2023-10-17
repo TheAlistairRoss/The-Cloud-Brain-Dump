@@ -15,7 +15,11 @@
 
     },
     "variables": {
-        "customTableName": "[concat(parameters('tableName'),'_CL')]"
+        "dataCollectionRuleName": "[concat(parameters('tableName'), '_LogSplittingToBasic_DCR')]",
+        "streamName": "[concat('Microsoft-Table-', parameters('tableName'))]",
+        "customTableName": "[concat(parameters('tableName'),'_CL')]",
+        "customTableStreamName": "[concat('Custom-', variables('customTableName'))]"
+
     },
     "resources": [
         {
@@ -30,6 +34,46 @@
                     "columns": "[parameters('columns')]"
                 }
             }
+        },
+                {
+            "type": "Microsoft.Insights/dataCollectionRules",
+            "apiVersion": "2022-06-01",
+            "name": "[variables('dataCollectionRuleName')]",
+            "location": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')),'2022-10-01', 'Full').location]",
+            "kind": "WorkspaceTransforms",
+            "properties": {
+                "dataSources": {},
+                "destinations": {
+                    "logAnalytics": [
+                        {
+                            "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]",
+                            "name": "logAnalyticsWorkspace"
+                        }
+                    ]
+                },
+                "dataFlows": [
+                    {
+                        "streams": [
+                            "[variables('streamName')]"
+                        ],
+                        "destinations": [
+                            "logAnalyticsWorkspace"
+                        ],
+                        "transformKql": "source"
+                    },
+                    {
+                        "streams": [
+                            "[variables('streamName')]"
+                        ],
+                        "outputStream": "[variables('customTableStreamName')]",
+                        "destinations": [
+                            "logAnalyticsWorkspace"
+                        ],
+                        "transformKql": "source"
+                    }
+                ]
+            }
         }
+
     ]
 }
