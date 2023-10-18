@@ -3,34 +3,45 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "workspaceName": {
-            "type": "String"
-        },
-        "tableName": {
-            "type": "String"
-        },
-        "columns": {
-            "defaultValue": [],
-            "type": "array"
+            "type": "string"
         },
         "location": {
             "defaultValue": "[resourceGroup().location]",
             "type": "string"
         },
-        "BuiltInTableTransformation": {
+        "originalTableName": {
+            "type": "string"
+        },
+        "newTableName": {
+            "type": "string"
+        },
+        "columns": {
+            "defaultValue": [],
+            "type": "array"
+        },
+
+        "originalTableTransformation": {
             "defaultValue": "source",
             "type": "string"
         },
-        "CustomTableTransformation": {
+        "newTableTransformation": {
             "defaultValue": "source",
             "type": "string"
         }
     },
     "variables": {
-        "dataCollectionRuleName": "[concat(parameters('tableName'), '_LogSplittingToBasic_DCR')]",
-        "streamName": "[concat('Microsoft-Table-', parameters('tableName'))]",
-        "customTableName": "[concat(parameters('tableName'),'_CL')]",
+        "dataCollectionRuleName": "[concat(parameters('originalTableName'), '_LogSplittingToBasic_DCR')]",
+        "streamName": "[if(
+                            endsWith(parameters('originalTableName'), '_CL'),
+                            concat('Microsoft-Table-', parameters('originalTableName')),
+                            concat('Custom-', parameters('originalTableName'))
+        )]",
+        "customTableName": "[if(
+                            not(endsWith(parameters('newTableName'), '_CL')),
+                            concat(parameters('newTableName'),'_CL'),
+                            parameters('newTableName')
+        )]",
         "customTableStreamName": "[concat('Custom-', variables('customTableName'))]"
-
     },
     "resources": [
         {
@@ -70,7 +81,7 @@
                         "destinations": [
                             "logAnalyticsWorkspace"
                         ],
-                        "transformKql": "[parameters('BuiltInTableTransformation')]"
+                        "transformKql": "[parameters('originalTableTransformation')]"
                     },
                     {
                         "streams": [
@@ -80,7 +91,7 @@
                         "destinations": [
                             "logAnalyticsWorkspace"
                         ],
-                        "transformKql": "[parameters('CustomTableTransformation')]"
+                        "transformKql": "[parameters('newTableTransformation')]"
                     }
                 ]
             }
