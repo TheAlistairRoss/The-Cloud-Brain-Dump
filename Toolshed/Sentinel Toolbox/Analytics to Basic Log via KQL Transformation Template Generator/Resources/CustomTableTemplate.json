@@ -1,0 +1,96 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.1",
+    "parameters": {
+        "workspaceName": {
+            "type": "string"
+        },
+        "location": {
+            "defaultValue": "[resourceGroup().location]",
+            "type": "string"
+        },
+        "originalTableName": {
+            "type": "string"
+        },
+        "newTableName": {
+            "type": "string"
+        },
+        "columns": {
+            "defaultValue": [],
+            "type": "array"
+        },
+
+        "originalTableTransformation": {
+            "defaultValue": "source",
+            "type": "string"
+        },
+        "newTableTransformation": {
+            "defaultValue": "source",
+            "type": "string"
+        }
+    },
+    "variables": {
+        "dataCollectionRuleName": "[concat(parameters('originalTableName'), '_LogSplittingToBasic_DCR')]",
+        "streamName": "[if(endsWith(parameters('originalTableName'), '_CL'), concat('Microsoft-Table-', parameters('originalTableName')),concat('Custom-', parameters('originalTableName')))]",
+        "customTableName": "[if(not(endsWith(parameters('newTableName'), '_CL')), concat(parameters('newTableName'),'_CL'), parameters('newTableName'))]",
+        "customTableStreamName": "[concat('Custom-', variables('customTableName'))]",
+        "customTableId" :  "[concat(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '/tables/', variables('customTableName'))]"    },
+    "resources": [
+        {
+            "id": "[variables('customTableId')]",
+            "name": "[concat(parameters('workspaceName'), '/', variables('customTableName'))]",
+            "type": "Microsoft.OperationalInsights/workspaces/tables",
+            "apiVersion": "2021-12-01-preview",
+            "properties": {
+                "plan": "Basic",
+                "schema": {
+                    "name": "[variables('customTableName')]",
+                    "columns": "[parameters('columns')]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Insights/dataCollectionRules",
+            "apiVersion": "2022-06-01",
+            "name": "[variables('dataCollectionRuleName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[variables('customTableId')]"
+            ],
+            "kind": "WorkspaceTransforms",
+            "properties": {
+                "dataSources": {},
+                "destinations": {
+                    "logAnalytics": [
+                        {
+                            "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]",
+                            "name": "logAnalyticsWorkspace"
+                        }
+                    ]
+                },
+                "dataFlows": [
+                    {
+                        "streams": [
+                            "[variables('streamName')]"
+                        ],
+                        "destinations": [
+                            "logAnalyticsWorkspace"
+                        ],
+                        "transformKql": "[parameters('originalTableTransformation')]"
+                    },
+                    {
+                        "streams": [
+                            "[variables('streamName')]"
+                        ],
+                        "outputStream": "[variables('customTableStreamName')]",
+                        "destinations": [
+                            "logAnalyticsWorkspace"
+                        ],
+                        "transformKql": "[parameters('newTableTransformation')]"
+                    }
+                ]
+            }
+        }
+
+    ]
+}
