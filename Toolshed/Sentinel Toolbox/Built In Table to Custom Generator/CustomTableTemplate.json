@@ -34,9 +34,7 @@
         "streamName": "[if(endsWith(parameters('originalTableName'), '_CL'), concat('Microsoft-Table-', parameters('originalTableName')),concat('Custom-', parameters('originalTableName')))]",
         "customTableName": "[if(not(endsWith(parameters('newTableName'), '_CL')), concat(parameters('newTableName'),'_CL'), parameters('newTableName'))]",
         "customTableStreamName": "[concat('Custom-', variables('customTableName'))]",
-        "customTableId" :  "[concat(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '/tables/', variables('customTableName'))]",
-        "originalTableId" : "[concat(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '/tables/', parameters('originalTableName'))]"
-    },
+        "customTableId" :  "[concat(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '/tables/', variables('customTableName'))]"    },
     "resources": [
         {
             "id": "[variables('customTableId')]",
@@ -57,8 +55,7 @@
             "name": "[variables('dataCollectionRuleName')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[variables('customTableId')]",
-                "[variables('originalTableId')]"
+                "[variables('customTableId')]"
             ],
             "kind": "WorkspaceTransforms",
             "properties": {
