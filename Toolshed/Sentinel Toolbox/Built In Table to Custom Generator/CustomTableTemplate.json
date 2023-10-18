@@ -33,11 +33,13 @@
         "dataCollectionRuleName": "[concat(parameters('originalTableName'), '_LogSplittingToBasic_DCR')]",
         "streamName": "[if(endsWith(parameters('originalTableName'), '_CL'), concat('Microsoft-Table-', parameters('originalTableName')),concat('Custom-', parameters('originalTableName')))]",
         "customTableName": "[if(not(endsWith(parameters('newTableName'), '_CL')), concat(parameters('newTableName'),'_CL'), parameters('newTableName'))]",
-        "customTableStreamName": "[concat('Custom-', variables('customTableName'))]"
+        "customTableStreamName": "[concat('Custom-', variables('customTableName'))]",
+        "customTableId" :  "[concat(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '/tables/', variables('customTableName'))]",
+        "originalTableId" : "[concat(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '/tables/', parameters('originalTableName'))]"
     },
     "resources": [
         {
-            "id": "[concat(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '/tables/', variables('customTableName'))]",
+            "id": "[variables('customTableId')]",
             "name": "[concat(parameters('workspaceName'), '/', variables('customTableName'))]",
             "type": "Microsoft.OperationalInsights/workspaces/tables",
             "apiVersion": "2021-12-01-preview",
@@ -54,6 +56,10 @@
             "apiVersion": "2022-06-01",
             "name": "[variables('dataCollectionRuleName')]",
             "location": "[parameters('location')]",
+            "dependsOn": [
+                "[variables('customTableId')]",
+                "[variables('originalTableId')]"
+            ],
             "kind": "WorkspaceTransforms",
             "properties": {
                 "dataSources": {},
