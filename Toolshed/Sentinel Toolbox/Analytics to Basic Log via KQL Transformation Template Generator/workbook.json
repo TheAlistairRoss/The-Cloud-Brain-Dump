@@ -1,0 +1,929 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "# Analytics to Basic Log via KQL Transformation Template Generator (Working Title!)\r\n### Author: [Alistair Ross - Microsoft](https://thealistairross0.wordpress.com/)"
+      },
+      "name": "text - 11"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "3b23bed9-9564-467c-aea0-4d2ee76f7e77",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscriptions",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "resources\r\n| where type =~ \"microsoft.operationalinsights/workspaces\"\r\n| distinct subscriptionId",
+            "crossComponentResources": [
+              "value::all"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ]
+            },
+            "defaultValue": "value::all",
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+              "value::all"
+            ]
+          },
+          {
+            "id": "d766ea1e-e7cb-4c21-9544-ced5c7aeef8d",
+            "version": "KqlParameterItem/1.0",
+            "name": "Workspace",
+            "type": 5,
+            "isRequired": true,
+            "query": "resources\r\n| where type =~ \"microsoft.operationalinsights/workspaces\"\r\n| project id, name, subscriptionId\r\n| join kind = inner (\r\n    resourcecontainers\r\n    | where type == \"microsoft.resources/subscriptions\"\r\n    | project subscriptionId, subscription = strcat(name,\" (\",subscriptionId,\")\")\r\n)\r\non subscriptionId\r\n|project value = id, label = name, group = subscription",
+            "crossComponentResources": [
+              "{Subscriptions}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "e7fe4e9e-f94c-49ef-aae3-f93bc7cb6cf5",
+            "version": "KqlParameterItem/1.0",
+            "name": "ShowHelp",
+            "label": "Show Help",
+            "type": 10,
+            "isRequired": true,
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "jsonData": "[\r\n    {\"value\":\"true\", \"label\": \"Yes\", \"selected\": false},\r\n    {\"value\":\"false\", \"label\": \"No\", \"selected\": true}\r\n]",
+            "timeContext": {
+              "durationMs": 86400000
+            }
+          },
+          {
+            "id": "8a1cc20a-f9ac-4532-8d13-eab906b08b63",
+            "version": "KqlParameterItem/1.0",
+            "name": "WorkspaceName",
+            "type": 1,
+            "isHiddenWhenLocked": true,
+            "criteriaData": [
+              {
+                "criteriaContext": {
+                  "operator": "Default",
+                  "resultValType": "static",
+                  "resultVal": "{Workspace:label}"
+                }
+              }
+            ]
+          },
+          {
+            "id": "37ca2c82-eec6-4b2e-aed4-d89a3abd22f4",
+            "version": "KqlParameterItem/1.0",
+            "name": "ResourceGroupId",
+            "type": 1,
+            "query": "resources\r\n| where id =~ \"{Workspace}\"\r\n| project value = strcat(\"/subscriptions/\", subscriptionId, \"/resourceGroups/\", resourceGroup)",
+            "crossComponentResources": [
+              "{Subscriptions}"
+            ],
+            "isHiddenWhenLocked": true,
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.resourcegraph/resources"
+      },
+      "name": "parameters - Main"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "This workbook has been designed with the aim to reduce costs incurred by customers when using Microsoft Sentinel and Azure Monitor Logs.\r\n\r\nThe concept is that not all data has the same value to teams, and therefore you may want to handle and use the data differently. For examples some security data, like sign in logs, have a high value, whereas a subset of that data may be considered low value to that organisation. \r\n\r\nBy default all data is ingested into Microsoft Sentinel as Analytics logs, this allows you to perform queries, run detections and build visualisations with the data. You can create custom tables (and change a select built in tables) to basic logs. Basic logs allow you to ingest and retain the data at a much lower cost, but with limited functionality. To find out more, read the documentation found [here](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/basic-logs-configure?tabs=portal-1#compare-the-basic-and-analytics-log-data-plans).\r\n\r\nThe output of this workbook is an ARM template, it does not actually deploy anything unless you press the deploy button. The workflow is as follows.\r\n\r\n1. You select an existing table in your workspace.\r\n2. It displays the schema of the table, this will be used for you new table. (You change this in the ARM template).\r\n3. It creates a new table, set as basic logs. You can change the name if the default is not right for your requirements.\r\n4. You create a new transformation for both the original and new table.\r\n5. Incoming data to the original table will be duplicated and sent to each table, passing through the transformation filters you have created.\r\n\r\n![GIF image showing logs going to analytics and basic logs table.](https://raw.githubusercontent.com/TheAlistairRoss/The-Cloud-Brain-Dump/Toolshed/Sentinel%20Toolbox/Analytics%20to%20Basic%20Log%20via%20KQL%20Transformation%20Template%20Generator/Resources/LogSplittingViaDCR.gif)\r\n\r\nThe aim is that the lower value data can be filtered out from the analytics tables, but still kept and ingested into the basic logs table, reducing overall costs to the organisation.",
+        "style": "info"
+      },
+      "conditionalVisibility": {
+        "parameterName": "ShowHelp",
+        "comparison": "isEqualTo",
+        "value": "true"
+      },
+      "name": "text - Introduction"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "{\"version\":\"ARMEndpoint/1.0\",\"data\":null,\"headers\":[],\"method\":\"GET\",\"path\":\"{Workspace}/tables?api-version=2022-10-01\",\"urlParams\":[],\"batchDisabled\":false,\"transformers\":[{\"type\":\"jsonpath\",\"settings\":{\"tablePath\":\"$.value\",\"columns\":[{\"path\":\"$.name\",\"columnid\":\"name\",\"columnType\":\"string\"},{\"path\":\"$.properties.plan\",\"columnid\":\"plan\",\"columnType\":\"string\"},{\"path\":\"$.properties.schema.tableType\",\"columnid\":\"tableType\",\"columnType\":\"string\"}]}}]}",
+        "size": 1,
+        "title": "Table Selection",
+        "showRefreshButton": true,
+        "exportedParameters": [
+          {
+            "fieldName": "name",
+            "parameterName": "SelectedTableName"
+          },
+          {
+            "fieldName": "tableType",
+            "parameterName": "TableType",
+            "parameterType": 1
+          },
+          {
+            "fieldName": "plan",
+            "parameterName": "PlanType",
+            "parameterType": 1
+          }
+        ],
+        "queryType": 12,
+        "gridSettings": {
+          "rowLimit": 1000,
+          "filter": true
+        }
+      },
+      "customWidth": "50",
+      "name": "query - Table Selection",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "## Table Selection\r\n\r\nSelect the table which you wish duplicate. A custom log will be created with the same schema as the original, but as as a basic log type. \r\n\r\nYou will have the option to create KQL transformations for each table prior to deployment.\r\n",
+        "style": "info"
+      },
+      "conditionalVisibility": {
+        "parameterName": "ShowHelp",
+        "comparison": "isEqualTo",
+        "value": "true"
+      },
+      "customWidth": "50",
+      "name": "text - Table Selection"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "3c9ab7f9-0e9a-435e-a6ee-0b398390e810",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "ShowFilteredColumns",
+                  "label": "Show Filtered Columns",
+                  "type": 10,
+                  "isRequired": true,
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "jsonData": "[\r\n    {\"value\":\"true\", \"label\": \"Yes\", \"selected\": false},\r\n    {\"value\":\"false\", \"label\": \"No\", \"selected\": true}\r\n]",
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                }
+              ],
+              "style": "formHorizontal",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "customWidth": "30",
+            "name": "parameters - 14"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "f2555ed2-d21e-42de-a619-95dbfe941381",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "FilteredColumnsList",
+                  "label": "FilteredColumns",
+                  "type": 1,
+                  "typeSettings": {
+                    "multiLineText": true,
+                    "editorLanguage": "json"
+                  },
+                  "criteriaData": [
+                    {
+                      "criteriaContext": {
+                        "operator": "Default",
+                        "resultValType": "static",
+                        "resultVal": "[\"TenantId\",\"Id\",\"Filter\" ]"
+                      }
+                    }
+                  ],
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                }
+              ],
+              "style": "formHorizontal",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "customWidth": "35",
+            "conditionalVisibility": {
+              "parameterName": "ShowFilteredColumns",
+              "comparison": "isEqualTo",
+              "value": "true"
+            },
+            "name": "parameters - FilteredColumns"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "### Filtered Columns\r\n\r\nSome columns are reserved and cannot be used in custom tables. Add to this list if you need to filter any columns out.",
+              "style": "info"
+            },
+            "customWidth": "35",
+            "conditionalVisibility": {
+              "parameterName": "ShowFilteredColumns",
+              "comparison": "isEqualTo",
+              "value": "true"
+            },
+            "name": "text - Show Filtered Columns"
+          }
+        ],
+        "exportParameters": true
+      },
+      "name": "group - Filtered Columns"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "{Workspace}"
+        ],
+        "parameters": [
+          {
+            "id": "f42e5762-ad2c-4cda-a9f1-fbfd79f9c2d5",
+            "version": "KqlParameterItem/1.0",
+            "name": "TableDetails",
+            "type": 1,
+            "query": "{\"version\":\"ARMEndpoint/1.0\",\"data\":null,\"headers\":[],\"method\":\"GET\",\"path\":\"{Workspace}/tables/{SelectedTableName}?api-version=2022-10-01\",\"urlParams\":[],\"batchDisabled\":false,\"transformers\":null}",
+            "isHiddenWhenLocked": true,
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "queryType": 12
+          },
+          {
+            "id": "1a61f78c-5b35-4364-b79e-da7d081b4c63",
+            "version": "KqlParameterItem/1.0",
+            "name": "FilteredColumns",
+            "type": 1,
+            "query": "let TableBase64 = \"{TableDetails:base64}\";\r\nlet FilteredColumnsList = dynamic({FilteredColumnsList});\r\nlet TableDetails = todynamic(base64_decode_tostring(TableBase64));\r\nprint TableDetails\r\n| extend StandardColumns = TableDetails.properties.schema.standardColumns\r\n| extend Columns = TableDetails.properties.schema.columns\r\n| project Columns = array_concat(StandardColumns, Columns)\r\n| mv-expand Columns\r\n| where Columns.name !in (FilteredColumnsList)\r\n| order by tostring(Columns.name) asc\r\n| summarize Columns = make_list(Columns)\r\n",
+            "crossComponentResources": [
+              "{Workspace}"
+            ],
+            "isHiddenWhenLocked": true,
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "conditionalVisibility": {
+        "parameterName": "_",
+        "comparison": "isEqualTo",
+        "value": "_"
+      },
+      "name": "parameters - Table Schema Filtering"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "Select a table above to continue.",
+        "style": "info"
+      },
+      "conditionalVisibility": {
+        "parameterName": "TableName",
+        "comparison": "isEqualTo"
+      },
+      "name": "text - Select a table message"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "## Table Schema\r\n\r\nBelow is the table schema that will be deployed as part of the ARM template. Standard tables have been filtered out to prevent deployment failures.\r\n\r\nThis is displayed for you information. If you wish to configure the schema, do so in the ARM template at the end.\r\n\r\n> **Note:** There can be a few seconds delay between selecting the table and the schema updating. This is due to an api call and a KQL query to filter the standard tables out.\r\n",
+        "style": "info"
+      },
+      "conditionalVisibility": {
+        "parameterName": "ShowHelp",
+        "comparison": "isEqualTo",
+        "value": "true"
+      },
+      "name": "text - Table Schema"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "{\"version\":\"1.0.0\",\"content\":\"{FilteredColumns}\",\"transformers\":[{\"type\":\"jsonpath\",\"settings\":{\"columns\":[{\"path\":\"$.name\",\"columnid\":\"name\",\"columnType\":\"string\"},{\"path\":\"$.type\",\"columnid\":\"type\",\"columnType\":\"string\"},{\"path\":\"$.isDefaultDisplay\",\"columnid\":\"isDefaultDisplay\",\"columnType\":\"string\"},{\"path\":\"$.isHidden\",\"columnid\":\"isHidden\",\"columnType\":\"string\"},{\"path\":\"$.description\",\"columnid\":\"description\",\"columnType\":\"string\"}]}}]}",
+        "size": 0,
+        "showRefreshButton": true,
+        "queryType": 8,
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "name",
+              "formatter": 1,
+              "formatOptions": {
+                "linkTarget": "GenericDetails",
+                "linkIsContextBlade": true
+              }
+            },
+            {
+              "columnMatch": "type",
+              "formatter": 1
+            },
+            {
+              "columnMatch": "isDefaultDisplay",
+              "formatter": 1
+            },
+            {
+              "columnMatch": "isHidden",
+              "formatter": 1
+            },
+            {
+              "columnMatch": "description",
+              "formatter": 1,
+              "formatOptions": {
+                "customColumnWidthSetting": "60%"
+              }
+            }
+          ],
+          "labelSettings": [
+            {
+              "columnId": "name",
+              "label": "Name"
+            },
+            {
+              "columnId": "type",
+              "label": "Type"
+            },
+            {
+              "columnId": "isDefaultDisplay",
+              "label": "Is Default Display"
+            },
+            {
+              "columnId": "isHidden",
+              "label": "Is Hidden"
+            },
+            {
+              "columnId": "description",
+              "label": "Description"
+            }
+          ]
+        }
+      },
+      "conditionalVisibility": {
+        "parameterName": "SelectedTableName",
+        "comparison": "isNotEqualTo"
+      },
+      "name": "query - Table Schema",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "crossComponentResources": [
+                "{Workspace}"
+              ],
+              "parameters": [
+                {
+                  "id": "cf1b13d0-9f14-4dd9-b966-f46d32e4a4dc",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "NewCustomTableName",
+                  "label": "New Custom Table Name",
+                  "type": 1,
+                  "isRequired": true,
+                  "query": "let TableNameBase64 = \"{SelectedTableName:base64}\";\r\nlet TableName = base64_decode_tostring(TableNameBase64);\r\nprint Name = iff(\r\n                 TableName endswith \"_CL\",\r\n                 replace_regex(TableName, @'_CL$', \"_COPY_CL\"),\r\n                 strcat(TableName,\"_CL\")\r\n)",
+                  "crossComponentResources": [
+                    "{Workspace}"
+                  ],
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "queryType": 0,
+                  "resourceType": "microsoft.operationalinsights/workspaces"
+                }
+              ],
+              "style": "formVertical",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "customWidth": "25",
+            "name": "parameters - New Custom Table Name"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "## New Custom Table Name\r\nThis is the name of the new table. \r\n\r\nBy default it will be set as \"YourSelectedTable**_CL**\" or if it is a custom table already, \"\"YourSelectedTable**_COPY_CL**\"\r\n\r\nChange this here if a different name is required. It MUST end with \"**_CL**\" as you are creating a custom log.",
+              "style": "info"
+            },
+            "customWidth": "75",
+            "conditionalVisibility": {
+              "parameterName": "ShowHelp",
+              "comparison": "isEqualTo",
+              "value": "true"
+            },
+            "name": "text - New Custom Table Name"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "51d5ea0c-22cc-479b-829d-50468f40b884",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "CreateTransformations",
+                  "type": 10,
+                  "isRequired": true,
+                  "query": "{\"version\":\"1.0.0\",\"content\":\"[\\r\\n\\t{\\\"value\\\": true, \\\"label\\\" : \\\"Yes\\\", \\\"selected\\\": false},\\r\\n\\t{\\\"value\\\": false, \\\"label\\\" : \\\"No\\\", \\\"selected\\\": true}\\r\\n]\",\"transformers\":null}",
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "queryType": 8,
+                  "label": "Create Transformations"
+                }
+              ],
+              "style": "formHorizontal",
+              "queryType": 8
+            },
+            "customWidth": "40",
+            "name": "parameters - Create Transformations"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "If you wish to create transformations using KQL, select **\"Yes\"**. The data shown will be data from the the selected table: **{TableName}**.",
+              "style": "info"
+            },
+            "customWidth": "60",
+            "conditionalVisibility": {
+              "parameterName": "ShowHelp",
+              "comparison": "isEqualTo",
+              "value": "true"
+            },
+            "name": "text - Create Transformations"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "title": "Transformations",
+              "items": [
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "# Basic Log Transformation\r\n\r\nBasic Log tables cannot be queried via workbooks, and therefore the results cannot be shown. \r\n\r\nEnsure you use the Log Analytics Editor or create the transformations following the instructions [here](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/tutorial-workspace-transformations-portal#add-a-transformation-to-the-table).",
+                    "style": "warning"
+                  },
+                  "conditionalVisibility": {
+                    "parameterName": "PlanType",
+                    "comparison": "isEqualTo",
+                    "value": "Basic"
+                  },
+                  "name": "text - Basic Logs Warning"
+                },
+                {
+                  "type": 12,
+                  "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "editable",
+                    "title": "Selected Table: {SelectedTableName}",
+                    "items": [
+                      {
+                        "type": 1,
+                        "content": {
+                          "json": "# Selected Table Transformation\r\n\r\nThis UI will allow you to create the KQL transformation for the incoming data to the selected table and will display the results below (unless the selected table is basic logs).\r\n\r\nSelect the button \"Open Workspace Editor\" below to test your query in the Log Analytics blade. Note that **\"source\"** has been commented out, this is just for the purposed of the query as the table name is not referenced in transformation queries. \r\n\r\nOnce you have created your query, ensure that it is copied to the \"Selected Table Transformation Query\" parameter below and it starts with \"source\".\r\n\r\nEnsure your query adheres to the limitations listed here.\r\nhttps://learn.microsoft.com/en-us/azure/azure-monitor/essentials/data-collection-transformations-structure#supported-kql-features",
+                          "style": "info"
+                        },
+                        "conditionalVisibility": {
+                          "parameterName": "ShowHelp",
+                          "comparison": "isEqualTo",
+                          "value": "true"
+                        },
+                        "name": "text - Selected Table Transformation Query"
+                      },
+                      {
+                        "type": 9,
+                        "content": {
+                          "version": "KqlParameterItem/1.0",
+                          "crossComponentResources": [
+                            "{Workspace}"
+                          ],
+                          "parameters": [
+                            {
+                              "id": "ec9ab19c-df1e-417e-baeb-758ad0ad84f1",
+                              "version": "KqlParameterItem/1.0",
+                              "name": "SelectedTableTransformation",
+                              "label": "Selected Table Transformation Query",
+                              "type": 1,
+                              "isRequired": true,
+                              "typeSettings": {
+                                "multiLineText": true,
+                                "editorLanguage": "kql"
+                              },
+                              "criteriaData": [
+                                {
+                                  "criteriaContext": {
+                                    "operator": "Default",
+                                    "resultValType": "static",
+                                    "resultVal": "source"
+                                  }
+                                }
+                              ],
+                              "timeContext": {
+                                "durationMs": 86400000
+                              }
+                            },
+                            {
+                              "id": "a8756dcb-1883-4e0f-8690-297473c1937f",
+                              "version": "KqlParameterItem/1.0",
+                              "name": "SelectedTableQuery",
+                              "type": 1,
+                              "query": "let TableNameBase64 = \"{SelectedTableName:base64}\";\r\nlet TableName = base64_decode_tostring(TableNameBase64);\r\nprint Query = ```{SelectedTableTransformation}``` \r\n| extend Query = case(\r\n    Query startswith \"source\", \r\n    replace_regex(Query, @\"source\", strcat(\"//source \\r\\n\", TableName)),\r\n    Query\r\n)",
+                              "crossComponentResources": [
+                                "{Workspace}"
+                              ],
+                              "isHiddenWhenLocked": true,
+                              "typeSettings": {
+                                "multiLineText": true,
+                                "editorLanguage": "kql"
+                              },
+                              "timeContext": {
+                                "durationMs": 86400000
+                              },
+                              "queryType": 0,
+                              "resourceType": "microsoft.operationalinsights/workspaces"
+                            }
+                          ],
+                          "style": "formVertical",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces"
+                        },
+                        "name": "parameters - Selected Table Transformation"
+                      },
+                      {
+                        "type": 11,
+                        "content": {
+                          "version": "LinkItem/1.0",
+                          "style": "paragraph",
+                          "links": [
+                            {
+                              "id": "c256b5b2-81b1-4cd6-9848-1f4965f05d52",
+                              "linkTarget": "OpenBlade",
+                              "linkLabel": "Open Workspace Editor",
+                              "style": "primary",
+                              "linkIsContextBlade": true,
+                              "bladeOpenContext": {
+                                "bladeName": "Logs.ReactView",
+                                "extensionName": "Microsoft_OperationsManagementSuite_Workspace",
+                                "bladeParameters": [
+                                  {
+                                    "name": "resourceId",
+                                    "source": "parameter",
+                                    "value": "Workspace"
+                                  },
+                                  {
+                                    "name": "source",
+                                    "source": "static",
+                                    "value": "LogsBlade.AnalyticsShareLinkToQuery"
+                                  },
+                                  {
+                                    "name": "query",
+                                    "source": "static",
+                                    "value": "\\\\//source {SelectedQuery}"
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "name": "links - Open Workspace Editor for Selected Table Query"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "{SelectedTableQuery}",
+                          "size": 0,
+                          "timeContext": {
+                            "durationMs": 86400000
+                          },
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{Workspace}"
+                          ]
+                        },
+                        "conditionalVisibility": {
+                          "parameterName": "PlanType",
+                          "comparison": "isNotEqualTo",
+                          "value": "Basic"
+                        },
+                        "name": "query - Selected Table Transformations Results",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      }
+                    ],
+                    "exportParameters": true
+                  },
+                  "name": "group - Transformations - Selected Table",
+                  "styleSettings": {
+                    "padding": "10px",
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 12,
+                  "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "editable",
+                    "title": "New Custom Table: {newTableName}",
+                    "items": [
+                      {
+                        "type": 1,
+                        "content": {
+                          "json": "## New Custom Table Transformation\r\n\r\nThe instructions for this is the same as the selected table, with the difference being that this will be the query used for the new table.\r\n\r\nThe data source used is the original table.",
+                          "style": "info"
+                        },
+                        "conditionalVisibility": {
+                          "parameterName": "ShowHelp",
+                          "comparison": "isEqualTo",
+                          "value": "true"
+                        },
+                        "name": "text - New Table Transformation Query"
+                      },
+                      {
+                        "type": 9,
+                        "content": {
+                          "version": "KqlParameterItem/1.0",
+                          "crossComponentResources": [
+                            "{Workspace}"
+                          ],
+                          "parameters": [
+                            {
+                              "id": "ec9ab19c-df1e-417e-baeb-758ad0ad84f1",
+                              "version": "KqlParameterItem/1.0",
+                              "name": "CustomTableTransformation",
+                              "label": "Custom Table Transformation Query",
+                              "type": 1,
+                              "isRequired": true,
+                              "typeSettings": {
+                                "multiLineText": true,
+                                "editorLanguage": "kql"
+                              },
+                              "criteriaData": [
+                                {
+                                  "criteriaContext": {
+                                    "operator": "Default",
+                                    "resultValType": "static",
+                                    "resultVal": "source"
+                                  }
+                                }
+                              ],
+                              "timeContext": {
+                                "durationMs": 86400000
+                              }
+                            },
+                            {
+                              "id": "a8756dcb-1883-4e0f-8690-297473c1937f",
+                              "version": "KqlParameterItem/1.0",
+                              "name": "CustomTableQuery",
+                              "type": 1,
+                              "query": "let TableNameBase64 = \"{SelectedTableName:base64}\";\r\nlet TableName = base64_decode_tostring(TableNameBase64);\r\nprint Query = ```{CustomTableTransformation}``` \r\n| extend Query = case(\r\n    Query startswith \"source\", \r\n    replace_regex(Query, @\"source\", strcat(\"//source \\r\\n\", TableName)),\r\n    Query\r\n)",
+                              "crossComponentResources": [
+                                "{Workspace}"
+                              ],
+                              "isHiddenWhenLocked": true,
+                              "typeSettings": {
+                                "multiLineText": true,
+                                "editorLanguage": "kql"
+                              },
+                              "timeContext": {
+                                "durationMs": 86400000
+                              },
+                              "queryType": 0,
+                              "resourceType": "microsoft.operationalinsights/workspaces"
+                            }
+                          ],
+                          "style": "formVertical",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces"
+                        },
+                        "name": "parameters - Custom Table Transformation Queries"
+                      },
+                      {
+                        "type": 11,
+                        "content": {
+                          "version": "LinkItem/1.0",
+                          "style": "paragraph",
+                          "links": [
+                            {
+                              "id": "c256b5b2-81b1-4cd6-9848-1f4965f05d52",
+                              "linkTarget": "OpenBlade",
+                              "linkLabel": "Open Workspace Editor",
+                              "style": "primary",
+                              "linkIsContextBlade": true,
+                              "bladeOpenContext": {
+                                "bladeName": "Logs.ReactView",
+                                "extensionName": "Microsoft_OperationsManagementSuite_Workspace",
+                                "bladeParameters": [
+                                  {
+                                    "name": "resourceId",
+                                    "source": "parameter",
+                                    "value": "Workspace"
+                                  },
+                                  {
+                                    "name": "source",
+                                    "source": "static",
+                                    "value": "LogsBlade.AnalyticsShareLinkToQuery"
+                                  },
+                                  {
+                                    "name": "query",
+                                    "source": "static",
+                                    "value": "\\\\//source {CustomTableQuery}"
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "name": "links - Open Workspace Editor for Custom Table Query"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "{CustomTableQuery}",
+                          "size": 0,
+                          "timeContext": {
+                            "durationMs": 86400000
+                          },
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{Workspace}"
+                          ]
+                        },
+                        "conditionalVisibility": {
+                          "parameterName": "PlanType",
+                          "comparison": "isNotEqualTo",
+                          "value": "Basic"
+                        },
+                        "name": "query - Custom Table Transformation Query Results",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      }
+                    ],
+                    "exportParameters": true
+                  },
+                  "name": "group - Transformations - Custom Table",
+                  "styleSettings": {
+                    "padding": "10px",
+                    "showBorder": true
+                  }
+                }
+              ],
+              "exportParameters": true
+            },
+            "conditionalVisibility": {
+              "parameterName": "CreateTransformations",
+              "comparison": "isEqualTo",
+              "value": "true"
+            },
+            "name": "group - Transformations",
+            "styleSettings": {
+              "padding": "10px",
+              "showBorder": true
+            }
+          }
+        ],
+        "exportParameters": true
+      },
+      "conditionalVisibility": {
+        "parameterName": "SelectedTableName",
+        "comparison": "isNotEqualTo"
+      },
+      "name": "group - Transformation Builder"
+    },
+    {
+      "type": 11,
+      "content": {
+        "version": "LinkItem/1.0",
+        "style": "paragraph",
+        "links": [
+          {
+            "id": "1f3de801-bfca-471a-94ca-8d3b8861c0a1",
+            "linkTarget": "ArmTemplate",
+            "linkLabel": "View and Deploy Template",
+            "style": "primary",
+            "linkIsContextBlade": true,
+            "templateRunContext": {
+              "componentIdSource": "parameter",
+              "componentId": "ResourceGroupId",
+              "templateUriSource": "static",
+              "templateUri": "https://raw.githubusercontent.com/TheAlistairRoss/The-Cloud-Brain-Dump/Toolshed/Sentinel%20Toolbox/Analytics%20to%20Basic%20Log%20via%20KQL%20Transformation%20Template%20Generator/Resources/CustomTableTemplate.json",
+              "templateParameters": [
+                {
+                  "name": "workspaceName",
+                  "source": "parameter",
+                  "value": "WorkspaceName",
+                  "kind": "stringValue"
+                },
+                {
+                  "name": "originalTableName",
+                  "source": "parameter",
+                  "value": "SelectedTableName",
+                  "kind": "stringValue"
+                },
+                {
+                  "name": "newTableName",
+                  "source": "parameter",
+                  "value": "NewCustomTableName",
+                  "kind": "stringValue"
+                },
+                {
+                  "name": "columns",
+                  "source": "parameter",
+                  "value": "FilteredColumns",
+                  "kind": "arrayValue"
+                },
+                {
+                  "name": "originalTableTransformation",
+                  "source": "parameter",
+                  "value": "SelectedTableTransformation",
+                  "kind": "stringValue"
+                },
+                {
+                  "name": "newTableTransformation",
+                  "source": "parameter",
+                  "value": "CustomTableTransformation",
+                  "kind": "stringValue"
+                }
+              ],
+              "titleSource": "static",
+              "title": "Template Deployment",
+              "descriptionSource": "static",
+              "description": "Select **Deploy** below to deploy the ARM template or select **View Template** (recommended) to view the ARM template and make any changes prior to deployment.",
+              "runLabelSource": "static",
+              "runLabel": "Deploy"
+            }
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "SelectedTableName",
+        "comparison": "isNotEqualTo"
+      },
+      "name": "links - View and Deploy Template"
+    }
+  ],
+  "fallbackResourceIds": [
+    "azure monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
