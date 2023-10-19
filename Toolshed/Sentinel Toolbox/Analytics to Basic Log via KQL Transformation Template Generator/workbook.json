@@ -4,9 +4,9 @@
     {
       "type": 1,
       "content": {
-        "json": "# Analytics to Basic Log via KQL Transformation Template Generator (Working Title!)\r\n### Author: [Alistair Ross - Microsoft](https://thealistairross0.wordpress.com/)"
+        "json": "# Analytics to Basic Log via KQL Transformation Template Generator\r\n### Author: [Alistair Ross - Microsoft](https://thealistairross0.wordpress.com/)"
       },
-      "name": "text - 11"
+      "name": "text - Title"
     },
     {
       "type": 9,
@@ -99,11 +99,29 @@
             "isHiddenWhenLocked": true,
             "queryType": 1,
             "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "97fb6774-7e45-43ae-81e7-d85c0bf18a26",
+            "version": "KqlParameterItem/1.0",
+            "name": "ARMTemplateURI",
+            "type": 1,
+            "description": "This is the URI for the ARM template used for deploying the table and DCR",
+            "isRequired": true,
+            "isHiddenWhenLocked": true,
+            "criteriaData": [
+              {
+                "criteriaContext": {
+                  "operator": "Default",
+                  "resultValType": "static",
+                  "resultVal": "https://raw.githubusercontent.com/TheAlistairRoss/The-Cloud-Brain-Dump/main/Toolshed/Sentinel%20Toolbox/Analytics%20to%20Basic%20Log%20via%20KQL%20Transformation%20Template%20Generator/Resources/CustomTableTemplate.json"
+                }
+              }
+            ]
           }
         ],
         "style": "pills",
         "queryType": 0,
-        "resourceType": "microsoft.resourcegraph/resources"
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "parameters - Main"
     },
@@ -203,7 +221,7 @@
               "resourceType": "microsoft.operationalinsights/workspaces"
             },
             "customWidth": "30",
-            "name": "parameters - 14"
+            "name": "parameters - Show Filtered Columns"
           },
           {
             "type": 9,
@@ -216,6 +234,7 @@
                   "name": "FilteredColumnsList",
                   "label": "FilteredColumns",
                   "type": 1,
+                  "isRequired": true,
                   "typeSettings": {
                     "multiLineText": true,
                     "editorLanguage": "json"
@@ -249,7 +268,7 @@
           {
             "type": 1,
             "content": {
-              "json": "### Filtered Columns\r\n\r\nSome columns are reserved and cannot be used in custom tables. Add to this list if you need to filter any columns out.",
+              "json": "### Filtered Columns\r\n\r\nSome columns are reserved and cannot be used in custom tables. Add to this list if you need to filter any columns out.\r\n\r\nThis must contain [\"TenantId\",\"Id\",\"Filter\"]",
               "style": "info"
             },
             "customWidth": "35",
@@ -320,7 +339,7 @@
         "style": "info"
       },
       "conditionalVisibility": {
-        "parameterName": "TableName",
+        "parameterName": "SelectedTableName",
         "comparison": "isEqualTo"
       },
       "name": "text - Select a table message"
@@ -344,6 +363,7 @@
         "version": "KqlItem/1.0",
         "query": "{\"version\":\"1.0.0\",\"content\":\"{FilteredColumns}\",\"transformers\":[{\"type\":\"jsonpath\",\"settings\":{\"columns\":[{\"path\":\"$.name\",\"columnid\":\"name\",\"columnType\":\"string\"},{\"path\":\"$.type\",\"columnid\":\"type\",\"columnType\":\"string\"},{\"path\":\"$.isDefaultDisplay\",\"columnid\":\"isDefaultDisplay\",\"columnType\":\"string\"},{\"path\":\"$.isHidden\",\"columnid\":\"isHidden\",\"columnType\":\"string\"},{\"path\":\"$.description\",\"columnid\":\"description\",\"columnType\":\"string\"}]}}]}",
         "size": 0,
+        "title": "Table Schema",
         "showRefreshButton": true,
         "queryType": 8,
         "gridSettings": {
@@ -482,7 +502,8 @@
                     "durationMs": 86400000
                   },
                   "queryType": 8,
-                  "label": "Create Transformations"
+                  "label": "Create Transformations",
+                  "value": "true"
                 }
               ],
               "style": "formHorizontal",
@@ -633,7 +654,7 @@
                                   {
                                     "name": "query",
                                     "source": "static",
-                                    "value": "\\\\//source {SelectedQuery}"
+                                    "value": "{SelectedTableQuery}"
                                   }
                                 ]
                               }
@@ -784,7 +805,7 @@
                                   {
                                     "name": "query",
                                     "source": "static",
-                                    "value": "\\\\//source {CustomTableQuery}"
+                                    "value": "{CustomTableQuery}"
                                   }
                                 ]
                               }
@@ -865,8 +886,8 @@
             "templateRunContext": {
               "componentIdSource": "parameter",
               "componentId": "ResourceGroupId",
-              "templateUriSource": "static",
-              "templateUri": "https://raw.githubusercontent.com/TheAlistairRoss/The-Cloud-Brain-Dump/Toolshed/Sentinel%20Toolbox/Analytics%20to%20Basic%20Log%20via%20KQL%20Transformation%20Template%20Generator/Resources/CustomTableTemplate.json",
+              "templateUriSource": "parameter",
+              "templateUri": "ARMTemplateURI",
               "templateParameters": [
                 {
                   "name": "workspaceName",
