@@ -1,0 +1,207 @@
+{
+  "if": {
+    "allOf": [
+      {
+        "field": "type",
+        "equals": "Microsoft.HybridCompute/machines"
+      },
+      {
+        "field": "Microsoft.HybridCompute/machines/osName",
+        "in": "[parameters('operatingSystemTypes')]"
+      },
+      {
+        "anyOf": [
+          {
+            "value": "[empty(parameters('locations'))]",
+            "equals": true
+          },
+          {
+            "field": "location",
+            "in": "[parameters('locations')]"
+          }
+        ]
+      },
+      {
+        "anyOf": [
+          {
+            "value": "[empty(parameters('resourceGroups'))]",
+            "equals": true
+          },
+          {
+            "value": "[resourceGroup().name]",
+            "in": "[parameters('resourceGroups')]"
+          }
+        ]
+      },
+      {
+        "anyOf": [
+          {
+            "value": "[empty(parameters('tagValues'))]",
+            "equals": true
+          },
+          {
+            "allOf": [
+              {
+                "value": "[parameters('tagOperator')]",
+                "equals": "Any"
+              },
+              {
+                "value": "[greaterOrEquals(if(empty(field('tags')), 0, length(intersection(parameters('tagValues'), field('tags')))), 1)]",
+                "equals": true
+              }
+            ]
+          },
+          {
+            "allOf": [
+              {
+                "value": "[parameters('tagOperator')]",
+                "equals": "All"
+              },
+              {
+                "value": "[equals(if(empty(field('tags')), 0, length(intersection(parameters('tagValues'), field('tags')))), length(parameters('tagValues')))]",
+                "equals": true
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "then": {
+    "effect": "[parameters('effect')]",
+    "details": {
+      "roleDefinitionIds": [
+        "/providers/Microsoft.Authorization/roleDefinitions/48b40c6e-82e0-4eb3-90d5-19e40f49b624"
+      ],
+      "type": "Microsoft.HybridCompute/machines",
+      "evaluationDelay": "AfterProvisioningSuccess",
+      "existenceCondition": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Compute/virtualMachines"
+          },
+          {
+            "anyOf": [
+              {
+                "allOf": [
+                  {
+                    "field": "Microsoft.HybridCompute/machines/osName",
+                    "equals": "Windows"
+                  },
+                  {
+                    "field": "Microsoft.HybridCompute/machines/osProfile.windowsConfiguration.patchSettings.assessmentMode",
+                    "equals": "[parameters('assessmentMode')]"
+                  },
+                  {
+                    "field": "Microsoft.HybridCompute/machines/osProfile.windowsConfiguration.patchSettings.patchMode",
+                    "equals": "[parameters('patchMode')]"
+                  }
+                ]
+              },
+              {
+                "allOf": [
+                  {
+                    "field": "Microsoft.HybridCompute/machines/osName",
+                    "equals": "Linux"
+                  },
+                  {
+                    "field": "Microsoft.HybridCompute/machines/osProfile.linuxConfiguration.patchSettings.assessmentMode",
+                    "equals": "[parameters('assessmentMode')]"
+                  },
+                  {
+                    "field": "Microsoft.HybridCompute/machines/osProfile.linuxConfiguration.patchSettings.assessmentMode",
+                    "equals": "[parameters('patchMode')]"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "deployment": {
+        "properties": {
+          "mode": "incremental",
+          "parameters": {
+            "machineResourceId": {
+              "value": "[field('id')]"
+            },
+            "osType": {
+              "value": "[field('Microsoft.HybridCompute/machines/osName')]"
+            },
+            "patchMode": {
+              "value": "[parameters('patchMode')]"
+            },
+            "assessmentMode": {
+              "value": "[parameters('assessmentMode')]"
+            },
+            "location": {
+              "value": "[field('location')]"
+            }
+          },
+          "template": {
+            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+            "contentVersion": "1.0.0.0",
+            "parameters": {
+              "machineResourceId": {
+                "type": "string"
+              },
+              "osType": {
+                "type": "String"
+              },
+              "patchMode": {
+                "type": "string"
+              },
+              "assessmentMode": {
+                "type": "string"
+              },
+              "location": {
+                "type": "string"
+              }
+            },
+            "variables": {
+              "osType": "[toLower(parameters('osType'))]",
+              "linuxOSProfile": {
+                "linuxConfiguration": {
+                  "patchSettings": {
+                    "patchMode": "[parameters('patchMode')]",
+                    "assessmentMode": "[parameters('assessmentMode')]"
+                  }
+                }
+              },
+              "windowsOSProfile": {
+                "windowsConfiguration": {
+                  "patchSettings": {
+                    "patchSettings": {
+                      "patchMode": "[parameters('patchMode')]",
+                      "assessmentMode": "[parameters('assessmentMode')]"
+                    }
+                  }
+                }
+              },
+              "machineName": "[last(split(parameters('machineResourceId'), '/'))]",
+              "updatedOSProfile": "[if(equals(variables('osType'), 'windows'), variables('windowsOSProfile'), variables('linuxOSProfile'))]"
+            },
+            "resources": [
+              {
+                "type": "Microsoft.HybridCompute/machines",
+                "apiVersion": "2023-12-27",
+                "name": "[variables('machineName')]",
+                "location": "[parameters('location')]",
+                "properties": {
+                  "osProfile": "[variables('updatedOSProfile')]"
+                }
+              }
+            ],
+            "outputs": {
+              "OSProfile": {
+                "type": "object",
+                "value": "[variables('updatedOSProfile')]"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
