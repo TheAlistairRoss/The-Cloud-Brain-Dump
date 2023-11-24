@@ -2,16 +2,15 @@ $SubscriptionId = "1ce1f03c-2a36-4401-86eb-76fa17f85995"
 # OR
 #$ManagementGroupName = "TheCloudBrainDump"
 
-#$DeployOrModify = "deploy"
-$DeployOrModify = "modify"
+
 
 
 $policyDefinitions = @(
-    "Update Management Center/set-azure-update-manager-settings-for-azure-machines-$($DeployOrModify.ToLower())",
-    "Update Management Center/set-azure-update-manager-settings-for-azure-arc-machines-$($DeployOrModify.ToLower())"
+    "Update Management Center/set-azure-update-manager-settings-for-azure-machines",
+    "Update Management Center/set-azure-update-manager-settings-for-azure-arc-machines"
 )
 
-$policySetDefinition = "Update Management Center/set-azure-update-manager-settings-for-machines-$($DeployOrModify.ToLower())"
+$policySetDefinition = "Update Management Center/set-azure-update-manager-settings-for-machines"
 
 $branch = "Adding-Azure-Policy"
 $baseurl = "https://raw.githubusercontent.com/TheAlistairRoss/The-Cloud-Brain-Dump/$branch/Toolshed/Azure Policy/Azure Update Manager"
@@ -31,14 +30,16 @@ ForEach ($policyDefinition in $policyDefinitions) {
         Name = $policyDefinitionName
         Policy = $policyContent   
     }
-
-    Write-Host "Deploying policy definition '$policyDefinitionDisplayName' ($policyDefinitionName) from $policyDefinitionUrl"
-    if ($SubscritpionId){
-        New-AzPolicyDefinition @NewAzPolicyDefinitionParams -SubscriptionId $SubscriptionId
+    if ($SubscriptionId){
+        $NewAzPolicyDefinitionParams.Add("SubscriptionId",$SubscriptionId)
     }
     else {
-        New-AzPolicyDefinition @NewAzPolicyDefinitionParams -ManagementGroupId $ManagementGroupName
+        $NewAzPolicyDefinitionParams.Add("ManagementGroupName",$ManagementGroupName)
     }
+
+    Write-Host "Deploying policy definition '$policyDefinitionDisplayName' ($policyDefinitionName) from $policyDefinitionUrl"
+    New-AzPolicyDefinition @NewAzPolicyDefinitionParams 
+
 }
 
 $policySetDefinitionUrl = [System.Uri]::EscapeUriString("$baseurl/policySetDefinitions/$policySetDefinition/"+"azurepolicyset.json")
@@ -84,3 +85,4 @@ else {
 
 
 
+#get modifiable azure policy alias
