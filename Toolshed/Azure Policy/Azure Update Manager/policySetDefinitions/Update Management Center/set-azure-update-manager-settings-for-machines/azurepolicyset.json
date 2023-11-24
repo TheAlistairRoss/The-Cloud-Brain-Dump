@@ -113,6 +113,7 @@
         },
         "policyDefinitions": [
             {
+                "policyDefinitionReferenceId": "Set Azure Update Manager Settings for Azure machines_1",
                 "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/ba0df93e-e4ac-479a-aac2-134bbae39a1a",
                 "parameters": {
                     "assessmentMode": {
@@ -144,7 +145,8 @@
                     }
                 }
             },
-            {
+            {                
+                "policyDefinitionReferenceId": "Set Azure Update Manager Settings for Azure Arc machines_1",
                 "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/d4f5e6a7-b8c9-4d0e-af1b-2c3d4e5f6a7b",
                 "parameters": {
                     "assessmentMode": {
