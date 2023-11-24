@@ -81,8 +81,3 @@ if($SubscriptionId){
 else {
     New-AzPolicySetDefinition @NewAzPolicySetDefinitionParams -ManagementGroupName $ManagementGroupName -PolicyDefinition $policySetDefinitions
 }
-
-
-
-
-#get modifiable azure policy alias
