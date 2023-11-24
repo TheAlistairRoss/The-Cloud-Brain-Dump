@@ -57,12 +57,15 @@ $NewAzPolicySetDefinitionParams =  @{
     DisplayName = $policySetDefinitionContentJson.properties.displayName
     Description = $policySetDefinitionContentJson.properties.description
     Metadata = $policySetDefinitionContentJson.properties.metadata | ConvertTo-Json
+    Parameter = $policySetDefinitionContentJson.properties.parameters | ConvertTo-Json
 }
-
-if ($SubscriptionId) {
+if ($SubscriptionId){
+    $NewAzPolicySetDefinitionParams.Add("SubscriptionId",$SubscriptionId)
     $policySetDefinitionIdPrefix = "/subscriptions/$SubscriptionId"
+
 }
 else {
+    $NewAzPolicySetDefinitionParams.Add("ManagementGroupName",$ManagementGroupName)
     $policySetDefinitionIdPrefix = "/providers/Microsoft.Management/managementGroups/$ManagementGroupName"
 }
 
@@ -75,9 +78,4 @@ $policySetDefinitions = $PolicySetdefinitionContentJson.properties.policyDefinit
 
 Write-Host "Deploying policy set definition '$policySetDefinitionDisplayName' ($policyDefinitionName) from $policyDefinitionSetUrl"
 
-if($SubscriptionId){
-    New-AzPolicySetDefinition @NewAzPolicySetDefinitionParams -SubscriptionId $SubscriptionId -PolicyDefinition $policySetDefinitions
-}
-else {
-    New-AzPolicySetDefinition @NewAzPolicySetDefinitionParams -ManagementGroupName $ManagementGroupName -PolicyDefinition $policySetDefinitions
-}
+New-AzPolicySetDefinition @NewAzPolicySetDefinitionParams -PolicyDefinition $policySetDefinitions 

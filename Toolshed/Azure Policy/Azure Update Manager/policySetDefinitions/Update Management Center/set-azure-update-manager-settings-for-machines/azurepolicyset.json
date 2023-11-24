@@ -81,6 +81,14 @@
                 ],
                 "defaultValue": "Any"
             },
+            "tagValues": {
+                "type": "array",
+                "metadata": {
+                    "displayName": "Tags on machines",
+                    "description": "\"The list of tags that need to matched for getting target machines (case sensitive). Example: [ {\"key\": \"tagKey1\", \"value\": \"value1\"}, {\"key\": \"tagKey2\", \"value\": \"value2\"}].\""
+                },
+                "defaultValue": []
+            },
             "effect": {
                 "type": "string",
                 "metadata": {
@@ -99,14 +107,6 @@
                     "displayName": "Machine Locations",
                     "description": "The list of locations from which machines need to be targeted.",
                     "strongType": "location"
-                },
-                "defaultValue": []
-            },
-            "tagValues": {
-                "type": "array",
-                "metadata": {
-                    "displayName": "Tags on machines",
-                    "description": "\"The list of tags that need to matched for getting target machines (case sensitive). Example: [ {\"key\": \"tagKey1\", \"value\": \"value1\"}, {\"key\": \"tagKey2\", \"value\": \"value2\"}].\""
                 },
                 "defaultValue": []
             }
@@ -145,7 +145,7 @@
                     }
                 }
             },
-            {                
+            {
                 "policyDefinitionReferenceId": "Set Azure Update Manager Settings for Azure Arc machines_1",
                 "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/d4f5e6a7-b8c9-4d0e-af1b-2c3d4e5f6a7b",
                 "parameters": {

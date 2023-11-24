@@ -146,24 +146,46 @@
               {
                 "allOf": [
                   {
+                    "value": "[empty(field('tags'))]",
+                    "equals": false
+                  },
+                  {
                     "value": "[parameters('tagOperator')]",
                     "equals": "Any"
                   },
                   {
-                    "value": "[greaterOrEquals(if(empty(field('tags')), 0, length(intersection(parameters('tagValues'), field('tags')))), 1)]",
-                    "equals": true
+                    "count": {
+                      "value": "[parameters('tagValues')]",
+                      "name": "tagKvp",
+                      "where": {
+                        "value": "[length(intersection(createObject(current('tagKvp').key, current('tagKvp').value), field('tags')))]",
+                        "greater": 0
+                      }
+                    },
+                    "greater": 0
                   }
                 ]
               },
               {
                 "allOf": [
                   {
+                    "value": "[empty(field('tags'))]",
+                    "equals": false
+                  },
+                  {
                     "value": "[parameters('tagOperator')]",
                     "equals": "All"
                   },
                   {
-                    "value": "[equals(if(empty(field('tags')), 0, length(intersection(parameters('tagValues'), field('tags')))), length(parameters('tagValues')))]",
-                    "equals": true
+                    "count": {
+                      "value": "[parameters('tagValues')]",
+                      "name": "tagKvp",
+                      "where": {
+                        "value": "[length(intersection(createObject(current('tagKvp').key, current('tagKvp').value), field('tags')))]",
+                        "greater": 0
+                      }
+                    },
+                    "equals": "[length(parameters('tagValues'))]"
                   }
                 ]
               }
