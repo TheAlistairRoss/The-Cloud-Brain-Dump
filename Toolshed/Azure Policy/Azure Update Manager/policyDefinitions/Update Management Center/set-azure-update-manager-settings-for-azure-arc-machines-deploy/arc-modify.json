@@ -1,0 +1,211 @@
+{
+    "name": "d4f5e6a7-b8c9-4d0e-af1b-2c3d4e5f6a7b",
+    "type": "Microsoft.Authorization/policyDefinitions",
+    "properties": {
+        "displayName": "Set Azure Update Manager Settings for Azure Arc machines",
+        "description": "You can use Azure Update Manager to view and schedule your updates. This policy allows you to se the patch mode and assessment mode for your machines. This policy is applicable only for Azure Arc machines. For more information, see https://docs.microsoft.com/azure/automation/update-management/overview",
+        "metadata": {
+            "version": "3.9.1",
+            "category": "Update Management Center"
+        },
+        "mode": "Indexed",
+        "parameters": {
+            "assessmentMode": {
+                "type": "String",
+                "metadata": {
+                    "displayName": "Assessment mode",
+                    "description": "Assessment mode for the machines."
+                },
+                "allowedValues": [
+                    "ImageDefault",
+                    "AutomaticByPlatform"
+                ],
+                "defaultValue": "AutomaticByPlatform"
+            },
+            "patchMode": {
+                "type": "String",
+                "metadata": {
+                    "displayName": "Patch mode",
+                    "description": "Patch mode for the machines."
+                },
+                "allowedValues": [
+                    "Manual",
+                    "AutomaticByOS",
+                    "AutomaticByPlatform",
+                    "ImageDefault"
+                ],
+                "defaultValue": "AutomaticByPlatform"
+            },
+            "resourceGroups": {
+                "type": "Array",
+                "metadata": {
+                    "displayName": "Resource groups",
+                    "description": "The list of resource groups from which machines need to be targeted. Example: [\"rg1\", \"rg2\"]."
+                },
+                "defaultValue": []
+            },
+            "operatingSystemTypes": {
+                "type": "Array",
+                "metadata": {
+                    "displayName": "Operating System types",
+                    "description": "The list of Operating System types from which machines need to be targeted."
+                },
+                "defaultValue": [
+                    "Windows",
+                    "Linux"
+                ],
+                "allowedValues": [
+                    "Windows",
+                    "Linux"
+                ]
+            },
+            "locations": {
+                "type": "Array",
+                "metadata": {
+                    "displayName": "Machines locations",
+                    "description": "The list of locations from which machines need to be targeted.",
+                    "strongType": "location"
+                },
+                "defaultValue": []
+            },
+            "tagValues": {
+                "type": "Array",
+                "metadata": {
+                    "displayName": "Tags on machines",
+                    "description": "The list of tags that need to matched for getting target machines (case sensitive). Example: [ {\"key\": \"tagKey1\", \"value\": \"value1\"}, {\"key\": \"tagKey2\", \"value\": \"value2\"}]."
+                },
+                "defaultValue": []
+            },
+            "tagOperator": {
+                "type": "String",
+                "metadata": {
+                    "displayName": "Tags operator",
+                    "description": "Matching condition for resource tags"
+                },
+                "allowedValues": [
+                    "All",
+                    "Any"
+                ],
+                "defaultValue": "Any"
+            },
+            "effect": {
+                "type": "String",
+                "metadata": {
+                    "displayName": "Effect",
+                    "description": "DeployIfNotExists, AuditIfNotExists or Disabled the execution of the Policy"
+                },
+                "allowedValues": [
+                    "DeployIfNotExists",
+                    "AuditIfNotExists",
+                    "Disabled"
+                ],
+                "defaultValue": "DeployIfNotExists"
+            }
+        },
+        "policyRule": {
+            "if": {
+                "allOf": [
+                    {
+                        "field": "type",
+                        "equals": "Microsoft.HybridCompute/machines"
+                    },
+                    {
+                        "field": "Microsoft.HybridCompute/machines/osName",
+                        "in": "[parameters('operatingSystemTypes')]"
+                    },
+                    {
+                        "anyOf": [
+                            {
+                                "value": "[empty(parameters('locations'))]",
+                                "equals": true
+                            },
+                            {
+                                "field": "location",
+                                "in": "[parameters('locations')]"
+                            }
+                        ]
+                    },
+                    {
+                        "anyOf": [
+                            {
+                                "value": "[empty(parameters('resourceGroups'))]",
+                                "equals": true
+                            },
+                            {
+                                "value": "[resourceGroup().name]",
+                                "in": "[parameters('resourceGroups')]"
+                            }
+                        ]
+                    },
+                    {
+                        "anyOf": [
+                            {
+                                "value": "[empty(parameters('tagValues'))]",
+                                "equals": true
+                            },
+                            {
+                                "allOf": [
+                                    {
+                                        "value": "[parameters('tagOperator')]",
+                                        "equals": "Any"
+                                    },
+                                    {
+                                        "value": "[greaterOrEquals(if(empty(field('tags')), 0, length(intersection(parameters('tagValues'), field('tags')))), 1)]",
+                                        "equals": true
+                                    }
+                                ]
+                            },
+                            {
+                                "allOf": [
+                                    {
+                                        "value": "[parameters('tagOperator')]",
+                                        "equals": "All"
+                                    },
+                                    {
+                                        "value": "[equals(if(empty(field('tags')), 0, length(intersection(parameters('tagValues'), field('tags')))), length(parameters('tagValues')))]",
+                                        "equals": true
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            "then": {
+                "effect": "modify",
+                "details": {
+                    "roleDefinitionIds": [
+                        "/providers/Microsoft.Authorization/roleDefinitions/9980e02c-c2be-4d73-94e8-173b1dc7cf3c"
+                    ],
+                    "conflictEffect": "audit",
+                    "operations": [
+                        {
+                            "condition": "[equals(tolower(parameters('osType')), 'windows')]",
+                            "operation": "addOrReplace",
+                            "field": "Microsoft.Compute/virtualMachines/osProfile.windowsConfiguration.patchSettings.assessmentMode",
+                            "value": "[parameters('assessmentMode')]"
+                        },
+                        {
+                            "condition": "[equals(tolower(parameters('osType')), 'windows')]",
+                            "operation": "addOrReplace",
+                            "field": "Microsoft.Compute/virtualMachines/osProfile.windowsConfiguration.patchSettings.patchMode",
+                            "value": "[parameters('patchMode')]"
+                        },
+                        {
+                            "condition": "[equals(tolower(parameters('osType')), 'linux')]",
+                            "operation": "addOrReplace",
+                            "field": "Microsoft.Compute/virtualMachines/osProfile.linuxConfiguration.patchSettings.assessmentMode",
+                            "value": "[parameters('assessmentMode')]"
+                        },
+                        {
+                            "condition": "[equals(tolower(parameters('osType')), 'linux')]",
+                            "operation": "addOrReplace",
+                            "field": "Microsoft.Compute/virtualMachines/osProfile.linuxConfiguration.patchSettings.patchMode",
+                            "value": "[parameters('patchMode')]"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

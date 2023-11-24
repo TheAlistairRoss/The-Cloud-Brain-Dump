@@ -1,0 +1,94 @@
+{
+  "assessmentMode": {
+    "type": "String",
+    "metadata": {
+      "displayName": "Assessment mode",
+      "description": "Assessment mode for the machines."
+    },
+    "allowedValues": [
+      "ImageDefault",
+      "AutomaticByPlatform"
+    ],
+    "defaultValue": "AutomaticByPlatform"
+  },
+  "patchMode": {
+    "type": "String",
+    "metadata": {
+      "displayName": "Patch mode",
+      "description": "Patch mode for the machines."
+    },
+    "allowedValues": [
+      "Manual",
+      "AutomaticByOS",
+      "AutomaticByPlatform",
+      "ImageDefault"
+    ],
+    "defaultValue": "AutomaticByPlatform"
+  },
+  "resourceGroups": {
+    "type": "Array",
+    "metadata": {
+      "displayName": "Resource groups",
+      "description": "The list of resource groups from which machines need to be targeted. Example: [\"rg1\", \"rg2\"]."
+    },
+    "defaultValue": []
+  },
+  "operatingSystemTypes": {
+    "type": "Array",
+    "metadata": {
+      "displayName": "Operating System types",
+      "description": "The list of Operating System types from which machines need to be targeted."
+    },
+    "defaultValue": [
+      "Windows",
+      "Linux"
+    ],
+    "allowedValues": [
+      "Windows",
+      "Linux"
+    ]
+  },
+  "locations": {
+    "type": "Array",
+    "metadata": {
+      "displayName": "Machines locations",
+      "description": "The list of locations from which machines need to be targeted.",
+      "strongType": "location"
+    },
+    "defaultValue": []
+  },
+  "tagValues": {
+    "type": "Array",
+    "metadata": {
+      "displayName": "Tags on machines",
+      "description": "The list of tags that need to matched for getting target machines (case sensitive). Example: [ {\"key\": \"tagKey1\", \"value\": \"value1\"}, {\"key\": \"tagKey2\", \"value\": \"value2\"}]."
+    },
+    "defaultValue": []
+  },
+  "tagOperator": {
+    "type": "String",
+    "metadata": {
+      "displayName": "Tags operator",
+      "description": "Matching condition for resource tags"
+    },
+    "allowedValues": [
+      "All",
+      "Any"
+    ],
+    "defaultValue": "Any"
+  },
+  "effect": {
+    "type": "String",
+    "metadata": {
+      "displayName": "Effect",
+      "description": "Modify, Deny, Audit or Disabled the execution of the Policy"
+    },
+    "allowedValues": [
+      "Modify",
+      "Deny",
+      "Audit",
+      "Disabled"
+    ],
+    "defaultValue": "Modify"
+  }
+}

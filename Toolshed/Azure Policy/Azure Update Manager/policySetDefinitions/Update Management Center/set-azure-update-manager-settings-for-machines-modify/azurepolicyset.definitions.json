@@ -1,0 +1,60 @@
+[
+    {
+        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/f2e1a7e4-6e1d-4e9e-8c0e-0a9f8b7d6c3a",
+        "parameters": {
+            "assessmentMode": {
+                "value": "[parameters('assessmentMode')]"
+            },
+            "patchMode": {
+                "value": "[parameters('patchMode')]"
+            },
+            "resourceGroups": {
+                "value": "[parameters('resourceGroups')]"
+            },
+            "operatingSystemTypes": {
+                "value": "[parameters('operatingSystemTypes')]"
+            },
+            "locations": {
+                "value": "[parameters('locations')]"
+            },
+            "tagValues": {
+                "value": "[parameters('tagValues')]"
+            },
+            "tagOperator": {
+                "value": "[parameters('tagOperator')]"
+            },
+            "effect": {
+                "value": "[parameters('effect')]"
+            }
+        }
+    },
+    {
+        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/a1b2c3d4-e5f6-7g8h-9i0j-k1l2m3n4o5p",
+        "parameters": {
+            "assessmentMode": {
+                "value": "[parameters('assessmentMode')]"
+            },
+            "patchMode": {
+                "value": "[parameters('patchMode')]"
+            },
+            "resourceGroups": {
+                "value": "[parameters('resourceGroups')]"
+            },
+            "operatingSystemTypes": {
+                "value": "[parameters('operatingSystemTypes')]"
+            },
+            "locations": {
+                "value": "[parameters('locations')]"
+            },
+            "tagValues": {
+                "value": "[parameters('tagValues')]"
+            },
+            "tagOperator": {
+                "value": "[parameters('tagOperator')]"
+            },
+            "effect": {
+                "value": "[parameters('effect')]"
+            }
+        }
+    }
+]

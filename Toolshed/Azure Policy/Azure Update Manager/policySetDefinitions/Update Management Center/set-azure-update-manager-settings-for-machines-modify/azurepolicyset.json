@@ -2,9 +2,8 @@
     "type": "Microsoft.Authorization/policySetDefinitions",
     "name": "ed8c6549-bwf9-4a7c-a3e1-6f4b2e8d3f1d",
     "properties": {
-        "displayName": "Set Azure Update Manager Settings for VMs",
+        "displayName": "Set Azure Update Manager Settings for machines",
         "description": "You can use Azure Update Manager to view and schedule your updates. This policy allows you to se the patch mode and assessment mode for your machines. You can also set the bypassPlatformSafetyChecksOnUserSchedule parameter to true to bypass platform safety checks on user schedule. This Initiative is applicable for Azure VMs and Azure Arc VMs. For more information, see https://docs.microsoft.com/azure/automation/update-management/overview\"",
-        "policyType": "Custom",
         "metadata": {
             "category": "Update Management Center"
         },
@@ -114,8 +113,7 @@
         },
         "policyDefinitions": [
             {
-                "policyDefinitionReferenceId": "Set Azure Update Manager Settings for Azure VMs",
-                "policyDefinitionId": "/subscriptions/1ce1f03c-2a36-4401-86eb-76fa17f85995/providers/Microsoft.Authorization/policyDefinitions/AzureUpdateManager-SetAzureCompute",
+                "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/ba0df93e-e4ac-479a-aac2-134bbae39a1a",
                 "parameters": {
                     "assessmentMode": {
                         "value": "[parameters('assessmentMode')]"
@@ -144,12 +142,10 @@
                     "effect": {
                         "value": "[parameters('effect')]"
                     }
-                },
-                "groupNames": []
+                }
             },
             {
-                "policyDefinitionReferenceId": "Set Azure Update Manager Settings for Azure Arc machines",
-                "policyDefinitionId": "/subscriptions/1ce1f03c-2a36-4401-86eb-76fa17f85995/providers/Microsoft.Authorization/policyDefinitions/AzureUpdateManager-SetArcCompute",
+                "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/d4f5e6a7-b8c9-4d0e-af1b-2c3d4e5f6a7b",
                 "parameters": {
                     "assessmentMode": {
                         "value": "[parameters('assessmentMode')]"
@@ -175,8 +171,7 @@
                     "effect": {
                         "value": "[parameters('effect')]"
                     }
-                },
-                "groupNames": []
+                }
             }
         ]
     }
