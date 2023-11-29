@@ -205,7 +205,7 @@
             "allOf": [
               {
                 "field": "type",
-                "equals": "Microsoft.Compute/virtualMachines"
+                "equals": "Microsoft.HybridCompute/machines"
               },
               {
                 "anyOf": [
