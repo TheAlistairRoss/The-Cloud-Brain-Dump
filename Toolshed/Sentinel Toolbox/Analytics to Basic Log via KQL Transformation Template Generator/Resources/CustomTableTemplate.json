@@ -27,7 +27,12 @@
         "newTableTransformation": {
             "defaultValue": "source",
             "type": "string"
+        },
+        "dcrKind": {
+            "defaultValue": "WorkspaceTransforms",
+            "type": "string"
         }
+    },
     },
     "variables": {
         "dataCollectionRuleName": "[concat(parameters('originalTableName'), '_LogSplittingToBasic_DCR')]",
@@ -57,7 +62,7 @@
             "dependsOn": [
                 "[variables('customTableId')]"
             ],
-            "kind": "WorkspaceTransforms",
+            "kind": "[parameters('dcrKind')]",
             "properties": {
                 "dataSources": {},
                 "destinations": {
