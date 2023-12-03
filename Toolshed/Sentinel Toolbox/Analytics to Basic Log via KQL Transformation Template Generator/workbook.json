@@ -14,6 +14,22 @@
         "version": "KqlParameterItem/1.0",
         "parameters": [
           {
+            "id": "e7fe4e9e-f94c-49ef-aae3-f93bc7cb6cf5",
+            "version": "KqlParameterItem/1.0",
+            "name": "ShowHelp",
+            "label": "Show Help",
+            "type": 10,
+            "isRequired": true,
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "jsonData": "[\r\n    {\"value\":\"true\", \"label\": \"Yes\", \"selected\": false},\r\n    {\"value\":\"false\", \"label\": \"No\", \"selected\": true}\r\n]",
+            "timeContext": {
+              "durationMs": 86400000
+            }
+          },
+          {
             "id": "3b23bed9-9564-467c-aea0-4d2ee76f7e77",
             "version": "KqlParameterItem/1.0",
             "name": "Subscriptions",
@@ -56,20 +72,15 @@
             "resourceType": "microsoft.resourcegraph/resources"
           },
           {
-            "id": "e7fe4e9e-f94c-49ef-aae3-f93bc7cb6cf5",
+            "id": "af27c4fb-9ac7-4630-8aa3-4f436b989763",
             "version": "KqlParameterItem/1.0",
-            "name": "ShowHelp",
-            "label": "Show Help",
-            "type": 10,
+            "name": "DCRKind",
+            "type": 2,
             "isRequired": true,
             "typeSettings": {
-              "additionalResourceOptions": [],
-              "showDefault": false
+              "additionalResourceOptions": []
             },
-            "jsonData": "[\r\n    {\"value\":\"true\", \"label\": \"Yes\", \"selected\": false},\r\n    {\"value\":\"false\", \"label\": \"No\", \"selected\": true}\r\n]",
-            "timeContext": {
-              "durationMs": 86400000
-            }
+            "jsonData": "[\r\n    {\"value\" : \"Windows\", \"label\" : \"Windows\"},\r\n    {\"value\" : \"Linux\", \"label\" : \"Linux\"},\r\n    {\"value\" : \"WorkspaceTransforms\", \"label\" : \"Workspace Transforms\"}\r\n]"
           },
           {
             "id": "8a1cc20a-f9ac-4532-8d13-eab906b08b63",
@@ -924,6 +935,12 @@
                   "source": "parameter",
                   "value": "CustomTableTransformation",
                   "kind": "stringValue"
+                },
+                {
+                  "name": "dcrKind",
+                  "source": "parameter",
+                  "value": "DCRKind",
+                  "kind": "stringValue"
                 }
               ],
               "titleSource": "static",
@@ -943,5 +960,6 @@
       "name": "links - View and Deploy Template"
     }
   ],
+  "fallbackResourceIds": [],
   "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
 }

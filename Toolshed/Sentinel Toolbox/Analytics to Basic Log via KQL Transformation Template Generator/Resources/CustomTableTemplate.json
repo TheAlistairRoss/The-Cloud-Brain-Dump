@@ -27,6 +27,10 @@
         "newTableTransformation": {
             "defaultValue": "source",
             "type": "string"
+        },
+        "dcrKind": {
+            "defaultValue": "workspaceTransforms",
+            "type": "string"
         }
     },
     "variables": {
@@ -57,7 +61,7 @@
             "dependsOn": [
                 "[variables('customTableId')]"
             ],
-            "kind": "WorkspaceTransforms",
+            "kind": "[parameters('dcrKind')]",
             "properties": {
                 "dataSources": {},
                 "destinations": {
