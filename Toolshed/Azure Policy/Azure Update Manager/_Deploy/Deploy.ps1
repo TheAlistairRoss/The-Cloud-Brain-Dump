@@ -1,9 +1,17 @@
-$SubscriptionId = "1ce1f03c-2a36-4401-86eb-76fa17f85995"
-# OR
-#$ManagementGroupName = "TheCloudBrainDump"
+param(
+    #$SubscriptionId Parameter. This must be in a parameter set that is different to the management group parameter set
+    [Parameter(Mandatory=$true,ParameterSetName="SubscriptionId")]
+    [string]$SubscriptionId,
 
+    #$ManagementGroupName Parameter. This must be in a parameter set that is different to the subscription ID parameter set
+    [Parameter(Mandatory=$true,ParameterSetName="ManagementGroupName")]
+    [string]$ManagementGroupName,
 
+    # The branch of the GitHub repo to deploy from. Defaults to main
+    [Parameter(Mandatory=$false)]
+    [string]$branch = "main"
 
+)
 
 $policyDefinitions = @(
     "Update Management Center/set-azure-update-manager-settings-for-azure-machines",
@@ -12,7 +20,7 @@ $policyDefinitions = @(
 
 $policySetDefinition = "Update Management Center/set-azure-update-manager-settings-for-machines"
 
-$branch = "Adding-Azure-Policy"
+$branch = "main"
 $baseurl = "https://raw.githubusercontent.com/TheAlistairRoss/The-Cloud-Brain-Dump/$branch/Toolshed/Azure Policy/Azure Update Manager"
 
 ForEach ($policyDefinition in $policyDefinitions) {
