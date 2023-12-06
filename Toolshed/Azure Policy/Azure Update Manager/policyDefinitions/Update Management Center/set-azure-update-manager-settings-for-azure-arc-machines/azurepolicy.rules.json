@@ -193,11 +193,9 @@
               },
               "windowsOSProfile": {
                 "windowsConfiguration": {
-                  "patchSettings": {
                     "patchSettings": {
                       "patchMode": "[parameters('patchMode')]",
                       "assessmentMode": "[parameters('assessmentMode')]"
-                    }
                   }
                 }
               },
@@ -207,7 +205,7 @@
             "resources": [
               {
                 "type": "Microsoft.HybridCompute/machines",
-                "apiVersion": "2023-12-27",
+                "apiVersion": "2022-12-27",
                 "name": "[variables('machineName')]",
                 "location": "[parameters('location')]",
                 "properties": {
