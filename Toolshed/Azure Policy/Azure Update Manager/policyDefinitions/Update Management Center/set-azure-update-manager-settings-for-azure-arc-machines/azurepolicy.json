@@ -1,0 +1,335 @@
+{
+  "name": "d4f5e6a7-b8c9-4d0e-af1b-2c3d4e5f6a7b",
+  "type": "Microsoft.Authorization/policyDefinitions",
+  "properties": {
+    "displayName": "Set Azure Update Manager Settings for Azure Arc machines",
+    "description": "You can use Azure Update Manager to view and schedule your updates. This policy allows you to se the patch mode and assessment mode for your machines. This policy is applicable only for Azure Arc machines. For more information, see https://docs.microsoft.com/azure/automation/update-management/overview",
+    "metadata": {
+      "version": "3.9.1",
+      "category": "Update Management Center"
+    },
+    "mode": "Indexed",
+    "parameters": {
+      "assessmentMode": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Assessment mode",
+          "description": "Assessment mode for the machines."
+        },
+        "allowedValues": [
+          "ImageDefault",
+          "AutomaticByPlatform"
+        ],
+        "defaultValue": "AutomaticByPlatform"
+      },
+      "patchMode": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Patch mode",
+          "description": "Patch mode for the machines."
+        },
+        "allowedValues": [
+          "Manual",
+          "AutomaticByOS",
+          "AutomaticByPlatform",
+          "ImageDefault"
+        ],
+        "defaultValue": "AutomaticByPlatform"
+      },
+      "resourceGroups": {
+        "type": "Array",
+        "metadata": {
+          "displayName": "Resource groups",
+          "description": "The list of resource groups from which machines need to be targeted. Example: [\"rg1\", \"rg2\"]."
+        },
+        "defaultValue": []
+      },
+      "operatingSystemTypes": {
+        "type": "Array",
+        "metadata": {
+          "displayName": "Operating System types",
+          "description": "The list of Operating System types from which machines need to be targeted."
+        },
+        "defaultValue": [
+          "Windows",
+          "Linux"
+        ],
+        "allowedValues": [
+          "Windows",
+          "Linux"
+        ]
+      },
+      "locations": {
+        "type": "Array",
+        "metadata": {
+          "displayName": "Machines locations",
+          "description": "The list of locations from which machines need to be targeted.",
+          "strongType": "location"
+        },
+        "defaultValue": []
+      },
+      "tagValues": {
+        "type": "Array",
+        "metadata": {
+          "displayName": "Tags on machines",
+          "description": "The list of tags that need to matched for getting target machines (case sensitive). Example: [ {\"key\": \"tagKey1\", \"value\": \"value1\"}, {\"key\": \"tagKey2\", \"value\": \"value2\"}]."
+        },
+        "defaultValue": []
+      },
+      "tagOperator": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Tags operator",
+          "description": "Matching condition for resource tags"
+        },
+        "allowedValues": [
+          "All",
+          "Any"
+        ],
+        "defaultValue": "Any"
+      },
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Effect",
+          "description": "DeployIfNotExists, AuditIfNotExists or Disabled the execution of the Policy"
+        },
+        "allowedValues": [
+          "DeployIfNotExists",
+          "AuditIfNotExists",
+          "Disabled"
+        ],
+        "defaultValue": "DeployIfNotExists"
+      }
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.HybridCompute/machines"
+          },
+          {
+            "field": "Microsoft.HybridCompute/machines/osName",
+            "in": "[parameters('operatingSystemTypes')]"
+          },
+          {
+            "anyOf": [
+              {
+                "value": "[empty(parameters('locations'))]",
+                "equals": true
+              },
+              {
+                "field": "location",
+                "in": "[parameters('locations')]"
+              }
+            ]
+          },
+          {
+            "anyOf": [
+              {
+                "value": "[empty(parameters('resourceGroups'))]",
+                "equals": true
+              },
+              {
+                "value": "[resourceGroup().name]",
+                "in": "[parameters('resourceGroups')]"
+              }
+            ]
+          },
+          {
+            "anyOf": [
+              {
+                "value": "[empty(parameters('tagValues'))]",
+                "equals": true
+              },
+              {
+                "allOf": [
+                  {
+                    "value": "[empty(field('tags'))]",
+                    "equals": false
+                  },
+                  {
+                    "value": "[parameters('tagOperator')]",
+                    "equals": "Any"
+                  },
+                  {
+                    "count": {
+                      "value": "[parameters('tagValues')]",
+                      "name": "tagKvp",
+                      "where": {
+                        "value": "[length(intersection(createObject(current('tagKvp').key, current('tagKvp').value), field('tags')))]",
+                        "greater": 0
+                      }
+                    },
+                    "greater": 0
+                  }
+                ]
+              },
+              {
+                "allOf": [
+                  {
+                    "value": "[empty(field('tags'))]",
+                    "equals": false
+                  },
+                  {
+                    "value": "[parameters('tagOperator')]",
+                    "equals": "All"
+                  },
+                  {
+                    "count": {
+                      "value": "[parameters('tagValues')]",
+                      "name": "tagKvp",
+                      "where": {
+                        "value": "[length(intersection(createObject(current('tagKvp').key, current('tagKvp').value), field('tags')))]",
+                        "greater": 0
+                      }
+                    },
+                    "equals": "[length(parameters('tagValues'))]"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "then": {
+        "effect": "[parameters('effect')]",
+        "details": {
+          "roleDefinitionIds": [
+            "/providers/Microsoft.Authorization/roleDefinitions/48b40c6e-82e0-4eb3-90d5-19e40f49b624"
+          ],
+          "type": "Microsoft.HybridCompute/machines",
+          "evaluationDelay": "AfterProvisioningSuccess",
+          "existenceCondition": {
+            "allOf": [
+              {
+                "field": "type",
+                "equals": "Microsoft.HybridCompute/machines"
+              },
+              {
+                "anyOf": [
+                  {
+                    "allOf": [
+                      {
+                        "field": "Microsoft.HybridCompute/machines/osName",
+                        "equals": "Windows"
+                      },
+                      {
+                        "field": "Microsoft.HybridCompute/machines/osProfile.windowsConfiguration.patchSettings.assessmentMode",
+                        "equals": "[parameters('assessmentMode')]"
+                      },
+                      {
+                        "field": "Microsoft.HybridCompute/machines/osProfile.windowsConfiguration.patchSettings.patchMode",
+                        "equals": "[parameters('patchMode')]"
+                      }
+                    ]
+                  },
+                  {
+                    "allOf": [
+                      {
+                        "field": "Microsoft.HybridCompute/machines/osName",
+                        "equals": "Linux"
+                      },
+                      {
+                        "field": "Microsoft.HybridCompute/machines/osProfile.linuxConfiguration.patchSettings.assessmentMode",
+                        "equals": "[parameters('assessmentMode')]"
+                      },
+                      {
+                        "field": "Microsoft.HybridCompute/machines/osProfile.linuxConfiguration.patchSettings.assessmentMode",
+                        "equals": "[parameters('patchMode')]"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "deployment": {
+            "properties": {
+              "mode": "incremental",
+              "parameters": {
+                "machineResourceId": {
+                  "value": "[field('id')]"
+                },
+                "osType": {
+                  "value": "[field('Microsoft.HybridCompute/machines/osName')]"
+                },
+                "patchMode": {
+                  "value": "[parameters('patchMode')]"
+                },
+                "assessmentMode": {
+                  "value": "[parameters('assessmentMode')]"
+                },
+                "location": {
+                  "value": "[field('location')]"
+                }
+              },
+              "template": {
+                "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                "contentVersion": "1.0.0.0",
+                "parameters": {
+                  "machineResourceId": {
+                    "type": "string"
+                  },
+                  "osType": {
+                    "type": "String"
+                  },
+                  "patchMode": {
+                    "type": "string"
+                  },
+                  "assessmentMode": {
+                    "type": "string"
+                  },
+                  "location": {
+                    "type": "string"
+                  }
+                },
+                "variables": {
+                  "osType": "[toLower(parameters('osType'))]",
+                  "linuxOSProfile": {
+                    "linuxConfiguration": {
+                      "patchSettings": {
+                        "patchMode": "[parameters('patchMode')]",
+                        "assessmentMode": "[parameters('assessmentMode')]"
+                      }
+                    }
+                  },
+                  "windowsOSProfile": {
+                    "windowsConfiguration": {
+                      "patchSettings": {
+                        "patchSettings": {
+                          "patchMode": "[parameters('patchMode')]",
+                          "assessmentMode": "[parameters('assessmentMode')]"
+                        }
+                      }
+                    }
+                  },
+                  "machineName": "[last(split(parameters('machineResourceId'), '/'))]",
+                  "updatedOSProfile": "[if(equals(variables('osType'), 'windows'), variables('windowsOSProfile'), variables('linuxOSProfile'))]"
+                },
+                "resources": [
+                  {
+                    "type": "Microsoft.HybridCompute/machines",
+                    "apiVersion": "2023-12-27",
+                    "name": "[variables('machineName')]",
+                    "location": "[parameters('location')]",
+                    "properties": {
+                      "osProfile": "[variables('updatedOSProfile')]"
+                    }
+                  }
+                ],
+                "outputs": {
+                  "OSProfile": {
+                    "type": "object",
+                    "value": "[variables('updatedOSProfile')]"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

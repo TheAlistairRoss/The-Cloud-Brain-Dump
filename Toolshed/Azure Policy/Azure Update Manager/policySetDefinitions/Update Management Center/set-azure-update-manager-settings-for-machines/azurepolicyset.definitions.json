@@ -1,0 +1,63 @@
+[
+    {
+        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/ba0df93e-e4ac-479a-aac2-134bbae39a1a",
+        "parameters": {
+            "assessmentMode": {
+                "value": "[parameters('assessmentMode')]"
+            },
+            "patchMode": {
+                "value": "[parameters('patchMode')]"
+            },
+            "bypassPlatformSafetyChecksOnUserSchedule": {
+                "value": "[parameters('bypassPlatformSafetyChecksOnUserSchedule')]"
+            },
+            "resourceGroups": {
+                "value": "[parameters('resourceGroups')]"
+            },
+            "operatingSystemTypes": {
+                "value": "[parameters('operatingSystemTypes')]"
+            },
+            "locations": {
+                "value": "[parameters('locations')]"
+            },
+            "tagValues": {
+                "value": "[parameters('tagValues')]"
+            },
+            "tagOperator": {
+                "value": "[parameters('tagOperator')]"
+            },
+            "effect": {
+                "value": "[parameters('effect')]"
+            }
+        }
+    },
+    {
+        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/d4f5e6a7-b8c9-4d0e-af1b-2c3d4e5f6a7b",
+        "parameters": {
+            "assessmentMode": {
+                "value": "[parameters('assessmentMode')]"
+            },
+            "patchMode": {
+                "value": "[parameters('patchMode')]"
+            },
+            "resourceGroups": {
+                "value": "[parameters('resourceGroups')]"
+            },
+            "operatingSystemTypes": {
+                "value": "[parameters('operatingSystemTypes')]"
+            },
+            "locations": {
+                "value": "[parameters('locations')]"
+            },
+            "tagValues": {
+                "value": "[parameters('tagValues')]"
+            },
+            "tagOperator": {
+                "value": "[parameters('tagOperator')]"
+            },
+            "effect": {
+                "value": "[parameters('effect')]"
+            }
+        }
+    }
+]

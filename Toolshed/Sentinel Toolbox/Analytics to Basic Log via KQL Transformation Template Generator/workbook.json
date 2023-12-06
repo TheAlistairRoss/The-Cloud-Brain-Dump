@@ -72,17 +72,6 @@
             "resourceType": "microsoft.resourcegraph/resources"
           },
           {
-            "id": "af27c4fb-9ac7-4630-8aa3-4f436b989763",
-            "version": "KqlParameterItem/1.0",
-            "name": "DCRKind",
-            "type": 2,
-            "isRequired": true,
-            "typeSettings": {
-              "additionalResourceOptions": []
-            },
-            "jsonData": "[\r\n    {\"value\" : \"Windows\", \"label\" : \"Windows\"},\r\n    {\"value\" : \"Linux\", \"label\" : \"Linux\"},\r\n    {\"value\" : \"WorkspaceTransforms\", \"label\" : \"Workspace Transforms\"}\r\n]"
-          },
-          {
             "id": "8a1cc20a-f9ac-4532-8d13-eab906b08b63",
             "version": "KqlParameterItem/1.0",
             "name": "WorkspaceName",
@@ -960,6 +949,5 @@
       "name": "links - View and Deploy Template"
     }
   ],
-  "fallbackResourceIds": [],
   "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
 }
