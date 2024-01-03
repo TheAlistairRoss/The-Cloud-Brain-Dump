@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.24.24.22086",
-      "templateHash": "11880582396463067938"
+      "templateHash": "8341522705868601792"
     }
   },
   "parameters": {
@@ -99,25 +99,21 @@
         "schema": {
           "columns": [
             {
-              "dataTypeHint": "datetime",
               "description": "Time the of the event",
               "name": "TimeGenerated",
-              "type": "datetime"
+              "type": "dateTime"
             },
             {
-              "dataTypeHint": "string",
               "description": "Log type (Access or Cache)",
               "name": "Log",
               "type": "string"
             },
             {
-              "dataTypeHint": "string",
               "description": "Name of the Proxy Server",
               "name": "Computer",
               "type": "string"
             },
             {
-              "dataTypeHint": "string",
               "description": "Raw log data",
               "name": "RawData",
               "type": "string"

@@ -72,28 +72,24 @@ resource SquidProxyCustomTable 'Microsoft.OperationalInsights/workspaces/tables@
     schema: {
       columns: [
         {
-          dataTypeHint: 'datetime'
           description: 'Time the of the event'
           name: 'TimeGenerated'
-          type: 'datetime'
+          type: 'dateTime'
         }
         //log
         {
-          dataTypeHint: 'string'
           description: 'Log type (Access or Cache)'
           name: 'Log'
           type: 'string'
         }
         //computer
         {
-          dataTypeHint: 'string'
           description: 'Name of the Proxy Server'
           name: 'Computer'
           type: 'string'
         }
         //RawData
         {
-          dataTypeHint: 'string'
           description: 'Raw log data'
           name: 'RawData'
           type: 'string'
