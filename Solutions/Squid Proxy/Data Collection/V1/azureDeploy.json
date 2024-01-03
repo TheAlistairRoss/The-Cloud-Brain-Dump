@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.24.24.22086",
-      "templateHash": "2532179811379094433"
+      "templateHash": "11880582396463067938"
     }
   },
   "parameters": {
@@ -123,9 +123,9 @@
               "type": "string"
             }
           ],
-          "description": "This is a custom table for Squid Proxy logs. This is formatted as per the original method using the Log Analytics Agent.  ",
-          "displayName": "string",
-          "name": "string"
+          "description": "This is a custom table for Squid Proxy logs. This is formatted as per the original method using the Log Analytics Agent.",
+          "displayName": "[variables('SquidProxyCustomTableName')]",
+          "name": "[variables('SquidProxyCustomTableName')]"
         }
       }
     },
