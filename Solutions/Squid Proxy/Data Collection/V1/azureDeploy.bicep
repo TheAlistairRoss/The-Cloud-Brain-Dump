@@ -106,7 +106,7 @@ resource SquidProxyCustomTable 'Microsoft.OperationalInsights/workspaces/tables@
 
 
 // Deploys a Data Collection Rule for each log type
-resource dataCollectionRule 'Microsoft.Insights/dataCollectionRules@' = [for item in collectLog: {
+resource dataCollectionRule 'Microsoft.Insights/dataCollectionRules@2022-06-01' = [for item in collectLog: {
   name: '${dataCollectionRuleNamePrefix}-${item}'
   location: location
   kind: 'Linux'
