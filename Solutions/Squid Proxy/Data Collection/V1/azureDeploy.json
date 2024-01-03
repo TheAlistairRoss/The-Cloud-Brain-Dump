@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.24.24.22086",
-      "templateHash": "8816180645387949444"
+      "templateHash": "6723063940893427266"
     }
   },
   "parameters": {
@@ -16,16 +16,22 @@
         "description": "Azure Resource Manager Location"
       }
     },
+    "logAnalyticsWorkspaceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Log Analytics Workspace Id"
+      }
+    },
     "dataCollectionEndpointId": {
       "type": "string",
       "metadata": {
         "description": "Data Collection Endpoint Id"
       }
     },
-    "logAnalyticsWorkspaceId": {
+    "ProxyName": {
       "type": "string",
       "metadata": {
-        "description": "Log Analytics Workspace Id"
+        "description": "Name of the proxy server. This is added manually as the logs do not contain the source computer name. You will need to deploy one DCR per proxy server. NOTE: If you are deploying to an exisiting server with a DCR, ensure you delete the duplicate DCRs"
       }
     },
     "collectLog": {
@@ -70,12 +76,6 @@
       ],
       "metadata": {
         "description": "Which Squid Proxy access logs results to exlude from ingestion. (ABORTED, ASYNC, CACHE, CF, CLIENT, DENIED, FAIL, HIT, IGNORED, IMS, INVALID, MEM, MISS, MODIFIED, NEGATIVE, NOFETCH, OFFLINE, REDIRECT, REFRESH, REPLY, SHARED, STALE, SWAPFAIL, TIMEOUT, TUNNEL, UNMODIFIED)"
-      }
-    },
-    "ProxyName": {
-      "type": "string",
-      "metadata": {
-        "description": "Name of the proxy server. This is added manually as the logs do not contain the source computer name. You will need to deploy one DCR per proxy server. NOTE: If you are deploying to an exisiting server with a DCR, ensure you delete the duplicate DCRs"
       }
     }
   },

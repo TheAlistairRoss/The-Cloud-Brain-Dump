@@ -9,17 +9,14 @@
                 "type": "Microsoft.Common.TextBlock",
                 "visible": true,
                 "options": {
-                    "text": "Squid Proxy logs and custom log collection do not contain the computer name. Add this here to help identify the source of the logs.",
-                    "link": {
-                        "label": "",
-                        "uri": ""
-                    }
+                    "text": "Squid Proxy logs and custom log collection do not contain the computer name. Add this here to help identify the source of the logs."
                 }
             },
             {
                 "name": "workspaceSelector",
                 "type": "Microsoft.Solutions.ResourceSelector",
                 "label": "Select the Log Analytics workspace.",
+                "toolTip": "Select the Log Analytics workspace where you want to collect the logs.",
                 "resourceType": "Microsoft.OperationalInsights/workspaces",
                 "options": {
                   "filter": {
@@ -32,6 +29,7 @@
                 "name": "dataCollectionEndpointSelector",
                 "type": "Microsoft.Solutions.ResourceSelector",
                 "label": "Select the Azure Monitor data collection endpoint.",
+                "toolTip": "Select the Azure Monitor data collection endpoint where you want to collect the logs. This needs to be created prior to deploying this solution.",
                 "resourceType": "Microsoft.Insights/dataCollectionEndpoints",
                 "options": {
                   "filter": {
@@ -47,8 +45,15 @@
                 "toolTip": "Name of the proxy server. This is added manually as the logs do not contain the source computer name. You will need to deploy one DCR per proxy server. NOTE: If you are deploying to an exisiting server with a DCR, ensure you delete the duplicate DCRs",
                 "defaultValue": "",
                 "constraints": {
-                    "required": false
-                }
+                    "required": false,
+                    "validations": [
+                      {
+                        "regex": "^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]$",
+                        "message": "The hostname must start and end with an alphanumeric character, can contain alphanumeric characters and hyphens, and be between 1 and 63 characters long."
+                      }
+
+                    ]
+                  }
             }
         ],
         "steps": [
@@ -228,6 +233,7 @@
             }
         ],
         "outputs": {
+            "location": "[location()]",
             "logAnalyticsWorkspaceId": "[basics('workspaceSelector').id]",
             "dataCollectionEndpointId": "[basics('dataCollectionEndpointSelector').id]",
             "ProxyName": "[basics('ProxyName')]",
