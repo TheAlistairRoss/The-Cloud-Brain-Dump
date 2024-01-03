@@ -1,0 +1,238 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/0.1.2-preview/CreateUIDefinition.MultiVm.json#",
+    "handler": "Microsoft.Azure.CreateUIDef",
+    "version": "0.1.2-preview",
+    "parameters": {
+        "basics": [
+            {
+                "name": "proxyServerNameInfo",
+                "type": "Microsoft.Common.TextBlock",
+                "visible": true,
+                "options": {
+                    "text": "Squid Proxy logs and custom log collection do not contain the computer name. Add this here to help identify the source of the logs.",
+                    "link": {
+                        "label": "",
+                        "uri": ""
+                    }
+                }
+            },
+            {
+                "name": "workspaceSelector",
+                "type": "Microsoft.Solutions.ResourceSelector",
+                "label": "Select the Log Analytics workspace.",
+                "resourceType": "Microsoft.OperationalInsights/workspaces",
+                "options": {
+                  "filter": {
+                    "subscription": "onBasics",
+                    "location": "onBasics"
+                  }
+                }
+              },
+              {
+                "name": "dataCollectionEndpointSelector",
+                "type": "Microsoft.Solutions.ResourceSelector",
+                "label": "Select the Azure Monitor data collection endpoint.",
+                "resourceType": "Microsoft.Insights/dataCollectionEndpoints",
+                "options": {
+                  "filter": {
+                    "subscription": "onBasics",
+                    "location": "onBasics"
+                  }
+                }
+              },
+              {
+                "name": "ProxyName",
+                "type": "Microsoft.Common.TextBox",
+                "label": "Proxy Server Name",
+                "toolTip": "Name of the proxy server. This is added manually as the logs do not contain the source computer name. You will need to deploy one DCR per proxy server. NOTE: If you are deploying to an exisiting server with a DCR, ensure you delete the duplicate DCRs",
+                "defaultValue": "",
+                "constraints": {
+                    "required": false
+                }
+            }
+        ],
+        "steps": [
+            {
+                "name": "logSelectionStep",
+                "label": "Log Selection",
+                "elements": [
+                                        {
+                        "name": "logSelection",
+                        "type": "Microsoft.Common.DropDown",
+                        "label": "Log Selection",
+                        "defaultValue": ["Access", "Cache"],
+                        "toolTip": "Select the logs you want to collect",
+                        "multiselect": true,
+                        "selectAll": true,
+                        "constraints": {
+                            "allowedValues": [
+                                {
+                                    "label": "Access",
+                                    "value": "access"
+                                },
+                                {
+                                    "label": "Cache",
+                                    "value": "cache"
+                                }
+                            ],
+                            "required": true
+                        },
+                        "visible": true
+                    },
+                    {
+                        "name": "accessLogFilterSelection",
+                        "type": "Microsoft.Common.DropDown",
+                        "label": "Access Log Filter",
+                        "defaultValue": ["ABORTED", "ASYNC", "CACHE", "CF", "CLIENT", "DENIED", "FAIL", "HIT", "IGNORED", "IMS", "INVALID", "MEM", "MISS", "MODIFIED", "NEGATIVE", "NOFETCH", "OFFLINE", "REDIRECT", "REFRESH", "REPLY", "SHARED", "STALE", "SWAPFAIL", "TIMEOUT", "TUNNEL", "UNMODIFIED"],
+                        "toolTip": "Select the logs you want to collect",
+                        "multiselect": true,
+                        "selectAll": true,
+                        "constraints": {
+                            "allowedValues": [
+                                {
+                                    "label": "ABORTED",
+                                    "value": "ABORTED",
+                                    "description": "A client-to-Squid or Squid-to-server connection was closed unexpectedly, usually due to an I/O error or clean transport connection closure in the middle of some higher-level protocol message/negotiation."
+                                },
+                                {
+                                    "label": "ASYNC",
+                                    "value": "ASYNC",
+                                    "description": "The request was generated internally by Squid. Usually this is background fetches for cache information exchanges, background revalidation from stale-while-revalidate cache controls, or ESI sub-objects being loaded."
+                                },
+                                {
+                                    "label": "CACHE",
+                                    "value": "CACHE",
+                                    "description": "At least one request in this transaction was collapsed. See collapsed_forwarding for more details about request collapsing. Support for this tag has been added to Squid v5 on 2018-06-18 (commit d2a6dc). It may not be available in earlier Squid versions."
+                                },
+                                {
+                                    "label": "CF",
+                                    "value": "CF",
+                                    "description": "The client request placed limits affecting the response. Usually seen with client issued a “no-cache”, or analogous cache control command along with the request. Thus, the cache has to validate the object."
+                                },
+                                {
+                                    "label": "CLIENT",
+                                    "value": "CLIENT",
+                                    "description": "The client sent a revalidation (conditional) request."
+                                },
+                                {
+                                    "label": "DENIED",
+                                    "value": "DENIED",
+                                    "description": "The request was denied by access controls."
+                                },
+                                {
+                                    "label": "FAIL",
+                                    "value": "FAIL",
+                                    "description": "Only seen on REFRESH to indicate the revalidation request failed. The response object may be the server provided network error or the stale object which was being revalidated depending on stale-if-error cache control."
+                                },
+                                {
+                                    "label": "HIT",
+                                    "value": "HIT",
+                                    "description": "The response object delivered was the local cache object."
+                                },
+                                {
+                                    "label": "IGNORED",
+                                    "value": "IGNORED",
+                                    "description": "While refreshing a previously cached response A, Squid got a response B that was older than A (as determined by the Date header field). Squid ignored response B (and attempted to use A instead)."
+                                },
+                                {
+                                    "label": "IMS",
+                                    "value": "IMS",
+                                    "description": "The client sent a revalidation (conditional) request."
+                                },
+                                {
+                                    "label": "INVALID",
+                                    "value": "INVALID",
+                                    "description": "An invalid request was received. An error response was delivered indicating what the problem was."
+                                },
+                                {
+                                    "label": "MEM",
+                                    "value": "MEM",
+                                    "description": "Additional tag indicating the response object came from memory cache, avoiding disk accesses. Only seen on HIT responses."
+                                },
+                                {
+                                    "label": "MISS",
+                                    "value": "MISS",
+                                    "description": "The response object delivered was the network response object."
+                                },
+                                {
+                                    "label": "MODIFIED",
+                                    "value": "MODIFIED",
+                                    "description": "Only seen on REFRESH responses to indicate revalidation produced a new modified object."
+                                },
+                                {
+                                    "label": "NEGATIVE",
+                                    "value": "NEGATIVE",
+                                    "description": "Only seen on HIT responses. Indicating the response was a cached error response. e.g. '404 not found'"
+                                },
+                                {
+                                    "label": "NOFETCH",
+                                    "value": "NOFETCH",
+                                    "description": "A ICP specific type. Indicating service is alive, but not to be used for this request. Sent during '-Y' startup, or during frequent failures, a cache in hit only mode will return either UDP_HIT or UDP_MISS_NOFETCH. Neighbours will thus only fetch hits."
+                                },
+                                {
+                                    "label": "OFFLINE",
+                                    "value": "OFFLINE",
+                                    "description": "The requested object was retrieved from the cache during offline_mode. The offline mode never validates any object."
+                                },
+                                {
+                                    "label": "REDIRECT",
+                                    "value": "REDIRECT",
+                                    "description": "Squid generated an HTTP redirect response to this request."
+                                },
+                                {
+                                    "label": "REFRESH",
+                                    "value": "REFRESH",
+                                    "description": "A revalidation (conditional) request was sent to the server."
+                                },
+                                {
+                                    "label": "REPLY",
+                                    "value": "REPLY",
+                                    "description": "The HTTP reply from server or peer. Usually seen on DENIED due to http_reply_access ACLs preventing delivery of servers response object to the client."
+                                },
+                                {
+                                    "label": "SHARED",
+                                    "value": "SHARED",
+                                    "description": "This tag is not supported yet. This request was combined with an existing transaction by collapsed forwarding. NOTE: the existing request is not marked as SHARED."
+                                },
+                                {
+                                    "label": "STALE",
+                                    "value": "STALE",
+                                    "description": "The object was cached and served stale. This is usually caused by stale-while-revalidate or stale-if-error cache controls."
+                                },
+                                {
+                                    "label": "SWAPFAIL",
+                                    "value": "SWAPFAIL",
+                                    "description": "The object was believed to be in the cache, but could not be accessed. A new copy was requested from the server."
+                                },
+                                {
+                                    "label": "TIMEOUT",
+                                    "value": "TIMEOUT",
+                                    "description": "The response was not completed due to a connection timeout."
+                                },
+                                {
+                                    "label": "TUNNEL",
+                                    "value": "TUNNEL",
+                                    "description": "A binary tunnel was established for this transaction."
+                                },
+                                {
+                                    "label": "UNMODIFIED",
+                                    "value": "UNMODIFIED",
+                                    "description": "Only seen on REFRESH responses to indicate revalidation produced a 304 (Not Modified) status. The client gets either a full 200 (OK), a 304 (Not Modified), or (in theory) another response, depending on the client request and other details."
+                                }
+                            ],
+                            "required": true
+                        },
+                        "visible": true
+                    }
+                ]
+            }
+        ],
+        "outputs": {
+            "logAnalyticsWorkspaceId": "[basics('workspaceSelector').id]",
+            "dataCollectionEndpointId": "[basics('dataCollectionEndpointSelector').id]",
+            "ProxyName": "[basics('ProxyName')]",
+            "collectLog": "[steps('logSelectionStep').logSelection]",
+            "accessLogResultIncludeFilter": "[steps('logSelectionStep').accessLogFilterSelection]"
+        }
+    }
+}
