@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.24.24.22086",
-      "templateHash": "18038831220287233545"
+      "templateHash": "2532179811379094433"
     }
   },
   "parameters": {
@@ -13,13 +13,13 @@
       "type": "string",
       "defaultValue": "[resourceGroup().location]",
       "metadata": {
-        "description": "Name of the resource group where the Log Analytics Workspace is deployed"
+        "description": "The name of the resource group where the Log Analytics Workspace is located."
       }
     },
-    "logAnalyticsWorkspaceId": {
+    "logAnalyticsWorkspaceName": {
       "type": "string",
       "metadata": {
-        "description": "Log Analytics Workspace Id"
+        "description": "Log Analytics Workspace Name"
       }
     },
     "dataCollectionEndpointId": {
@@ -93,7 +93,7 @@
     {
       "type": "Microsoft.OperationalInsights/workspaces/tables",
       "apiVersion": "2022-10-01",
-      "name": "[format('{0}/{1}', parameters('logAnalyticsWorkspaceId'), variables('SquidProxyCustomTableName'))]",
+      "name": "[format('{0}/{1}', parameters('logAnalyticsWorkspaceName'), variables('SquidProxyCustomTableName'))]",
       "properties": {
         "plan": "Analytics",
         "schema": {
@@ -177,7 +177,7 @@
         "destinations": {
           "logAnalytics": [
             {
-              "workspaceResourceId": "[parameters('logAnalyticsWorkspaceId')]",
+              "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]",
               "name": "logAnalyticsWorkspaceDestination"
             }
           ]
@@ -196,7 +196,7 @@
         ]
       },
       "dependsOn": [
-        "[resourceId('Microsoft.OperationalInsights/workspaces/tables', parameters('logAnalyticsWorkspaceId'), variables('SquidProxyCustomTableName'))]"
+        "[resourceId('Microsoft.OperationalInsights/workspaces/tables', parameters('logAnalyticsWorkspaceName'), variables('SquidProxyCustomTableName'))]"
       ]
     }
   ],
