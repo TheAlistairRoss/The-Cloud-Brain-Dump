@@ -1,8 +1,8 @@
-@description('Name of the resource group where the Log Analytics Workspace is deployed')
+@description('The name of the resource group where the Log Analytics Workspace is located.')
 param location string = resourceGroup().location
 
-@description('Log Analytics Workspace Id')
-param logAnalyticsWorkspaceId string
+@description('Log Analytics Workspace Name')
+param logAnalyticsWorkspaceName string
 
 @description('Data Collection Endpoint Id')
 param dataCollectionEndpointId string
@@ -61,7 +61,7 @@ var transforms = {
 
 // Existing Log Analytics Workspace
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' existing = {
-  name: logAnalyticsWorkspaceId
+  name: logAnalyticsWorkspaceName
 }
 
 resource SquidProxyCustomTable 'Microsoft.OperationalInsights/workspaces/tables@2022-10-01' = {
@@ -153,7 +153,7 @@ resource dataCollectionRule 'Microsoft.Insights/dataCollectionRules@2022-06-01' 
     destinations: {
       logAnalytics: [
         {
-          workspaceResourceId: logAnalyticsWorkspaceId
+          workspaceResourceId: logAnalyticsWorkspace.id
           name: 'logAnalyticsWorkspaceDestination'
         }
       ]

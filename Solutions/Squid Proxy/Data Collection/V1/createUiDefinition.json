@@ -234,7 +234,7 @@
         ],
         "outputs": {
             "location": "[location()]",
-            "logAnalyticsWorkspaceId": "[basics('workspaceSelector').id]",
+            "logAnalyticsWorkspaceName": "[basics('workspaceSelector').name]",
             "dataCollectionEndpointId": "[basics('dataCollectionEndpointSelector').id]",
             "ProxyName": "[basics('ProxyName')]",
             "collectLog": "[steps('logSelectionStep').logSelection]",
