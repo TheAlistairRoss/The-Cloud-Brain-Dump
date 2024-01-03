@@ -1,3 +1,5 @@
+@description('Name of the resource group where the Log Analytics Workspace is deployed')
+param location string = resourceGroup().location
 
 @description('Log Analytics Workspace Id')
 param logAnalyticsWorkspaceId string
