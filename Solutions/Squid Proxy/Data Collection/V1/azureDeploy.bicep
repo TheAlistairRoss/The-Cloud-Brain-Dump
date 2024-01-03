@@ -99,9 +99,9 @@ resource SquidProxyCustomTable 'Microsoft.OperationalInsights/workspaces/tables@
           type: 'string'
         }
       ]
-      description: 'This is a custom table for Squid Proxy logs. This is formatted as per the original method using the Log Analytics Agent.  '
-      displayName: 'string'
-      name: 'string'
+      description: 'This is a custom table for Squid Proxy logs. This is formatted as per the original method using the Log Analytics Agent.'
+      displayName: SquidProxyCustomTableName
+      name: SquidProxyCustomTableName
     }
   }
 }
