@@ -18,7 +18,7 @@ You can also choose which logs are collected (Access and cache, and what access 
 
 To deploy to Azure, you can use the following deploy to Azure button:
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FTheAlistairRoss%2FThe-Cloud-Brain-Dump%2FSquidProxy%2FSolutions%2FSquid%2520Proxy%2FData%2520Collection%2FV1%2FazureDeploy.json/createUIDefinitionUri/https%3A%2F%2Fraw.githubusercontent.com%2FTheAlistairRoss%2FThe-Cloud-Brain-Dump%2FSquidProxy%2FSolutions%2FSquid%2520Proxy%2FData%2520Collection%2FV1%2FcreateUiDefinition.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FTheAlistairRoss%2FThe-Cloud-Brain-Dump%2FMain%2FSolutions%2FSquid%2520Proxy%2FData%2520Collection%2FV1%2FazureDeploy.json/createUIDefinitionUri/https%3A%2F%2Fraw.githubusercontent.com%2FTheAlistairRoss%2FThe-Cloud-Brain-Dump%2FMain%2FSolutions%2FSquid%2520Proxy%2FData%2520Collection%2FV1%2FcreateUiDefinition.json)
 
 
 After deployment, associate the data collection rule with named squid proxy server to start collecting data.
