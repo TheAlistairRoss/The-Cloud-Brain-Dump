@@ -1,0 +1,205 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.24.24.22086",
+      "templateHash": "8341522705868601792"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "The name of the resource group where the Log Analytics Workspace is located."
+      }
+    },
+    "logAnalyticsWorkspaceName": {
+      "type": "string",
+      "metadata": {
+        "description": "Log Analytics Workspace Name"
+      }
+    },
+    "dataCollectionEndpointId": {
+      "type": "string",
+      "metadata": {
+        "description": "Data Collection Endpoint Id"
+      }
+    },
+    "ProxyName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the proxy server. This is added manually as the logs do not contain the source computer name. You will need to deploy one DCR per proxy server. NOTE: If you are deploying to an exisiting server with a DCR, ensure you delete the duplicate DCRs"
+      }
+    },
+    "collectLog": {
+      "type": "array",
+      "defaultValue": [
+        "access",
+        "cache"
+      ],
+      "metadata": {
+        "description": "Squid Log to be collected (access, cache)"
+      }
+    },
+    "accessLogResultIncludeFilter": {
+      "type": "array",
+      "defaultValue": [
+        "ABORTED",
+        "ASYNC",
+        "CACHE",
+        "CF",
+        "CLIENT",
+        "DENIED",
+        "FAIL",
+        "HIT",
+        "IGNORED",
+        "IMS",
+        "INVALID",
+        "MEM",
+        "MISS",
+        "MODIFIED",
+        "NEGATIVE",
+        "NOFETCH",
+        "OFFLINE",
+        "REDIRECT",
+        "REFRESH",
+        "REPLY",
+        "SHARED",
+        "STALE",
+        "SWAPFAIL",
+        "TIMEOUT",
+        "TUNNEL",
+        "UNMODIFIED"
+      ],
+      "metadata": {
+        "description": "Which Squid Proxy access logs results to exlude from ingestion. (ABORTED, ASYNC, CACHE, CF, CLIENT, DENIED, FAIL, HIT, IGNORED, IMS, INVALID, MEM, MISS, MODIFIED, NEGATIVE, NOFETCH, OFFLINE, REDIRECT, REFRESH, REPLY, SHARED, STALE, SWAPFAIL, TIMEOUT, TUNNEL, UNMODIFIED)"
+      }
+    }
+  },
+  "variables": {
+    "dataCollectionRuleNamePrefix": "[if(not(empty(parameters('ProxyName'))), format('SquidProxyLinux-{0}', parameters('ProxyName')), 'SquidProxyLinux')]",
+    "SquidProxyCustomTableName": "SquidProxy_CL",
+    "accessLogTransform": "[format('let squidResultCodes = parse_json(\"{0}\");\nsource\n| where split(extract(@''^(\\d+\\.\\d+)\\s+(\\d+)\\s(\\S+)\\s([A-Z_]+)'', 4, RawData ), \"_\")[1]  in (squidResultCodes)\n| extend Log = \"Access\"\n| extend Computer = \"{1}\"', parameters('accessLogResultIncludeFilter'), parameters('ProxyName'))]",
+    "cacheLogTransform": "[format('source\n| extend Log = \"Cache\"\n| extend Computer = \"{0}\"', parameters('ProxyName'))]",
+    "transforms": {
+      "access": "[variables('accessLogTransform')]",
+      "cache": "[variables('cacheLogTransform')]"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.OperationalInsights/workspaces/tables",
+      "apiVersion": "2022-10-01",
+      "name": "[format('{0}/{1}', parameters('logAnalyticsWorkspaceName'), variables('SquidProxyCustomTableName'))]",
+      "properties": {
+        "plan": "Analytics",
+        "schema": {
+          "columns": [
+            {
+              "description": "Time the of the event",
+              "name": "TimeGenerated",
+              "type": "dateTime"
+            },
+            {
+              "description": "Log type (Access or Cache)",
+              "name": "Log",
+              "type": "string"
+            },
+            {
+              "description": "Name of the Proxy Server",
+              "name": "Computer",
+              "type": "string"
+            },
+            {
+              "description": "Raw log data",
+              "name": "RawData",
+              "type": "string"
+            }
+          ],
+          "description": "This is a custom table for Squid Proxy logs. This is formatted as per the original method using the Log Analytics Agent.",
+          "displayName": "[variables('SquidProxyCustomTableName')]",
+          "name": "[variables('SquidProxyCustomTableName')]"
+        }
+      }
+    },
+    {
+      "copy": {
+        "name": "dataCollectionRule",
+        "count": "[length(parameters('collectLog'))]"
+      },
+      "type": "Microsoft.Insights/dataCollectionRules",
+      "apiVersion": "2022-06-01",
+      "name": "[format('{0}-{1}', variables('dataCollectionRuleNamePrefix'), parameters('collectLog')[copyIndex()])]",
+      "location": "[parameters('location')]",
+      "kind": "Linux",
+      "properties": {
+        "dataCollectionEndpointId": "[parameters('dataCollectionEndpointId')]",
+        "streamDeclarations": {
+          "[format('Custom-Text-{0}', variables('SquidProxyCustomTableName'))]": {
+            "columns": [
+              {
+                "name": "TimeGenerated",
+                "type": "datetime"
+              },
+              {
+                "name": "RawData",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "dataSources": {
+          "logFiles": [
+            {
+              "streams": [
+                "[format('Custom-Text-{0}', variables('SquidProxyCustomTableName'))]"
+              ],
+              "filePatterns": [
+                "[format('/var/log/squid/{0}.log', parameters('collectLog')[copyIndex()])]"
+              ],
+              "format": "text",
+              "settings": {
+                "text": {
+                  "recordStartTimestampFormat": "ISO 8601"
+                }
+              },
+              "name": "[format('Custom-Text-{0}-{1}', parameters('collectLog')[copyIndex()], variables('SquidProxyCustomTableName'))]"
+            }
+          ]
+        },
+        "destinations": {
+          "logAnalytics": [
+            {
+              "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]",
+              "name": "logAnalyticsWorkspaceDestination"
+            }
+          ]
+        },
+        "dataFlows": [
+          {
+            "streams": [
+              "[format('Custom-Text-{0}', variables('SquidProxyCustomTableName'))]"
+            ],
+            "destinations": [
+              "logAnalyticsWorkspaceDestination"
+            ],
+            "transformKql": "[variables('transforms')[parameters('collectLog')[copyIndex()]]]",
+            "outputStream": "[format('Custom-{0}', variables('SquidProxyCustomTableName'))]"
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.OperationalInsights/workspaces/tables', parameters('logAnalyticsWorkspaceName'), variables('SquidProxyCustomTableName'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "resultcodes": {
+      "type": "array",
+      "value": "[parameters('accessLogResultIncludeFilter')]"
+    }
+  }
+}
