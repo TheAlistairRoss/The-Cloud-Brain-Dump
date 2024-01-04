@@ -33,7 +33,7 @@
                 "resourceType": "Microsoft.Insights/dataCollectionEndpoints",
                 "options": {
                   "filter": {
-                    "subscription": "onBasics",
+                    "subscription": "all",
                     "location": "onBasics"
                   }
                 }
