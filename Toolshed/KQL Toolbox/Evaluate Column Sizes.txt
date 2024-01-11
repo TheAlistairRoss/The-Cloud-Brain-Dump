@@ -1,0 +1,32 @@
+// Evaluate Column Sizes
+// 
+// This query will estimate the total size of each column by taking an average size of a sample of events and then calculate the total size of each column based on the number of events. This is by no means 100% accurate, as it is done based on averages.
+//
+// Syntax
+// EvaluateTable(tableName [, startTime, endTime, sampleSize])
+// Query Arguments
+// tableName:string:  - The name of the table to be evaluated.                     - No Default          Example: 'AADNonInteractiveUserSignInLogs'
+// startTime:datetime - The start time of the logs you wish to evaluate.           - Default = ago(1d)   Example: datetime('2024-01-11T14:00:00Z') or ago(7d)
+// endTime:datetime   - The start time of the logs you wish to evaluate.           - Default = now()     Example: datetime('2024-01-11T15:00:00Z') or now()
+// sampleSize:long    - The total number of events to determine the average sizes. - Default = 1000      Example: 100000
+//
+let EvaluateTable = (tableName:string, startTime:datetime = datetime(null) , endTime:datetime = datetime(null), sampleSize: long = long(null)){
+    let vStartTime = iff(isnull(startTime), ago(1d), startTime);
+    let vEndTime = iff(isnull(endTime), now(), endTime);
+    let vSampleSize = iif(isnull(sampleSize), 1000, sampleSize);
+    let countOfLogs = toscalar(table(tableName)
+        | where TimeGenerated between (vStartTime .. vEndTime)
+        | count);
+    table(tableName)
+    | where TimeGenerated between (vStartTime .. vEndTime)
+    | take vSampleSize
+    | evaluate narrow()
+    | summarize Average_Size_Bytes = avg(estimate_data_size(Value)) by Column
+    | extend Estimate_Total_Size_Bytes = Average_Size_Bytes * countOfLogs
+    | extend Total_Log_Count = countOfLogs
+    | extend TableName = tableName
+    | project TableName, Column, Total_Log_Count, Average_Size_Bytes = round(Average_Size_Bytes, 0), round(Estimate_Total_Size_Bytes, 0)
+};
+union 
+EvaluateTable('AADNonInteractiveUserSignInLogs'),
+EvaluateTable('SigninLogs')
