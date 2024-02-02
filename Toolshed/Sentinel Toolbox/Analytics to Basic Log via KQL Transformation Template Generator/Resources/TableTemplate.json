@@ -5,10 +5,6 @@
         "workspaceName": {
             "type": "string"
         },
-        "location": {
-            "defaultValue": "[resourceGroup().location]",
-            "type": "string"
-        },
         "tableName": {
             "type": "string"
         },
