@@ -1,0 +1,41 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.1",
+    "parameters": {
+        "workspaceName": {
+            "type": "string"
+        },
+        "location": {
+            "defaultValue": "[resourceGroup().location]",
+            "type": "string"
+        },
+        "tableName": {
+            "type": "string"
+        },
+        "tablePlan":{
+            "type": "string"
+        },
+        "columns": {
+            "defaultValue": [],
+            "type": "array"
+        }
+    },
+    "variables": {
+        "customTableName": "[if(not(endsWith(parameters('newTableName'), '_CL')), concat(parameters('newTableName'),'_CL'), parameters('newTableName'))]",
+        "customTableId" :  "[concat(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '/tables/', variables('customTableName'))]"    },
+    "resources": [
+        {
+            "id": "[variables('customTableId')]",
+            "name": "[concat(parameters('workspaceName'), '/', variables('customTableName'))]",
+            "type": "Microsoft.OperationalInsights/workspaces/tables",
+            "apiVersion": "2021-12-01-preview",
+            "properties": {
+                "plan": "[parameters('tablePlan')]",
+                "schema": {
+                    "name": "[variables('customTableName')]",
+                    "columns": "[parameters('columns')]"
+                }
+            }
+        }
+    ]
+}
