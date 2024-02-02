@@ -17,7 +17,7 @@
         }
     },
     "variables": {
-        "customTableName": "[if(not(endsWith(parameters('tableName'), '_CL')), concat(parameters('tableName'),'_CL'), parameters('newTableName'))]",
+        "customTableName": "[if(not(endsWith(parameters('tableName'), '_CL')), concat(parameters('tableName'),'_CL'), parameters('tableName'))]",
         "customTableId" :  "[concat(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '/tables/', variables('customTableName'))]"    },
     "resources": [
         {
