@@ -29,7 +29,7 @@
             "type": "string"
         },
         "dcrKind": {
-            "defaultValue": "workspaceTransforms",
+            "defaultValue": "WorkspaceTransforms",
             "type": "string"
         }
     },
