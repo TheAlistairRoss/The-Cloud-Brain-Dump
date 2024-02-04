@@ -10,6 +10,7 @@
             "type": "string"
         },
         "originalTableName": {
+            "defaultValue": "",
             "type": "string"
         },
         "newTableName": {
