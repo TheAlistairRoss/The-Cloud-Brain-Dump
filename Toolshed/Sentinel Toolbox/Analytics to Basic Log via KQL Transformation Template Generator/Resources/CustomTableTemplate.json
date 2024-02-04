@@ -31,6 +31,14 @@
         "dcrKind": {
             "defaultValue": "WorkspaceTransforms",
             "type": "string"
+        },
+        "deployTable" : {
+            "defaultValue": false,
+            "type": "bool"
+        },
+        "deployDCR" : {
+            "defaultValue": false,
+            "type": "bool"
         }
     },
     "variables": {
@@ -40,7 +48,9 @@
         "customTableStreamName": "[concat('Custom-', variables('customTableName'))]",
         "customTableId" :  "[concat(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '/tables/', variables('customTableName'))]"    },
     "resources": [
+
         {
+            "condition": "[parameters('deployTable')]",
             "id": "[variables('customTableId')]",
             "name": "[concat(parameters('workspaceName'), '/', variables('customTableName'))]",
             "type": "Microsoft.OperationalInsights/workspaces/tables",
@@ -54,6 +64,7 @@
             }
         },
         {
+            "condition": "[parameters('deployDCR')]",
             "type": "Microsoft.Insights/dataCollectionRules",
             "apiVersion": "2022-06-01",
             "name": "[variables('dataCollectionRuleName')]",
