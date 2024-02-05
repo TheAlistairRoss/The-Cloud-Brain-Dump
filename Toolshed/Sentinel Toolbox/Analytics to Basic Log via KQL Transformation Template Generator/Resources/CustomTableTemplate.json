@@ -16,9 +16,9 @@
         "newTableName": {
             "type": "string"
         },
-        "columns": {
-            "defaultValue": [],
-            "type": "array"
+        "newTableParameters": {
+            "defaultValue": {},
+            "type": "object"
         },
 
         "originalTableTransformation": {
@@ -56,13 +56,7 @@
             "name": "[concat(parameters('workspaceName'), '/', variables('customTableName'))]",
             "type": "Microsoft.OperationalInsights/workspaces/tables",
             "apiVersion": "2021-12-01-preview",
-            "properties": {
-                "plan": "Basic",
-                "schema": {
-                    "name": "[variables('customTableName')]",
-                    "columns": "[parameters('columns')]"
-                }
-            }
+            "properties": "[parameters('newTableParameters')]"
         },
         {
             "condition": "[parameters('deployDCR')]",
