@@ -40,10 +40,13 @@
         "deployDCR" : {
             "defaultValue": false,
             "type": "bool"
+        },
+        "dcrName": {
+            "defaultValue": "",
+            "type": "string"
         }
     },
     "variables": {
-        "dataCollectionRuleName": "[concat(parameters('originalTableName'), '_LogSplittingToBasic_DCR')]",
         "streamName": "[if(endsWith(parameters('originalTableName'), '_CL'), concat('Microsoft-Table-', parameters('originalTableName')),concat('Custom-', parameters('originalTableName')))]",
         "customTableName": "[if(not(endsWith(parameters('newTableName'), '_CL')), concat(parameters('newTableName'),'_CL'), parameters('newTableName'))]",
         "customTableStreamName": "[concat('Custom-', variables('customTableName'))]",
@@ -62,7 +65,7 @@
             "condition": "[parameters('deployDCR')]",
             "type": "Microsoft.Insights/dataCollectionRules",
             "apiVersion": "2022-06-01",
-            "name": "[variables('dataCollectionRuleName')]",
+            "name": "[parameters('dcrName')]",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[variables('customTableId')]"

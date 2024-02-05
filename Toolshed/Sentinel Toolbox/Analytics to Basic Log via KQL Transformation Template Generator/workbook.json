@@ -173,8 +173,7 @@
                     "showDefault": false
                   },
                   "queryType": 1,
-                  "resourceType": "microsoft.resourcegraph/resources",
-                  "value": "/subscriptions/a460eb43-f297-44ec-a8c6-3de20c09439a/resourceGroups/Unilever-Demo/providers/Microsoft.OperationalInsights/workspaces/Unilever-Demo"
+                  "resourceType": "microsoft.resourcegraph/resources"
                 },
                 {
                   "id": "2b6ddbba-4b48-48b4-81ce-c9bc21b18f76",
@@ -233,7 +232,6 @@
                   "jsonData": "[\r\n    {\"value\":\"true\", \"label\": \"Yes\", \"selected\": false},\r\n    {\"value\":\"false\", \"label\": \"No\", \"selected\": true}\r\n]"
                 },
                 {
-                  "id": "853c4588-e4e2-46be-840d-3d6b58c99e1e",
                   "version": "KqlParameterItem/1.0",
                   "name": "ShowNonBillableTables",
                   "label": "Show Non Billable Tables",
@@ -244,7 +242,8 @@
                     "additionalResourceOptions": [],
                     "showDefault": false
                   },
-                  "jsonData": "[\r\n    {\"value\":\"true\", \"label\": \"Yes\", \"selected\": false},\r\n    {\"value\":\"false\", \"label\": \"No\", \"selected\": true}\r\n]"
+                  "jsonData": "[\r\n    {\"value\":\"true\", \"label\": \"Yes\", \"selected\": false},\r\n    {\"value\":\"false\", \"label\": \"No\", \"selected\": true}\r\n]",
+                  "id": "45004020-2e20-4398-86b9-d889f4311d9e"
                 },
                 {
                   "id": "8a1cc20a-f9ac-4532-8d13-eab906b08b63",
@@ -992,10 +991,29 @@
                         "label": "New Custom Table Name",
                         "type": 1,
                         "isRequired": true,
-                        "query": "let TableNameBase64 = \"{SelectedTableName:base64}\";\r\nlet TableName = base64_decode_tostring(TableNameBase64);\r\nprint Name = iff(\r\n                 TableName endswith \"_CL\",\r\n                 replace_regex(TableName, @'_CL$', \"_COPY_CL\"),\r\n                 strcat(TableName,\"_CL\")\r\n)",
+                        "query": "let TableNameBase64 = \"{SelectedTableName:base64}\";\r\nlet TableName = base64_decode_tostring(TableNameBase64);\r\nprint Name = iff(\r\n                 TableName endswith \"_CL\", TableName,\r\n                 strcat(TableName,\"_CL\")\r\n)",
                         "crossComponentResources": [
                           "{Workspace}"
                         ],
+                        "typeSettings": {
+                          "paramValidationRules": [
+                            {
+                              "regExp": "^[a-zA-Z][a-zA-Z0-9_]*[a-zA-Z0-9]$",
+                              "match": true,
+                              "message": "Cannot contain whitespaces or special characters, except underscores and must start with alphabetical character"
+                            },
+                            {
+                              "regExp": "^.{0,45}$",
+                              "match": true,
+                              "message": "The value must have a length of at most 45, not including the \"_CL\""
+                            },
+                            {
+                              "regExp": ".*_CL$",
+                              "match": true,
+                              "message": "Custom logs must end with _CL"
+                            }
+                          ]
+                        },
                         "timeContext": {
                           "durationMs": 86400000
                         },
@@ -1009,7 +1027,7 @@
                         "type": 2,
                         "description": "Used to check if the new custom table name exists",
                         "isRequired": true,
-                        "query": "let allTables = print Tables = dynamic([\"{AllTableNames}\"]);\r\nlet NewCustomTableName = \"{NewCustomTableName}\";\r\nprint check = NewCustomTableName in~ (allTables)\r\n| project value = tostring(check), label = tostring(check), selected = true",
+                        "query": "let allTables = print Tables = dynamic([{AllTableNames}]);\r\nlet NewCustomTableName = \"{NewCustomTableName}\";\r\nprint check = NewCustomTableName in~ (allTables)\r\n| extend value = iff(check, \"Yes\", \"No\")\r\n| project value, label = tostring(check), selected = true",
                         "crossComponentResources": [
                           "{Workspace}"
                         ],
@@ -1029,7 +1047,7 @@
                         "version": "KqlParameterItem/1.0",
                         "name": "ExistingTableProperties",
                         "type": 1,
-                        "description": "Default Values",
+                        "description": "Default Values  - This is a placeholder parameter",
                         "isHiddenWhenLocked": true,
                         "timeContext": {
                           "durationMs": 86400000
@@ -1041,6 +1059,18 @@
                     "resourceType": "microsoft.operationalinsights/workspaces"
                   },
                   "name": "parameters - New Custom Table Name"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "### Loading Table Details\r\n\r\nPlease wait!",
+                    "style": "upsell"
+                  },
+                  "conditionalVisibility": {
+                    "parameterName": "ExistingTable",
+                    "comparison": "isEqualTo"
+                  },
+                  "name": "text - 7"
                 },
                 {
                   "type": 1,
@@ -1072,7 +1102,7 @@
                           "additionalResourceOptions": [],
                           "showDefault": false
                         },
-                        "jsonData": "[\r\n    {\"value\":\"true\", \"label\": \"Yes\", \"selected\": false},\r\n    {\"value\":\"false\", \"label\": \"No\", \"selected\": true}\r\n]",
+                        "jsonData": "[\r\n    {\"value\":\"Yes\", \"label\": \"Yes\", \"selected\": false},\r\n    {\"value\":\"No\", \"label\": \"No\", \"selected\": true}\r\n]",
                         "timeContext": {
                           "durationMs": 86400000
                         }
@@ -1090,7 +1120,7 @@
                               "leftOperand": "ConfigureTable",
                               "operator": "==",
                               "rightValType": "static",
-                              "rightVal": "True",
+                              "rightVal": "Yes",
                               "resultValType": "static",
                               "resultVal": "True"
                             }
@@ -1100,7 +1130,7 @@
                               "leftOperand": "ExistingTable",
                               "operator": "==",
                               "rightValType": "static",
-                              "rightVal": "True",
+                              "rightVal": "Yes",
                               "resultValType": "static",
                               "resultVal": "False"
                             }
@@ -1122,7 +1152,7 @@
                   "conditionalVisibility": {
                     "parameterName": "ExistingTable",
                     "comparison": "isEqualTo",
-                    "value": "True"
+                    "value": "Yes"
                   },
                   "name": "parameters - EditTableCheck"
                 },
@@ -1306,7 +1336,7 @@
                               "type": 2,
                               "description": " This is the period that your data will be available for interactive queries.",
                               "isRequired": true,
-                              "query": "let planType = \"{PlanType}\";\r\nlet ExistingTableProperties = dynamic({ExistingTablePropertiesResult});\r\nlet workspaceRetention = {workspaceRetention};\r\nlet convertDaysToString = (value: int = 0) {\r\n    toscalar(print days = value\r\n    | extend quantity = iif(value >= 365, tostring(round(value / real(365), 1)), tostring(toreal(value)))\r\n    | extend quantity = iif(quantity endswith \".0\", replace_string(quantity, \".0\", \"\"), quantity)\r\n    | project StringOut = case(\r\n                              value >= 365,\r\n                              strcat(quantity, \" years\", \" (\", value, \" days)\"), \r\n                              value == 1,\r\n                              strcat(value, \" day\"),\r\n                              strcat(value, \" days\")\r\n                          )\r\n    )\r\n};\r\ndatatable(value: real, label: string, selected: string)\r\n[\r\n    -1, \"Same as Workspace default\", \"false\",\r\n    0, \"8 Days (Basic)\", \"false\",\r\n    30, \"30 Days\", \"false\",\r\n    60, \"60 Days\", \"false\",\r\n    120, \"120 Days\", \"false\",\r\n    180, \"180 Days\", \"false\",\r\n    270, \"270 Days\", \"false\",\r\n    365, \"1 Year\", \"false\",\r\n    547, \"1.5 Years\", \"false\",\r\n    730, \"2 Years\", \"false\"\r\n]\r\n| extend label = iff(value == -1, strcat(label, \" (\", convertDaysToString(workspaceRetention), \")\"), label)\r\n| extend selected = case(\r\n    tobool(ExistingTableProperties.retentionInDaysAsDefault) and value == -1, \"true\",\r\n    not(tobool(ExistingTableProperties.retentionInDaysAsDefault)) and value == toreal(ExistingTableProperties.retentionInDays), \"true\",\r\n    \"false\"\r\n)\r\n| where planType == \"Basic\" and value == 0 or planType != \"Basic\" and value != 0\r\n\r\n",
+                              "query": "let planType = \"{PlanType}\";\r\nlet ExistingTableProperties = dynamic({ExistingTablePropertiesResult});\r\nlet workspaceRetention = {workspaceRetention};\r\nlet convertDaysToString = (value: int = 0) {\r\n    toscalar(print days = value\r\n    | extend quantity = iif(value >= 365, tostring(round(value / real(365), 1)), tostring(toreal(value)))\r\n    | extend quantity = iif(quantity endswith \".0\", replace_string(quantity, \".0\", \"\"), quantity)\r\n    | project StringOut = case(\r\n                              value >= 365,\r\n                              strcat(quantity, \" years\", \" (\", value, \" days)\"), \r\n                              value == 1,\r\n                              strcat(value, \" day\"),\r\n                              strcat(value, \" days\")\r\n                          )\r\n    )\r\n};\r\ndatatable(value: real, label: string, selected: string)\r\n[\r\n    -1, \"Same as Workspace default\", \"false\",\r\n    0, \"8 Days (Basic)\", \"false\",\r\n    30, \"30 Days\", \"false\",\r\n    60, \"60 Days\", \"false\",\r\n    120, \"120 Days\", \"false\",\r\n    180, \"180 Days\", \"false\",\r\n    270, \"270 Days\", \"false\",\r\n    365, \"1 Year\", \"false\",\r\n    547, \"1.5 Years\", \"false\",\r\n    730, \"2 Years\", \"false\"\r\n]\r\n| extend label = iff(value == -1, strcat(label, \" (\", convertDaysToString(workspaceRetention), \")\"), label)\r\n| extend selected = case(\r\n    tobool(ExistingTableProperties.retentionInDaysAsDefault) and value == -1, \"true\",\r\n    not(tobool(ExistingTableProperties.retentionInDaysAsDefault)) and value == toreal(ExistingTableProperties.retentionInDays), \"true\",\r\n    \"false\"\r\n)\r\n| extend label = case(\r\n    tobool(ExistingTableProperties.retentionInDaysAsDefault) and value == -1, strcat(label, \" (Current)\"),\r\n    not(tobool(ExistingTableProperties.retentionInDaysAsDefault)) and value == toreal(ExistingTableProperties.retentionInDays), strcat(label, \" (Current)\"),\r\n    label\r\n)\r\n| where planType == \"Basic\" and value == 0 or planType != \"Basic\" and value != 0\r\n\r\n",
                               "crossComponentResources": [
                                 "{Workspace}"
                               ],
@@ -1359,9 +1389,6 @@
                         "type": 9,
                         "content": {
                           "version": "KqlParameterItem/1.0",
-                          "crossComponentResources": [
-                            "{Workspace}"
-                          ],
                           "parameters": [
                             {
                               "id": "9de3094d-1029-425b-9c5a-ea3f3598a4b2",
@@ -1371,7 +1398,7 @@
                               "type": 2,
                               "description": " The total retention period is a sum of the interactive and archive periods.",
                               "isRequired": true,
-                              "query": "let workspaceRetentionInDays = {workspaceRetention};\r\nlet interactiveRetentionInDays = {retentionInDays};\r\nlet ExistingTableProperties = dynamic({ExistingTablePropertiesResult});\r\nlet planType = \"{PlanType}\";\r\nlet totalRetentionInDays = toreal(ExistingTableProperties.totalRetentionInDays);\r\nlet totalRetentionInDaysAsDefault = tobool(ExistingTableProperties.totalRetentionInDaysAsDefault);\r\nlet retentionInDays = iif(interactiveRetentionInDays == -1, workspaceRetentionInDays, interactiveRetentionInDays);\r\nlet datatableValues = datatable(value: real, label: string, selected: string)\r\n[\r\n    -1, \"Same as Interactive Retention\", \"false\",\r\n    0, \"Same as Interactive Retention (Basic - 8 Days)\", \"false\",\r\n    1, \"Custom\", \"false\",\r\n    30, \"30 Days\", \"false\",\r\n    60, \"60 Days\", \"false\",\r\n    120, \"120 Days\", \"false\",\r\n    180, \"180 Days\", \"false\",\r\n    270, \"270 Days\", \"false\",\r\n    365, \"1 Year\", \"false\",\r\n    547, \"1.5 Years\", \"false\",\r\n    730, \"2 Years\", \"false\",\r\n    1095, \"3 Years\", \"false\",\r\n    1460, \"4 Years\", \"false\",\r\n    1826, \"5 Years\", \"false\",\r\n    2191, \"6 Years\", \"false\",\r\n    2556, \"7 Years\", \"false\",\r\n    2922, \"8 Years\", \"false\",\r\n    3288, \"9 Years\", \"false\",\r\n    3653, \"10 Years\", \"false\",\r\n    4018, \"11 Years\", \"false\",\r\n    4383, \"12 Years\", \"false\"\r\n];\r\nlet isCustomValueInDatatable = totalRetentionInDays !in (toscalar(datatableValues | summarize make_list(value)));\r\ndatatableValues\r\n| where not(planType == \"Analytics\" and value == 0)\r\n| where not(planType == \"Basic\" and value == -1)\r\n| where isCustomValueInDatatable or value != 1\r\n| extend label = iff(value == 1, strcat(totalRetentionInDays, \" days (Custom)\"), label),\r\n        value = iif(value == 1, totalRetentionInDays, value)\r\n| extend selected = case(\r\n    totalRetentionInDaysAsDefault and value in (-1,0) , \"true\",\r\n    not(totalRetentionInDaysAsDefault) and value == totalRetentionInDays, \"true\",\r\n    \"false\"\r\n)\r\n| order by value asc\r\n",
+                              "query": "let workspaceRetentionInDays = {workspaceRetention};\r\nlet interactiveRetentionInDays = {retentionInDays};\r\nlet ExistingTableProperties = dynamic({ExistingTablePropertiesResult});\r\nlet planType = \"{PlanType}\";\r\nlet totalRetentionInDays = toreal(ExistingTableProperties.totalRetentionInDays);\r\nlet totalRetentionInDaysAsDefault = tobool(ExistingTableProperties.totalRetentionInDaysAsDefault);\r\nlet retentionInDays = iif(interactiveRetentionInDays == -1, workspaceRetentionInDays, interactiveRetentionInDays);\r\nlet datatableValues = datatable(value: real, label: string, selected: string)\r\n[\r\n    -1, \"Same as Interactive Retention\", \"false\",\r\n    0, \"Same as Interactive Retention (Basic - 8 Days)\", \"false\",\r\n    1, \"Custom\", \"false\",\r\n    30, \"30 Days\", \"false\",\r\n    60, \"60 Days\", \"false\",\r\n    120, \"120 Days\", \"false\",\r\n    180, \"180 Days\", \"false\",\r\n    270, \"270 Days\", \"false\",\r\n    365, \"1 Year\", \"false\",\r\n    547, \"1.5 Years\", \"false\",\r\n    730, \"2 Years\", \"false\",\r\n    1095, \"3 Years\", \"false\",\r\n    1460, \"4 Years\", \"false\",\r\n    1826, \"5 Years\", \"false\",\r\n    2191, \"6 Years\", \"false\",\r\n    2556, \"7 Years\", \"false\",\r\n    2922, \"8 Years\", \"false\",\r\n    3288, \"9 Years\", \"false\",\r\n    3653, \"10 Years\", \"false\",\r\n    4018, \"11 Years\", \"false\",\r\n    4383, \"12 Years\", \"false\"\r\n];\r\nlet isCustomValueInDatatable = totalRetentionInDays !in (toscalar(datatableValues | summarize make_list(value)));\r\ndatatableValues\r\n| where not(planType == \"Analytics\" and value == 0)\r\n| where not(planType == \"Basic\" and value == -1)\r\n| where isCustomValueInDatatable or value != 1\r\n| extend label = iff(value == 1, strcat(totalRetentionInDays, \" days (Custom)\"), label),\r\n        value = iif(value == 1, totalRetentionInDays, value)\r\n| extend selected = case(\r\n    totalRetentionInDaysAsDefault and value in (-1,0) , \"true\",\r\n    not(totalRetentionInDaysAsDefault) and value == totalRetentionInDays, \"true\",\r\n    \"false\"\r\n)\r\n| extend label = case(\r\n    planType == \"Basic\", label,\r\n    totalRetentionInDaysAsDefault and value in (-1,0) , strcat(label, \" (Current)\"),\r\n    not(totalRetentionInDaysAsDefault) and value == totalRetentionInDays, strcat(label, \" (Current)\"),\r\n    label\r\n)\r\n| order by value asc\r\n",
                               "crossComponentResources": [
                                 "{Workspace}"
                               ],
@@ -1384,11 +1411,22 @@
                               },
                               "queryType": 0,
                               "resourceType": "microsoft.operationalinsights/workspaces"
+                            },
+                            {
+                              "id": "efd4f8cf-4463-496a-b894-35298856bfbf",
+                              "version": "KqlParameterItem/1.0",
+                              "name": "TableTemplateParameters",
+                              "type": 1,
+                              "isRequired": true,
+                              "query": "{\"version\":\"1.0.0\",\"content\":\"{\\r\\n\\t\\\"parameters\\\": {\\r\\n\\t\\t\\\"plan\\\": \\\"{PlanType}\\\",\\r\\n\\t\\t\\\"retentionInDays\\\": {retentionInDays},\\r\\n\\t\\t\\\"totalRetentionInDays\\\": {totalRetentionInDays},\\r\\n\\t\\t\\\"schema\\\": {\\r\\n\\t\\t\\t\\\"name\\\": \\\"{NewCustomTableName}\\\",\\r\\n\\t\\t\\t\\\"columns\\\": {FilteredColumns}\\r\\n\\t\\t}\\r\\n\\t}\\r\\n}\",\"transformers\":null}",
+                              "timeContext": {
+                                "durationMs": 86400000
+                              },
+                              "queryType": 8
                             }
                           ],
                           "style": "formVertical",
-                          "queryType": 0,
-                          "resourceType": "microsoft.operationalinsights/workspaces"
+                          "queryType": 8
                         },
                         "customWidth": "45",
                         "name": "parameters - Total Retention Parameter"
@@ -1467,6 +1505,100 @@
                           "sortBy": []
                         },
                         "name": "query - 8"
+                      },
+                      {
+                        "type": 1,
+                        "content": {
+                          "json": "### View and Deploy Table Template\r\n\r\nThis option allows you to deploy the table before creating the Data Collection Rules. This will help identify any table deployment issues ahead of building the transformation queries. ",
+                          "style": "info"
+                        },
+                        "conditionalVisibility": {
+                          "parameterName": "ShowHelp",
+                          "comparison": "isEqualTo",
+                          "value": "true"
+                        },
+                        "name": "text - View and Deploy Table Template"
+                      },
+                      {
+                        "type": 11,
+                        "content": {
+                          "version": "LinkItem/1.0",
+                          "style": "paragraph",
+                          "links": [
+                            {
+                              "id": "1f3de801-bfca-471a-94ca-8d3b8861c0a1",
+                              "linkTarget": "ArmTemplate",
+                              "linkLabel": "View and Deploy Table Template",
+                              "style": "primary",
+                              "linkIsContextBlade": true,
+                              "templateRunContext": {
+                                "componentIdSource": "parameter",
+                                "componentId": "ResourceGroupId",
+                                "templateUriSource": "parameter",
+                                "templateUri": "ARMTemplateURL",
+                                "templateParameters": [
+                                  {
+                                    "name": "workspaceName",
+                                    "source": "parameter",
+                                    "value": "WorkspaceName",
+                                    "kind": "stringValue"
+                                  },
+                                  {
+                                    "name": "newTableName",
+                                    "source": "parameter",
+                                    "value": "NewCustomTableName",
+                                    "kind": "stringValue"
+                                  },
+                                  {
+                                    "name": "newTableParameters",
+                                    "source": "parameter",
+                                    "value": "TableTemplateParameters",
+                                    "kind": "objectValue"
+                                  },
+                                  {
+                                    "name": "deployTable",
+                                    "source": "static",
+                                    "value": "true",
+                                    "kind": "boolValue"
+                                  }
+                                ],
+                                "titleSource": "static",
+                                "title": "Review the Template Deployment",
+                                "descriptionSource": "static",
+                                "description": "This is not the template parameters, but the subsituted values. View the template for the actual deployed parameters.\r\n\r\n1. **Select a Table** - `{SelectedTableName}`\r\n2. **Remove Unwanted Columns** - `{ColumnsToFilterOut}`\r\n3. **New Custom Table Name** - `{NewCustomTableName}`\r\n4. **Custom Table Plan Type** - `{PlanType}`\r\n5. **Interactive Retention** - `{retentionInDays:label}`\r\n6. **Total Retention** - `{totalRetentionInDays:label}`\r\n7. **Deploy Table** - true\r\n\r\n#### If all of the values are correct, select **View Template**. \r\n\r\n> Optionally, you can select **Deploy** to create the new custom table.",
+                                "runLabelSource": "static",
+                                "runLabel": "Deploy"
+                              }
+                            }
+                          ]
+                        },
+                        "conditionalVisibilities": [
+                          {
+                            "parameterName": "SelectedTableName",
+                            "comparison": "isNotEqualTo"
+                          },
+                          {
+                            "parameterName": "NewCustomTableName",
+                            "comparison": "isNotEqualTo"
+                          },
+                          {
+                            "parameterName": "ColumnsToFilterOut",
+                            "comparison": "isNotEqualTo"
+                          },
+                          {
+                            "parameterName": "retentionInDays",
+                            "comparison": "isNotEqualTo"
+                          },
+                          {
+                            "parameterName": "totalRetentionInDays",
+                            "comparison": "isNotEqualTo"
+                          },
+                          {
+                            "parameterName": "PlanType",
+                            "comparison": "isNotEqualTo"
+                          }
+                        ],
+                        "name": "links - View and Deploy Table Template"
                       }
                     ],
                     "exportParameters": true
@@ -1476,101 +1608,7 @@
                     "comparison": "isEqualTo",
                     "value": "True"
                   },
-                  "name": "group - New Table"
-                },
-                {
-                  "type": 1,
-                  "content": {
-                    "json": "### View and Deploy Table Template\r\n\r\nThis option allows you to deploy the table before creating the Data Collection Rules. This will help identify any table deployment issues ahead of building the transformation queries. ",
-                    "style": "info"
-                  },
-                  "conditionalVisibility": {
-                    "parameterName": "ShowHelp",
-                    "comparison": "isEqualTo",
-                    "value": "true"
-                  },
-                  "name": "text - View and Deploy Table Template"
-                },
-                {
-                  "type": 11,
-                  "content": {
-                    "version": "LinkItem/1.0",
-                    "style": "paragraph",
-                    "links": [
-                      {
-                        "id": "1f3de801-bfca-471a-94ca-8d3b8861c0a1",
-                        "linkTarget": "ArmTemplate",
-                        "linkLabel": "View and Deploy Table Template",
-                        "style": "primary",
-                        "linkIsContextBlade": true,
-                        "templateRunContext": {
-                          "componentIdSource": "parameter",
-                          "componentId": "ResourceGroupId",
-                          "templateUriSource": "parameter",
-                          "templateUri": "ARMTemplateURL",
-                          "templateParameters": [
-                            {
-                              "name": "workspaceName",
-                              "source": "parameter",
-                              "value": "WorkspaceName",
-                              "kind": "stringValue"
-                            },
-                            {
-                              "name": "newTableName",
-                              "source": "parameter",
-                              "value": "NewCustomTableName",
-                              "kind": "stringValue"
-                            },
-                            {
-                              "name": "columns",
-                              "source": "parameter",
-                              "value": "FilteredColumns",
-                              "kind": "arrayValue"
-                            },
-                            {
-                              "name": "deployTable",
-                              "source": "static",
-                              "value": "true",
-                              "kind": "boolValue"
-                            }
-                          ],
-                          "titleSource": "static",
-                          "title": "Review the Template Deployment",
-                          "descriptionSource": "static",
-                          "description": "This is not the template parameters, but the subsituted values. View the template for the actual deployed parameters.\r\n\r\n1. **Select a Table** - `{SelectedTableName}`\r\n2. **Remove Unwanted Columns** - `{ColumnsToFilterOut}`\r\n3. **New Custom Table Name** - `{NewCustomTableName}`\r\n4. **Custom Table Plan Type** - `{PlanType}`\r\n5. **Interactive Retention** - `{retentionInDays:label}`\r\n6. **Total Retention** - `{totalRetentionInDays:label}`\r\n7. **Deploy Table** - true\r\n\r\n#### If all of the values are correct, select **View Template**. \r\n\r\n> Optionally, you can select **Deploy** to create the new custom table.",
-                          "runLabelSource": "static",
-                          "runLabel": "Deploy"
-                        }
-                      }
-                    ]
-                  },
-                  "conditionalVisibilities": [
-                    {
-                      "parameterName": "SelectedTableName",
-                      "comparison": "isNotEqualTo"
-                    },
-                    {
-                      "parameterName": "NewCustomTableName",
-                      "comparison": "isNotEqualTo"
-                    },
-                    {
-                      "parameterName": "ColumnsToFilterOut",
-                      "comparison": "isNotEqualTo"
-                    },
-                    {
-                      "parameterName": "retentionInDays",
-                      "comparison": "isNotEqualTo"
-                    },
-                    {
-                      "parameterName": "totalRetentionInDays",
-                      "comparison": "isNotEqualTo"
-                    },
-                    {
-                      "parameterName": "PlanType",
-                      "comparison": "isNotEqualTo"
-                    }
-                  ],
-                  "name": "links - View and Deploy Table Template"
+                  "name": "group - Table Editor"
                 }
               ],
               "exportParameters": true
@@ -2086,17 +2124,228 @@
       "content": {
         "version": "NotebookGroup/1.0",
         "groupType": "editable",
-        "title": "Step 6 - Review and Deploy",
+        "title": "Step 6 - Set Data Collection Rule Properties",
         "expandable": true,
         "items": [
           {
             "type": 1,
             "content": {
-              "json": "# Review and Deploy\r\n\r\nYou are nearing the end! Hopefully, by now you have done the following:\r\n\r\n| Step | Task | Value | Description |\r\n| ---- | ---- | ---- | ---- |\r\n| 1 | **Select a Table**| {SelectedTableName}  | This is the table which you will create a copy of|\r\n| 2 | **Remove Unwanted Columns** | {ColumnsToFilterOut} | Unfortunately, you may need to come back and do this or edit the columns in your ARM template as I can only validate the table by deploying it. All reserved columns should be removed by default, leave all the other columns as they are|\r\n| 3.1 | **New Custom Table Name** | {NewCustomTableName} | This is the name of your new table to be created|\r\n| 3.2 | **Custom Table Plan Type** | {PlanType} | This is the data plan of the new custom table|\r\n| 3.3 | **Interactive Retention** | {retentionInDays:label} | This is the length of time your logs will be available before archiving| \r\n| 3.4 | **Total Retention** | {totalRetentionInDays:label} | This is the total length of time your logs will be stored (interactive and archived)|\r\n| 4 | **Selected Table Transformation** |See below| This is the KQL which will be used to transform data heading to the original selected table|\r\n| 5 | **Custom Table Transformation** |See below| This is the KQL which will be used to transform data heading to the new custom table|\r\n\r\n### Selected Table Transformation\r\n```\r\n{SelectedTableTransformation}\r\n```\r\n### Custom Table Transformation\r\n```\r\n{CustomTableTransformation}\r\n```\r\n\r\n#### If all of this is done, you will be able to select **View and Deploy Template**. A context pane will appear, which you will have the option to select **View Template**. \r\n\r\n> Optionally, you can select **Deploy** to create the new custom table and data collection rules.\r\n\r\nIf the button is missing, review the above table and ensure that each step has been completed.\r\n",
+              "json": "Select a table above in step 1 to continue.",
+              "style": "warning"
+            },
+            "conditionalVisibility": {
+              "parameterName": "SelectedTableName",
+              "comparison": "isEqualTo"
+            },
+            "name": "text - 5 - Copy"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "### Data Collection Rule Name\r\n\r\nEnter your name for the new data collection rule. If you choose or type an existing name, it will overwrite the existing configuration of the current data collection rule.\r\n\r\nThe name must contain between 1 to 64 characters inclusive. The name only allows alphanumeric characters, underscores, hyphens and cannot start or end in a space.",
+              "style": "info"
+            },
+            "conditionalVisibility": {
+              "parameterName": "ShowHelp",
+              "comparison": "isEqualTo",
+              "value": "true"
+            },
+            "name": "text - DCR Name Help"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "crossComponentResources": [
+                "{Workspace}"
+              ],
+              "parameters": [
+                {
+                  "id": "353eae4f-6dc3-40b9-abd4-9d69d326cd9f",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "ExistingDataCollectionRules",
+                  "label": "Existing Data Collection Rules",
+                  "type": 5,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "query": "{\"version\":\"ARMEndpoint/1.0\",\"data\":null,\"headers\":[],\"method\":\"GET\",\"path\":\"{ResourceGroupId}/providers/Microsoft.Insights/dataCollectionRules?api-version=2022-06-01\",\"urlParams\":[],\"batchDisabled\":false,\"transformers\":[{\"type\":\"jsonpath\",\"settings\":{\"tablePath\":\"$.value\",\"columns\":[{\"path\":\"$.name\",\"columnid\":\"name\",\"columnType\":\"string\"}]}}]}",
+                  "isHiddenWhenLocked": true,
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::all"
+                    ],
+                    "showDefault": false
+                  },
+                  "defaultValue": "value::all",
+                  "queryType": 12
+                },
+                {
+                  "id": "5a62978a-38e9-4e1c-826f-968209dfadc3",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "ExistingDataCollectionRulesAndNewOption",
+                  "label": "New or Existing Data Collection Rule",
+                  "type": 2,
+                  "description": "Default Values  - This is a placeholder parameter",
+                  "isRequired": true,
+                  "query": "let existingDataCollectionRules = dynamic([{ExistingDataCollectionRules}]);\r\nprint value = \"NewDCR\", label = \"New Data Collection Rule\", group = \"New\" , selected = true\r\n| union isfuzzy = true (\r\n    print value = existingDataCollectionRules\r\n    | mv-expand value to typeof(string)\r\n    | project value, label = value, group = \"Existing\"\r\n    | order by value asc\r\n    )",
+                  "crossComponentResources": [
+                    "{Workspace}"
+                  ],
+                  "isHiddenWhenLocked": true,
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 0
+                  },
+                  "timeContextFromParameter": "TimeRange",
+                  "queryType": 0,
+                  "resourceType": "microsoft.operationalinsights/workspaces"
+                }
+              ],
+              "style": "formVertical",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "name": "parameters - New Custom Table Name"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "crossComponentResources": [
+                "{Workspace}"
+              ],
+              "parameters": [
+                {
+                  "id": "7f2a5285-4f2c-4c64-8061-b3c2d81e46a6",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "NewDataCollectionRuleName",
+                  "label": "New Data Collection Rule Name",
+                  "type": 1,
+                  "isRequired": true,
+                  "typeSettings": {
+                    "paramValidationRules": [
+                      {
+                        "regExp": "^[a-zA-Z0-9_-]{1,64}$",
+                        "match": true,
+                        "message": "The name must contain between 1 to 64 characters inclusive. The name only allows alphanumeric characters, underscores, hyphens and cannot start or end in a space."
+                      }
+                    ]
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                },
+                {
+                  "id": "c6608c90-67dc-45b9-8dea-01786476adbe",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "ExistingDCR",
+                  "type": 2,
+                  "description": "Used to check if the new custom table name exists",
+                  "isRequired": true,
+                  "query": "let allDCRs = dynamic([{ExistingDataCollectionRules}]);\r\nlet NewDataCollectionRuleName = \"{NewDataCollectionRuleName}\";\r\nprint check = NewDataCollectionRuleName in~ (allDCRs)\r\n| extend value = iff(check, \"Yes\", \"No\")\r\n| project value, label = tostring(check), selected = true",
+                  "crossComponentResources": [
+                    "{Workspace}"
+                  ],
+                  "isHiddenWhenLocked": true,
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "queryType": 0,
+                  "resourceType": "microsoft.operationalinsights/workspaces"
+                },
+                {
+                  "id": "5908d38b-615c-4f1b-b3ef-c4514763596b",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "DataCollectionRuleName",
+                  "type": 1,
+                  "isRequired": true,
+                  "isHiddenWhenLocked": true,
+                  "criteriaData": [
+                    {
+                      "criteriaContext": {
+                        "leftOperand": "ExistingDataCollectionRulesAndNewOption",
+                        "operator": "==",
+                        "rightValType": "static",
+                        "rightVal": "NewDCR",
+                        "resultValType": "param",
+                        "resultVal": "NewDataCollectionRuleName"
+                      }
+                    },
+                    {
+                      "criteriaContext": {
+                        "operator": "Default",
+                        "resultValType": "param",
+                        "resultVal": "ExistingDataCollectionRulesAndNewOption"
+                      }
+                    }
+                  ],
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                }
+              ],
+              "style": "formVertical",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "name": "parameters - New Custom Table Name - Copy"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "### Warning Data Collection Rule Already Exists\r\n\r\nThe data collection rule ```{NewDataCollectionRuleName}``` already exists within the current resource group. Choosing this will overwrite any existing configuration.",
+              "style": "warning"
+            },
+            "conditionalVisibility": {
+              "parameterName": "ExistingDCR",
+              "comparison": "isEqualTo",
+              "value": "Yes"
+            },
+            "name": "text - DCR Name Check"
+          }
+        ],
+        "exportParameters": true
+      },
+      "name": "group - Step 6",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "Step 7 - Review and Deploy",
+        "expandable": true,
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "# Review and Deploy\r\n\r\nYou are nearing the end! Hopefully, by now you have done the following:\r\n\r\n| Step | Task | Value | Description |\r\n| ---- | ---- | ---- | ---- |\r\n| 1 | **Select a Table**| {SelectedTableName}  | This is the table which you will create a copy of|\r\n| 2 | **Remove Unwanted Columns** | {ColumnsToFilterOut} | Unfortunately, you may need to come back and do this or edit the columns in your ARM template as I can only validate the table by deploying it. All reserved columns should be removed by default, leave all the other columns as they are|\r\n| 3.1 | **New Custom Table Name** | {NewCustomTableName} | This is the name of your new table to be created|\r\n| 3.2 | **Custom Table Plan Type** | {PlanType} | This is the data plan of the new custom table|\r\n| 3.3 | **Interactive Retention** | {retentionInDays:label} | This is the length of time your logs will be available before archiving| \r\n| 3.4 | **Total Retention** | {totalRetentionInDays:label} | This is the total length of time your logs will be stored (interactive and archived)|\r\n| 4 | **Selected Table Transformation** |See below| This is the KQL which will be used to transform data heading to the original selected table|\r\n| 5 | **Custom Table Transformation** |See below| This is the KQL which will be used to transform data heading to the new custom table|\r\n| 6 | **Data Collection Rule Name** |```{DataCollectionRuleName}```| This is the name of your new or existing data collection rule|\r\n\r\n### Selected Table Transformation\r\n```\r\n{SelectedTableTransformation}\r\n```\r\n### Custom Table Transformation\r\n```\r\n{CustomTableTransformation}\r\n```\r\n\r\n#### If all of this is done, you will be able to select **View and Deploy Template**. A context pane will appear, which you will have the option to select **View Template**. \r\n\r\n> Optionally, you can select **Deploy** to create the new custom table and data collection rules.\r\n\r\nIf the button is missing, review the above table and ensure that each step has been completed.\r\n",
               "style": "info"
             },
             "showPin": false,
             "name": "text - Review and Deploy Help"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [],
+              "style": "pills",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "name": "parameters - Deploy Table"
           },
           {
             "type": 11,
@@ -2107,7 +2356,7 @@
                 {
                   "id": "1f3de801-bfca-471a-94ca-8d3b8861c0a1",
                   "linkTarget": "ArmTemplate",
-                  "linkLabel": "View and Deploy Template",
+                  "linkLabel": "View and Deploy Data Collection Rule Template Without Table",
                   "style": "primary",
                   "linkIsContextBlade": true,
                   "templateRunContext": {
@@ -2135,10 +2384,10 @@
                         "kind": "stringValue"
                       },
                       {
-                        "name": "columns",
+                        "name": "newTableParameters",
                         "source": "parameter",
-                        "value": "FilteredColumns",
-                        "kind": "arrayValue"
+                        "value": "TableTemplateParameters",
+                        "kind": "objectValue"
                       },
                       {
                         "name": "originalTableTransformation",
@@ -2156,6 +2405,105 @@
                         "name": "dcrKind",
                         "source": "parameter",
                         "value": "DCRKind",
+                        "kind": "stringValue"
+                      },
+                      {
+                        "name": "deployDCR",
+                        "source": "static",
+                        "value": "true",
+                        "kind": "boolValue"
+                      },
+                      {
+                        "name": "deployTable",
+                        "source": "static",
+                        "value": "false",
+                        "kind": "boolValue"
+                      },
+                      {
+                        "name": "dcrName",
+                        "source": "parameter",
+                        "value": "NewDataCollectionRuleName",
+                        "kind": "stringValue"
+                      }
+                    ],
+                    "titleSource": "static",
+                    "title": "Review the Template Deployment",
+                    "descriptionSource": "static",
+                    "description": "This is not the template parameters, but the subsituted values. View the template for the actual deployed parameters.\r\n\r\n1. **Select a Table** - `{SelectedTableName}`\r\n2. **Remove Unwanted Columns** - `{ColumnsToFilterOut}`\r\n3. **New Custom Table Name** - `{NewCustomTableName}`\r\n4. **Custom Table Plan Type** - `{PlanType}`\r\n5. **Interactive Retention** - `{retentionInDays:label}`\r\n6. **Total Retention** - `{totalRetentionInDays:label}`\r\n7. **Selected Table Transformation** - `{SelectedTableTransformation}`\r\n8. **Custom Table Transformation** - `{CustomTableTransformation}`\r\n\r\n#### If all of the values are correct, select **View Template**. \r\n\r\n> Optionally, you can select **Deploy** to create the new custom table and data collection rules.",
+                    "runLabelSource": "static",
+                    "runLabel": "Deploy"
+                  }
+                },
+                {
+                  "id": "b7a3b89b-9fa3-4784-a1b4-6bbdd52f6065",
+                  "linkTarget": "ArmTemplate",
+                  "linkLabel": "View and Deploy Data Collection Rule Template With Table",
+                  "style": "secondary",
+                  "linkIsContextBlade": true,
+                  "templateRunContext": {
+                    "componentIdSource": "parameter",
+                    "componentId": "ResourceGroupId",
+                    "templateUriSource": "parameter",
+                    "templateUri": "ARMTemplateURL",
+                    "templateParameters": [
+                      {
+                        "name": "workspaceName",
+                        "source": "parameter",
+                        "value": "WorkspaceName",
+                        "kind": "stringValue"
+                      },
+                      {
+                        "name": "originalTableName",
+                        "source": "parameter",
+                        "value": "SelectedTableName",
+                        "kind": "stringValue"
+                      },
+                      {
+                        "name": "newTableName",
+                        "source": "parameter",
+                        "value": "NewCustomTableName",
+                        "kind": "stringValue"
+                      },
+                      {
+                        "name": "newTableParameters",
+                        "source": "parameter",
+                        "value": "TableTemplateParameters",
+                        "kind": "objectValue"
+                      },
+                      {
+                        "name": "originalTableTransformation",
+                        "source": "parameter",
+                        "value": "SelectedTableTransformation",
+                        "kind": "stringValue"
+                      },
+                      {
+                        "name": "newTableTransformation",
+                        "source": "parameter",
+                        "value": "CustomTableTransformation",
+                        "kind": "stringValue"
+                      },
+                      {
+                        "name": "dcrKind",
+                        "source": "parameter",
+                        "value": "DCRKind",
+                        "kind": "stringValue"
+                      },
+                      {
+                        "name": "deployDCR",
+                        "source": "static",
+                        "value": "true",
+                        "kind": "boolValue"
+                      },
+                      {
+                        "name": "deployTable",
+                        "source": "static",
+                        "value": "false",
+                        "kind": "boolValue"
+                      },
+                      {
+                        "name": "dcrName",
+                        "source": "parameter",
+                        "value": "DataCollectionRuleName",
                         "kind": "stringValue"
                       }
                     ],
@@ -2208,7 +2556,7 @@
         ],
         "exportParameters": true
       },
-      "name": "group - Step 6",
+      "name": "group - Step 7",
       "styleSettings": {
         "showBorder": true
       }
@@ -2237,9 +2585,6 @@
       }
     }
   ],
-  "fallbackResourceIds": [
-    "/subscriptions/a460eb43-f297-44ec-a8c6-3de20c09439a/resourcegroups/linuxlogdeploymentupdate/providers/microsoft.operationalinsights/workspaces/sentinel-workshop-wksp"
-  ],
-  "fromTemplateId": "sentinel-UserWorkbook",
+  "fallbackResourceIds": [],
   "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
 }
