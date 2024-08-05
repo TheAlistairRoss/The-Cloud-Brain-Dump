@@ -15,9 +15,9 @@ Ensure the authentication has occurred using Connect-AzAccount prior to running 
 
 
 ## Release
-|Version|Date|
-|--|--|
-|1.0.0| 05/08/2024|
+|Version|Date|Download|
+|--|--|--|
+|[1.0.0](./Build/1.0.0)| 05/08/2024|[Download](./Build/1.0.0/SentinelThreatIntelligence.zip| 
 
 ## Issues
 The function ```Remove-ThreatIndicator``` and ```Remove-ThreatIndicatorsQuery``` relies on the [Threat Intelligence Indicator - Delete](https://learn.microsoft.com/en-us/rest/api/securityinsights/threat-intelligence-indicator/delete?view=rest-securityinsights-2024-03-01&tabs=HTTP) API which is limited to 1 request at a time. Based on the new [throttling algorithm](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/request-limits-and-throttling#migrating-to-regional-throttling-and-token-bucket-algorithm) this should be able to perform 10 deletes per second without being throttled.
