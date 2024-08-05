@@ -9,3 +9,7 @@ Sentinel content that doesn't have a home or series, that just gets chucked in t
 ## Copy Log Analytics Tables and Schema to Custom Logs
 - [Blog Post](https://thealistairross0.wordpress.com/?p=242)
 - [Code](/Toolshed/Sentinel%20Toolbox/Copy-LogAnalyticsTable.ps1)  
+- 
+- ## Sentinel Threat Intelligence PowerShell Module
+- Blog Post
+- [Docs](/Toolshed/Sentinel%20Toolbox/SentinelThreatIntelligence/README.MD)  
