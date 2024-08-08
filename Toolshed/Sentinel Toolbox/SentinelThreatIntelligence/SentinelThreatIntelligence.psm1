@@ -596,8 +596,8 @@ function Remove-ThreatIndicatorsQuery {
 
         #Throttle Limit
         [Parameter(Mandatory = $false)]
+        [ValidateRange(1, 10)]
         [int]$ThrottleLimit = 10 
-
     )
 
     if ($DebugPreference -ne "SilentlyContinue") {
@@ -686,21 +686,26 @@ function Remove-ThreatIndicatorsQuery {
         }
     }
 
-
     Write-Information "Total possible indicators: $MetricTotalIndicators"
     Write-Information "The number of indicators may be much less than this based on filters you have selected."
 
     # Get the number of logical processors
     $NumberOfLogicalProcessors = [Environment]::ProcessorCount
     Write-Debug "Number of Logical Processors: $NumberOfLogicalProcessors"
+    
+    $NumberOfThreads = [math]::Min($NumberOfLogicalProcessors - 1, 10)
+    $NumberOfThreads = [math]::Max($NumberOfThreads, 1)
+    Write-Debug "Max Number of Threads: $NumberOfThreads"
+
 
     Write-Information "Starting to delete indicators in workspace = $WorkspaceName"
+    
     # Main loop to fetch and delete indicators
     while ($true) {
         
         # Check if the total processed count is greater than or equal to the total to delete break the script and finish
-        if ($TotalProcessed -ge $TotalToDelete) {
-            Write-Information "Total Procssed count is greater than or equal to the total to delete. Exiting ..."
+        if ($TotalProcessed -ge $TotalToDelete -and $TotalToDelete -ne -1) {
+            Write-Information "Total processed count is greater than or equal to the total to delete. Exiting ..."
             break
         }
 
@@ -708,7 +713,7 @@ function Remove-ThreatIndicatorsQuery {
 
         if ($TotalToDelete -ne -1 -and $TotalProcessed + 1000 -ge $TotalToDelete) {
             Write-Debug "TotalToDelete = $TotalToDelete and TotalProcessed = $TotalProcessed = 1000 is -ge TotalToDelete"
-            Write-Debug "Setting PageSize to $TotalToDelete - $TotalProcessed"
+            Write-Debug "Setting PageSize to $($TotalToDelete - $TotalProcessed)"
             $ThreadQueryParameters.pageSize = $TotalToDelete - $TotalProcessed  
         }
         else {
@@ -763,14 +768,16 @@ function Remove-ThreatIndicatorsQuery {
         }
         $IndicatorsFound = $true
     
-        # Assume 10 threads by default
-        $NumberOfSubArrays = $ThrottleLimit
+        # Throttle Limit has been set to a maximum of 10 in the validate set. 
+        # Ensure the number of parallel threads does not exceed the number of logical processors -1 or 10, whichever is lower
+        $NumberOfSubArrays = $ThrottleLimit, $NumberOfThreads, 10 | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum
 
         # Calculate the subarray size
         $SubArraySize = [math]::Ceiling($ThreadIndicatorsNames.Count / $NumberOfSubArrays)
     
         # Check if the subarray size is less than 40
         if ($SubArraySize -lt 40) {
+            Write-Debug "SubArraySize is less than 40 ($SubArraySize). Recalculating the number of subarrays"
             # Calculate the maximum number of subarrays that can be created with a minimum size of 40
             $maxNumberOfSubArrays = [math]::Floor($ThreadIndicatorsNames.Count / 40)
         
@@ -780,46 +787,60 @@ function Remove-ThreatIndicatorsQuery {
             # Recalculate the subarray size
             $SubArraySize = [math]::Ceiling($ThreadIndicatorsNames.Count / $NumberOfSubArrays)
         }
+        Write-Debug "SubArraySize: $SubArraySize"
 
+        $ResultsSync = @{}
         $SubArrays = @()
         # Split the original array into sub-arrays
         for ($i = 0; $i -lt $NumberOfSubArrays; $i++) {
             $startIndex = $i * $SubArraySize
             $endIndex = [math]::Min($startIndex + $SubArraySize, $ThreadIndicatorsNames.Count)
             $SubArray = $ThreadIndicatorsNames[$startIndex..($endIndex - 1)]
-            $SubArrays += , $SubArray
+            $SubArrayHash = @{
+                Id             = $i
+                IndicatorNames = $SubArray
+            }
+            $SubArrays += $SubArrayHash
+            $ResultsSync.Add($i, @{
+                    Success = 0
+                    Failed  = 0
+                }
+            )
         }
+
+        $ResultsSync = [System.Collections.Hashtable]::Synchronized($ResultsSync)
     
-        $ThrottleLimit = [math]::Min($SubArrays.Count, 10)
+        # Revisit this
+        $NumberOfThreads = [math]::Min($SubArrays.Count, 10)
+
+        $DeleteRateLimitPerSecond = 10
+        $MinRunTimePerThreadLoop = $NumberOfThreads / $DeleteRateLimitPerSecond
 
         # Get the Access Token for each thread
         $AccessToken = (Get-AzAccessToken)   
-
-        if ($ShowProgress) {
-            Write-Progress -Id 0 -Activity "Indicators Status" -Status "Total To Delete: $TotalToDelete| Processing: $TotalProcessed | Deleted: $($TotalResults.Success) | Failed: $($TotalResults.Failed)"
-        }
         
         # Run the sub-arrays in parallel
-        $Results = $SubArrays | ForEach-Object -ThrottleLimit $ThrottleLimit -Parallel {
+        $Jobs = $SubArrays | ForEach-Object -ThrottleLimit $NumberOfThreads -AsJob -Parallel {
             $ModulePath = $using:ModulePath
             $AccessToken = $using:AccessToken
             $SubscriptionId = $using:SubscriptionId
             $ResourceGroupName = $using:ResourceGroupName
             $WorkspaceName = $using:WorkspaceName
-            $IndicatorNames = $_
+            $IndicatorNames = $PSItem.IndicatorNames
+            $MinRunTimePerThreadLoop = $using:MinRunTimePerThreadLoop
+
+            $ThreadId = $PSItem.Id
+            $ResultsSyncCopy = $using:ResultsSync
+            $ThreadResults = $ResultsSyncCopy.$ThreadId
 
             Import-Module $ModulePath
 
             # Connect to the Azure Account using the Access Token 
-            Connect-AzAccount -Tenant $AccessToken.TenantId  -SubscriptionId $SubscriptionId -AccessToken $AccessToken.Token -AccountId $AccessToken.UserId
-
-            $ThreadResults = @{
-                Success = 0
-                Failed  = 0
-            }
-                
+            Connect-AzAccount -Tenant $AccessToken.TenantId  -SubscriptionId $SubscriptionId -AccessToken $AccessToken.Token -AccountId $AccessToken.UserId | Out-Null
+               
             # Delete the indicators
             foreach ($IndicatorName in $IndicatorNames) {
+                $LoopStartTime = Get-Date
                 $Run = Remove-ThreatIndicator  -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -IndicatorName $IndicatorName -ShowRateLimitMetrics -ErrorAction $ErrorActionPreference
                 [int]$RateLimit = if ($Run.RateLimitMetrics.'x-ms-ratelimit-remaining-subscription-deletes') {
                     $Run.RateLimitMetrics.'x-ms-ratelimit-remaining-subscription-deletes'
@@ -837,23 +858,50 @@ function Remove-ThreatIndicatorsQuery {
                     Write-Warning "Delete Rate limit is $RateLimit. Sleeping for 5 seconds to prevent throttling..."
                     Start-Sleep -Seconds 5
                 }
+                $LoopExecutionTime = ((Get-Date) - $LoopStartTime).TotalMilliseconds
+                $remainingTime = $MinRunTimePerThreadLoop - $LoopExecutionTime
+                if ($remainingTime -gt 0) {
+                    Write-Debug "Sleeping for $remainingTime milliseconds"
+                    Start-Sleep -Milliseconds $remainingTime
+                }
             } 
             $ReturnResults = New-Object PSObject -Property $Results
             return $ReturnResults
         }
 
-        Write-Debug "Results: $Results"
-        foreach ($Result in $Results) {
-            $TotalResults.Success += $Result.Success
-            $TotalResults.Failed += $Result.Failed
+        while ($Jobs.State -eq "Running") {
+            $CurrentSuccess = 0
+            $CurrentFailed = 0
+            $ResultsSync.Keys | ForEach-Object {
+                if (![string]::IsNullOrEmpty($ResultsSync.$_.keys)) {
+                    $CurrentSuccess += $ResultsSync.$_.Success
+                    $CurrentFailed += $ResultsSync.$_.Failed
+                }
+            }
+            if ($ShowProgress) {
+                if ($TotalToDelete -eq -1) {
+                    Write-Progress -Id 0 -Activity "Indicators Status" -Status "Total To Delete: $TotalToDelete | Processing: $TotalProcessed | Deleted: $($TotalResults.Success + $CurrentSuccess) | Failed: $($TotalResults.Failed + $CurrentFailed)"
+                }
+                else {
+                    Write-Progress -Id 0 -Activity "Indicators Status" -Status "Total To Delete: $TotalToDelete | Processing: $TotalProcessed | Deleted: $($TotalResults.Success + $CurrentSuccess) | Failed: $($TotalResults.Failed + $CurrentFailed)" -PercentComplete ((($TotalResults.Success + $CurrentSuccess + $TotalResults.Failed + $CurrentFailed) / $TotalToDelete ) * 100)
+                }
+            }
         }
+        
+        if ($DebugPreference -ne "SilentlyContinue") {
+            Write-Debug "Getting Job Results"
+            $job | Receive-Job -Wait 
+
+        }
+
+        $TotalResults.Success += $CurrentSuccess
+        $TotalResults.Failed += $CurrentFailed
 
         Write-Debug "Total to Process: $TotalToDelete"
         Write-Debug "Processed count: $TotalProcessed"
         Write-Debug "Deleted count: $($TotalResults.Success)"
         Write-Debug "Failed count: $($TotalResults.Failed)"
     }
-
 
     if ($ShowProgress) {
         Write-Progress -Id 0 -Activity "Indicators Status" -Status "Fetched: $TotalProcessed | Deleted: $($TotalResults.Success) | Failed: $($TotalResults.Failed)" -Completed
@@ -870,9 +918,8 @@ function Remove-ThreatIndicatorsQuery {
 
     $EndTime = Get-Date
     $ScriptExecutionTime = ($EndTime - $StartTime)
-    Write-Information "Execution Time: $($ScriptExecutionTime.days) days, $($ScriptExecutionTime.hours) hours, $($ScriptExecutionTime.Minutes) minutes,$($ScriptExecutionTime.seconds) seconds,"
+    Write-Information "Execution Time: $($ScriptExecutionTime.days) days, $($ScriptExecutionTime.hours) hours, $($ScriptExecutionTime.Minutes) minutes,$($ScriptExecutionTime.seconds) seconds"
 }
-
 
 #endregion Public Functions
 
