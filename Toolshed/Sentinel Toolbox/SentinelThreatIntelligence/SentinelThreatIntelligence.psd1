@@ -33,7 +33,7 @@ Copyright = '(c) Alistair Ross. All rights reserved.'
 Description = 'This module has been created for managing Microsoft Sentinel Threat Intelligence at Scale'
 
 # Minimum version of the PowerShell engine required by this module
-PowerShellVersion = '5.0'
+PowerShellVersion = '6.0'
 
 # Name of the PowerShell host required by this module
 # PowerShellHostName = ''

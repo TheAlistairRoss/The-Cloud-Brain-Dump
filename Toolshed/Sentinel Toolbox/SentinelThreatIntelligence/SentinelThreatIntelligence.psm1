@@ -137,7 +137,9 @@ function Get-RateLimitMetrics {
     This example demonstrates how to returieve all the indicators in a workspace.
 #>
 function Get-ThreatIndicatorsQuery {
-    [CmdletBinding(DefaultParameterSetName = 'Queries')]
+    [CmdletBinding(DefaultParameterSetName = 'Queries',
+        PositionalBinding = $false
+    )]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'Queries')]
         [Parameter(Mandatory = $true, ParameterSetName = 'Skip')]
@@ -199,7 +201,7 @@ function Get-ThreatIndicatorsQuery {
         [switch]$ShowRateLimitMetrics
     )
 
-    $BaseUri = "https://management.azure.com"
+    $BaseUri = (Get-AzContext).Environment.ResourceManagerUrl.TrimEnd('/')
     $ThreatIndicatorsApi = $BaseUri + "/subscriptions/$SubscriptionId/resourcegroups/$ResourceGroupName/providers/Microsoft.OperationalInsights/workspaces/$WorkspaceName/providers/Microsoft.SecurityInsights/threatIntelligence/main/"
     $getIndicatorsQueryUri = $ThreatIndicatorsApi + "queryIndicators?api-version=2024-03-01"
     
@@ -262,7 +264,7 @@ function Get-ThreatIndicatorsQuery {
   		
     $response = Invoke-AzRestMethod -Uri $getIndicatorsQueryUri -Method POST -Payload $getIndicatorsQueryPostParameters -ErrorAction $ErrorActionPreference
     if ($null -eq $response) {                
-        Write-Error -Message "Failed to get a response." -Exception $_.Exception
+        Write-Error -Message "Failed to get a response: $($_.Exception.Message)" -Exception $_.Exception
         exit 1
     }
 
@@ -289,7 +291,7 @@ function Get-ThreatIndicatorsQuery {
     }
 
     if ($response.StatusCode -ne 200) {
-        Write-Error -Message "Failed to get indicators. Status Code = $($response.StatusCode)" -Exception $_.Exception
+        Write-Error -Message "Failed to get indicators. Status Code = $($response.StatusCode): $($_.Exception.Message)" -Exception $_.Exception
         return $indicatorReturn
         exit 1
     }
@@ -318,7 +320,9 @@ function Get-ThreatIndicatorsQuery {
 
 #>
 function Get-ThreatIndicatorsMetrics {
-    [CmdletBinding()]
+    [CmdletBinding(
+        PositionalBinding = $false
+    )]
     param (
         [Parameter(Mandatory = $true)]
         [string]$SubscriptionId,
@@ -330,21 +334,21 @@ function Get-ThreatIndicatorsMetrics {
         [string]$WorkspaceName
     )
     
-    $BaseUri = "https://management.azure.com"
+    $BaseUri = (Get-AzContext).Environment.ResourceManagerUrl.TrimEnd('/')
     $ThreatIndicatorsApi = $BaseUri + "/subscriptions/$SubscriptionId/resourcegroups/$ResourceGroupName/providers/Microsoft.OperationalInsights/workspaces/$WorkspaceName/providers/Microsoft.SecurityInsights/threatIntelligence/main/"
     $getThreatIndicatorMetricsUri = $ThreatIndicatorsApi + "metrics?api-version=2024-03-01"
     
     try {
         $response = Invoke-AzRestMethod -Uri $getThreatIndicatorMetricsUri -Method GET -ErrorAction $ErrorActionPreference
         if ($null -eq $response -or $response.StatusCode -ne 200) {    
-            Write-Error -Message "Failed to fetch indicators Metrics. Status Code = $($response.StatusCode)"        
+            Write-Error -Message "Failed to fetch indicators Metrics. Status Code = $($response.StatusCode): $($_.Exception.Message)"        
             exit 1
         }
         $sourceMetrics = ($Response.Content | ConvertFrom-Json).value.properties
         return $sourceMetrics
     }
     catch {    
-        Write-Error -Message "Failed to get the indicator metrics" -Exception $_.Exception
+        Write-Error -Message "Failed to get the indicator metrics: $($_.Exception.Message)" -Exception $_.Exception
         exit 1
     }
 }
@@ -372,7 +376,9 @@ function Get-ThreatIndicatorsMetrics {
 
 #>
 function Remove-ThreatIndicator {
-    [CmdletBinding()]
+    [CmdletBinding(
+        PositionalBinding = $false
+    )]
     param (
         [Parameter(Mandatory = $true)]
         [string]$SubscriptionId,
@@ -393,11 +399,10 @@ function Remove-ThreatIndicator {
     
     Write-Verbose -Message "Deleting indicator: $indicatorName"
 
-    $BaseUri = "https://management.azure.com"
+    $BaseUri = (Get-AzContext).Environment.ResourceManagerUrl.TrimEnd('/')
     $ThreatIndicatorsResourceId = "/subscriptions/$SubscriptionId/resourcegroups/$ResourceGroupName/providers/Microsoft.OperationalInsights/workspaces/$WorkspaceName/providers/Microsoft.SecurityInsights/threatIntelligence/main/indicators/$IndicatorName"
     $deleteIndicatorUri = $BaseUri + $ThreatIndicatorsResourceId + "?api-version=2024-03-01"
     $response = Invoke-AzRestMethod -Uri $deleteIndicatorUri -Method DELETE -ErrorAction $ErrorActionPreference
-
     
     if ( $response.StatusCode -eq 200) {
         $indicatorObject = $null
@@ -406,14 +411,7 @@ function Remove-ThreatIndicator {
             "Id"        = $ThreatIndicatorsResourceId
             "Indicator" = $indicatorObject.value
             "Status"    = "Success"
-        }
-        
-        if ($ShowRateLimitMetrics) {
-            $indicatorReturn | Add-Member -MemberType NoteProperty -Name "RateLimitMetrics" -Value (Get-RateLimitMetrics -Headers $response.Headers)
-        }        
-        return $indicatorReturn
-    
-        exit 0
+        }  
     }
 
     if ($response.StatusCode -eq 204) {
@@ -422,27 +420,20 @@ function Remove-ThreatIndicator {
             "Indicator" = $null
             "Status"    = "Success"
         }            
-        if ($ShowRateLimitMetrics) {
-            $indicatorReturn | Add-Member -MemberType NoteProperty -Name "RateLimitMetrics" -Value (Get-RateLimitMetrics -Headers $response.Headers)
-        }
-        return $indicatorReturn       
-        exit 0
     }
     
     if ($null -eq $response) {                
-        Write-Error -Message "Failed to delete indicators." -Exception $_.Exception 
+        Write-Error -Message "Failed to delete indicators: $($_.Exception.Message)" -Exception $_.Exception 
         $indicatorReturn = New-Object PSObject -Property @{
             "Id"        = $ThreatIndicatorsResourceId
             "Indicator" = $null
             "Status"    = "Failure"
-            "Error"     = $Response.Content
+            "Error"     = $Response
         }            
-        return
-        exit 1
     }
 
-    if ($response.StatusCode -eq 400) {
-        Write-Error -Message "Failed to delete indicators. Status Code: $($Response.StatusCode)`n$($Response.Content)" 
+    if ($response.StatusCode -ne 200) {
+        Write-Error -Message "Failed to delete indicators. Status Code: $($Response.StatusCode)`n$($Response.Content): $($_.Exception.Message)" 
         $indicatorObject = $null
         $indicatorReturn = New-Object PSObject -Property @{
             "Id"         = $ThreatIndicatorsResourceId
@@ -450,28 +441,22 @@ function Remove-ThreatIndicator {
             "Status"     = "Failure"
             "Error"      = $Response
         }
-        
-        if ($ShowRateLimitMetrics) {
-            $indicatorReturn | Add-Member -MemberType NoteProperty -Name "RateLimitMetrics" -Value (Get-RateLimitMetrics -Headers $response.Headers)
-        }
-        return $indicatorReturn
-        exit 1
     }
 
-    if ($response.StatusCode -ne 200) {
-        Write-Error -Message "Failed to delete indicators. Status Code: $($Response.StatusCode)`n$($Response.Content)" 
-        $indicatorObject = $null
-        $indicatorReturn = New-Object PSObject -Property @{
-            "Id"         = $ThreatIndicatorsResourceId
-            "Indicators" = $null
-            "Status"     = "Failure"
-            "Error"      = $Response.Content
-        }
-        return $indicatorReturn
-        exit 1
+    if ($ShowRateLimitMetrics) {
+        $indicatorReturn | Add-Member -MemberType NoteProperty -Name "RateLimitMetrics" -Value (Get-RateLimitMetrics -Headers $response.Headers)
+    }        
+
+    if ($indicatorReturn.Status -eq "Success") {
+        $ExitCode = 0
     }
+    else {
+        $ExitCode = 1
+    }
+
+    return $indicatorReturn
+    exit $ExitCode
 }
-
 
 <#
 .SYNOPSIS
@@ -522,7 +507,10 @@ function Remove-ThreatIndicator {
     Version: 1.0
 #>
 function Remove-ThreatIndicatorsQuery {
-    [CmdletBinding(DefaultParameterSetName = 'Queries')]
+    [CmdletBinding(
+        DefaultParameterSetName = 'Queries',
+        PositionalBinding = $false
+    )]
     param (
         # Unique Identifier of the subscription
         [Parameter(Mandatory = $true)]
@@ -538,7 +526,7 @@ function Remove-ThreatIndicatorsQuery {
 
         # Total To Delete
         [Parameter(Mandatory = $false)]
-        [string]$TotalToDelete = -1,
+        [int]$TotalToDelete = -1,
 
         #Ids of threat intelligence indicators
         [Parameter(Mandatory = $false)]
@@ -559,7 +547,7 @@ function Remove-ThreatIndicatorsQuery {
         
         #End time for ValidUntil filter.
         [Parameter(Mandatory = $false)]
-        [string]$MaxValidUntil,
+        [string]$MaxValidUntil, 
         
         #Minimum confidence.
         [Parameter(Mandatory = $false)]
@@ -592,39 +580,50 @@ function Remove-ThreatIndicatorsQuery {
         
         #Threat types of threat intelligence indicators
         [Parameter(Mandatory = $false)]
-        [string[]]$ThreatTypes,
-
-        #Throttle Limit
-        [Parameter(Mandatory = $false)]
-        [ValidateRange(1, 10)]
-        [int]$ThrottleLimit = 10 
+        [string[]]$ThreatTypes
     )
-
-    if ($DebugPreference -ne "SilentlyContinue") {
-        Write-Debug "Locally scoped variables:"
-        Get-Variable -Scope 0 | foreach { Write-Debug "$($_.Name): $($_.Value)" }
+    
+    #Function setup
+    if ($VerbosePreference -ne "SilentlyContinue") {
+        Write-Verbose "Parameters List:"
+        foreach ($_ in $PSBoundParameters.Keys) {
+            if ($null -ne $PSBoundParameters[$_] -and $PSBoundParameters[$_] -ne -1) {
+                Write-Verbose "$_ : $($PSBoundParameters[$_])"
+            }
+        }  
+        Write-Verbose "End of Parameters"  
     }
-    #>
+
+    # Constants
+    $ModulePath = (Get-Module -Name "SentinelThreatIntelligence").ModuleBase
+    $DeleteRefillRatePerSecond = 10
+    $MaxRetries = 3
+
+    # Setup Variables
     $StartTime = Get-Date
 
     # This flag checks whether the initial count of indicators in the workspace is already 0 or not
     $IndicatorsFound = $false
 
-    # Total count of indicators processed (Success and Fails)
-    $TotalProcessed = 0
+    # Total Retrieved Indicators
+    [ref] $TotalCollected = 0
 
-    # Aggregate the results of the indicators fetched
-    $TotalResults = @{
-        Success = 0
-        Failed  = 0
-    }
+    # Initial Deletetion Bucket Size
+    [ref] $DeleteBucketSize = [int] 200
+
+    # Total Indicators Deleted
+    [ref] $TotalSuccess = [int] 0
+
+    # Total Indicators Failed to Delete
+    [ref] $TotalFailed = [int] 0
 
     # Foreach parameter, if value, add to query
     $GetThreatIndicatorsQueryParameters = [ordered]@{}
 
-    $ModulePath = (Get-Module -Name "SentinelThreatIntelligence").ModuleBase
+    # Queue to store the indicators
+    $IndicatorsNameQueue = [System.Collections.Concurrent.ConcurrentQueue[string]]::new()
 
-    $Parameters = @(
+    $ParametersForQuery = @(
         "SubscriptionId"
         "ResourceGroupName"
         "WorkspaceName"
@@ -643,291 +642,333 @@ function Remove-ThreatIndicatorsQuery {
         "ThreatTypes"
     )
 
-    foreach ($Parameter in $Parameters) {
-        if (Get-Variable -Name $Parameter -ValueOnly -ErrorAction SilentlyContinue) {
-            Write-Debug "Adding Parameter to hash: $Parameter"
-            $GetThreatIndicatorsQueryParameters.Add($Parameter, (Get-Variable -Name $Parameter -ValueOnly))
+    # Add parameters to the query
+    $ParametersForQuery | ForEach-Object {
+        if ($null -ne $PSBoundParameters[$_] -and $PSBoundParameters[$_] -ne -1) {
+            Write-Verbose "[RemoveThreatIndicatorsQuery] $(Get-Date): Adding Parameter to hash - $_ : $($PSBoundParameters[$_])"
+            $GetThreatIndicatorsQueryParameters.Add($_, $PSBoundParameters[$_])
         }
     }
 
-    Write-Information "Checking for indicators in workspace = $WorkspaceName"
-    # Get Threat Indicator Metrics and determine the maximum possible indicators based on avaliable filtering.
-    $Metrics = Get-ThreatIndicatorsMetrics -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName
-    
-    $UseTotalSourceMetrics = $true
-    Write-Debug "UseTotalSourceMetrics: $UseTotalSourceMetrics"
-
-    $MetricTypes = @{
-        "Sources"     = "sourceMetrics"
-        "ThreatTypes" = "threatTypeMetrics"
-        "PatternType" = "patternTypeMetrics"
-    }
-    $MetricTotalIndicators = 0
-
-    foreach ($MetricType in $MetricTypes.Keys.split("\n")) {
-        if ($GetThreatIndicatorsQueryParameters.$MetricType) {
-            Write-Debug "Calculating Total Indicators for $MetricType"
-            Write-Debug "Setting UseTotalSourceMetrics to false"
-            $UseTotalSourceMetrics = $false
-            $MetricTypeTotal = 0
-            foreach ($Type in $GetThreatIndicatorsQueryParameters.$MetricType) {
-                $MetricTypeTotal += $Metrics.$($MetricTypes.$MetricType).where({ $_.metricName -like $Type }).metricValue
-            }
-            if ($MetricTypeTotal -gt $MetricTotalIndicators) {
-                $MetricTotalIndicators = $MetricTypeTotal
-            }
-        }
-    }
-
-    Write-Debug "UseTotalSourceMetrics: $UseTotalSourceMetrics"
-    if ($UseTotalSourceMetrics -eq $true) {
-        foreach ($metricValue in $Metrics.sourceMetrics.metricValue) {
-            $MetricTotalIndicators += $metricValue
-        }
-    }
-
-    Write-Information "Total possible indicators: $MetricTotalIndicators"
-    Write-Information "The number of indicators may be much less than this based on filters you have selected."
+    # Set the initial page size
+    $GetThreatIndicatorsQueryParameters.Add("PageSize", 100)
 
     # Get the number of logical processors
     $NumberOfLogicalProcessors = [Environment]::ProcessorCount
-    Write-Debug "Number of Logical Processors: $NumberOfLogicalProcessors"
+    Write-Verbose "[RemoveThreatIndicatorsQuery] $(Get-Date): Number of Logical Processors: $NumberOfLogicalProcessors"
     
-    $NumberOfThreads = [math]::Min($NumberOfLogicalProcessors - 1, 10)
+    $NumberOfThreads = [math]::Min($NumberOfLogicalProcessors - 1, 8)
     $NumberOfThreads = [math]::Max($NumberOfThreads, 1)
-    Write-Debug "Max Number of Threads: $NumberOfThreads"
+    Write-Verbose "[RemoveThreatIndicatorsQuery] $(Get-Date): Max Number of Threads: $NumberOfThreads"
 
+    # Get the initial access token
+    $AccessToken = Get-AzAccessToken
 
-    Write-Information "Starting to delete indicators in workspace = $WorkspaceName"
-    
-    # Main loop to fetch and delete indicators
-    while ($true) {
+    # Removal Jobs
+    $RemoveJobScriptBlock = {
         
-        # Check if the total processed count is greater than or equal to the total to delete break the script and finish
-        if ($TotalProcessed -ge $TotalToDelete -and $TotalToDelete -ne -1) {
-            Write-Information "Total processed count is greater than or equal to the total to delete. Exiting ..."
+        # Static Variables from Parent
+        $JobId = $_
+        $SubscriptionId = $using:SubscriptionId
+        $ResourceGroupName = $using:ResourceGroupName
+        $WorkspaceName = $using:WorkspaceName
+        $ModulePath = $using:ModulePath
+        $AccessToken = $using:AccessToken
+
+        # Dynamic Variables from Parent
+        $TotalCollected = $using:TotalCollected
+        $TotalSuccess = $using:TotalSuccess
+        $TotalFailed = $using:TotalFailed
+        $IndicatorsNameQueue = $using:IndicatorsNameQueue
+        $DeleteBucketSize = $using:DeleteBucketSize
+
+        $VerbosePreference = $using:VerbosePreference
+        $DebugPreference = $using:DebugPreference
+
+
+        # Write-Verbose each variable and parameter
+        Write-Debug "[RemoveThreatIndicatorsQuery][Job $JobID] $(Get-Date): JobId = $JobId"
+        Write-Debug "[RemoveThreatIndicatorsQuery][Job $JobID] $(Get-Date): SubscriptionId = $SubscriptionId"
+    
+        Write-Debug "[RemoveThreatIndicatorsQuery][Job $JobID] $(Get-Date): ResourceGroupName = $ResourceGroupName"
+        Write-Debug "[RemoveThreatIndicatorsQuery][Job $JobID] $(Get-Date): WorkspaceName = $WorkspaceName"
+        Write-Debug "[RemoveThreatIndicatorsQuery][Job $JobID] $(Get-Date): ModulePath = $ModulePath"
+        Write-Debug "[RemoveThreatIndicatorsQuery][Job $JobID] $(Get-Date): AccessToken = $($AccessToken.ExpiresOn)"
+
+        Write-Debug "[RemoveThreatIndicatorsQuery][Job $JobID] $(Get-Date): TotalCollected = $($TotalCollected.value)"
+        Write-Debug "[RemoveThreatIndicatorsQuery][Job $JobID] $(Get-Date): IndicatorsNameQueue = $($IndicatorsNameQueue.Count)"
+        Write-Debug "[RemoveThreatIndicatorsQuery][Job $JobID] $(Get-Date): DeleteBucketSize = $($DeleteBucketSize.Value)"
+        # Variables
+        $maxRetries = 3
+        $JobTimeout = 120
+    
+        Write-Verbose "[RemoveThreatIndicatorsQuery][Job $JobID] $(Get-Date): Starting Removal Job"
+        # Job Setup
+        # Import the Module
+        try {
+            Write-Verbose "[RemoveThreatIndicatorsQuery][Job $JobID] $(Get-Date): Importing Module"
+            Import-Module $ModulePath
+        }
+        catch {
+            Write-Error -Message "[RemoveThreatIndicatorsQuery][Job $JobID] $(Get-Date): Failed to import module: $($_.Exception.Message)" -Exception $_.Exception
             break
         }
 
-        $ThreadQueryParameters = $GetThreatIndicatorsQueryParameters
-
-        if ($TotalToDelete -ne -1 -and $TotalProcessed + 1000 -ge $TotalToDelete) {
-            Write-Debug "TotalToDelete = $TotalToDelete and TotalProcessed = $TotalProcessed = 1000 is -ge TotalToDelete"
-            Write-Debug "Setting PageSize to $($TotalToDelete - $TotalProcessed)"
-            $ThreadQueryParameters.pageSize = $TotalToDelete - $TotalProcessed  
-        }
-        else {
-            $ThreadQueryParameters.pageSize = 1000
-            Write-Debug "Setting PageSize to defalut value of 1000"
-        }
-
-        $ThreadIndicatorsNames = @()
-
-        # Get the indicators
+        # Authenticate
         try {
-            Write-Debug "Getting indicators"
-            (Get-ThreatIndicatorsQuery @ThreadQueryParameters -ShowRateLimitMetrics -ErrorAction $ErrorActionPreference).indicators | ForEach-Object {
-                $ThreadIndicatorsNames += $_.Name
-            }            
+            Connect-AzAccount -Tenant $AccessToken.TenantId -AccountId $AccessToken.UserId -AccessToken $AccessToken.Token | Out-Null
+            Write-Verbose "[RemoveThreatIndicatorsQuery][Job $JobID] $(Get-Date): Authenticated"
         }
         catch {
-            # If the indicators are not found, break the loop
-            Write-Error -Message "Failed to get indicators" -Exception $_.Exception
-            exit 1
+            Write-Error -Message "[RemoveThreatIndicatorsQuery][Job $JobID] $(Get-Date): Failed to authenticate: $($_.Exception.Message)" -Exception $_.Exception
+            break
         }
-        $TotalProcessed += $ThreadIndicatorsNames.Count
 
-        if ($ThreadIndicatorsNames.count -eq 0) {
-            # If the indicators are not found on the initial run, break the loop
-            Write-Debug "No indicators found"
-            Write-Debug "Is Initial Run: $(!$IndicatorsFound)"
-            if ($IndicatorsFound -eq $false) {
-                Write-Error "No indicators found! Exiting ..."
-                break
+        Write-Output "Initialized"
+
+        $TimeoutStart = Get-Date
+        while ($true) {
+            # Get Indicator Name
+            $IndicatorName = $null
+            if ($IndicatorsNameQueue.TryDequeue([ref]$IndicatorName)) {
+                Write-Verbose "[RemoveThreatIndicatorsQuery][Job $JobID] $(Get-Date): Indicator Fetched: $IndicatorName"
+                $TimeoutStart = Get-Date
             }
-            # If the indicators are not found on subsequent runs, complete the script
             else {
-                Write-Debug "No indicators found on subsequent runs"
-                if ($ShowProgress) {
-                    Write-Progress -Id 0 -Activity "Indicators Status" -Status "Fetched: $TotalProcessed | Deleted: $($TotalResults.Success) | Failed: $($TotalResults.Failed)" -Completed
-                }
+                Write-Debug "[RemoveThreatIndicatorsQuery][Job $JobID] $(Get-Date): No Indicator in the queue."
+            }
 
-                Write-Information "Finished querying workspace = $WorkspaceName for indicators"
-                Write-Information "Processed count: $TotalProcessed"
-                Write-Information "Deleted count: $($TotalResults.Success)"
-                Write-Information "Failed count: $($TotalResults.Failed)"
+            # Exit if no indicator in the queue for the number of seconds in $Timeout
+            if (-not $IndicatorName ) {
+                if ((Get-Date) - $TimeoutStart -ge (New-TimeSpan -Seconds $JobTimeout)) {
+                    Write-Verbose "[RemoveThreatIndicatorsQuery][Job $JobID] $(Get-Date): No Indicator in the queue for $JobTimeout seconds. Exiting Removal Job"
+                    break
+                }
+                else {
+                    Write-Verbose "[RemoveThreatIndicatorsQuery][Job $JobID] $(Get-Date): No Indicator in the queue. Waiting for $([math]::Ceiling($JobTimeout - ((Get-Date) - $TimeoutStart).TotalSeconds)) seconds"
+                    Start-Sleep -Seconds 5
+                    continue
+                }
+            }
 
-                if ($TotalProcessed -eq $TotalResults.Success) {                
-                    Write-Information "Successfully deleted all indicators in query scope"
-                }
-                else {                
-                    Write-Warning "Please re-run the script to delete remaining indicators or reach out to the script owners if you're facing any issues."
-                }
+            # Exit Signal
+            if ($IndicatorName -eq "`0") {
+                Write-Verbose "[RemoveThreatIndicatorsQuery][Job $JobID] $(Get-Date): Exit Signal Received, Exiting Removal Job"
                 break
             }
-        }
-        $IndicatorsFound = $true
-    
-        # Throttle Limit has been set to a maximum of 10 in the validate set. 
-        # Ensure the number of parallel threads does not exceed the number of logical processors -1 or 10, whichever is lower
-        $NumberOfSubArrays = $ThrottleLimit, $NumberOfThreads, 10 | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum
 
-        # Calculate the subarray size
-        $SubArraySize = [math]::Ceiling($ThreadIndicatorsNames.Count / $NumberOfSubArrays)
-    
-        # Check if the subarray size is less than 40
-        if ($SubArraySize -lt 40) {
-            Write-Debug "SubArraySize is less than 40 ($SubArraySize). Recalculating the number of subarrays"
-            # Calculate the maximum number of subarrays that can be created with a minimum size of 40
-            $maxNumberOfSubArrays = [math]::Floor($ThreadIndicatorsNames.Count / 40)
-        
-            # Reduce the number of subarrays if necessary
-            $NumberOfSubArrays = [math]::Min($NumberOfSubArrays, $maxNumberOfSubArrays)
-        
-            # Recalculate the subarray size
-            $SubArraySize = [math]::Ceiling($ThreadIndicatorsNames.Count / $NumberOfSubArrays)
-        }
-        Write-Debug "SubArraySize: $SubArraySize"
+            # Delete Indicator
+            $retryCount = 0
+            while ($retryCount -lt $maxRetries) {
+                $Remove = Remove-ThreatIndicator -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -IndicatorName $IndicatorName -ShowRateLimitMetrics
 
-        $ResultsSync = @{}
-        $SubArrays = @()
-        # Split the original array into sub-arrays
-        for ($i = 0; $i -lt $NumberOfSubArrays; $i++) {
-            $startIndex = $i * $SubArraySize
-            $endIndex = [math]::Min($startIndex + $SubArraySize, $ThreadIndicatorsNames.Count)
-            $SubArray = $ThreadIndicatorsNames[$startIndex..($endIndex - 1)]
-            $SubArrayHash = @{
-                Id             = $i
-                IndicatorNames = $SubArray
-            }
-            $SubArrays += $SubArrayHash
-            $ResultsSync.Add($i, @{
-                    Success = 0
-                    Failed  = 0
+                if ($Remove.RateLimitMetrics.'x-ms-ratelimit-remaining-subscription-deletes') {
+                    $DeleteBucketSize.Value = $Remove.RateLimitMetrics.'x-ms-ratelimit-remaining-subscription-deletes'
                 }
-            )
-        }
-
-        $ResultsSync = [System.Collections.Hashtable]::Synchronized($ResultsSync)
-    
-        # Revisit this
-        $NumberOfThreads = [math]::Min($SubArrays.Count, 10)
-
-        $DeleteRateLimitPerSecond = 10
-        $MinRunTimePerThreadLoop = $NumberOfThreads / $DeleteRateLimitPerSecond
-
-        # Get the Access Token for each thread
-        $AccessToken = (Get-AzAccessToken)   
-        
-        # Run the sub-arrays in parallel
-        $Jobs = $SubArrays | ForEach-Object -ThrottleLimit $NumberOfThreads -AsJob -Parallel {
-            $ModulePath = $using:ModulePath
-            $AccessToken = $using:AccessToken
-            $SubscriptionId = $using:SubscriptionId
-            $ResourceGroupName = $using:ResourceGroupName
-            $WorkspaceName = $using:WorkspaceName
-            $IndicatorNames = $PSItem.IndicatorNames
-            $MinRunTimePerThreadLoop = $using:MinRunTimePerThreadLoop
-
-            $ThreadId = $PSItem.Id
-            $ResultsSyncCopy = $using:ResultsSync
-            $ThreadResults = $ResultsSyncCopy.$ThreadId
-
-            Import-Module $ModulePath
-
-            # Connect to the Azure Account using the Access Token 
-            Connect-AzAccount -Tenant $AccessToken.TenantId  -SubscriptionId $SubscriptionId -AccessToken $AccessToken.Token -AccountId $AccessToken.UserId | Out-Null
-               
-            # Delete the indicators
-            foreach ($IndicatorName in $IndicatorNames) {
-                $LoopStartTime = Get-Date
-                $Run = Remove-ThreatIndicator  -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -IndicatorName $IndicatorName -ShowRateLimitMetrics -ErrorAction $ErrorActionPreference
-                [int]$RateLimit = if ($Run.RateLimitMetrics.'x-ms-ratelimit-remaining-subscription-deletes') {
-                    $Run.RateLimitMetrics.'x-ms-ratelimit-remaining-subscription-deletes'
-                }
-
-                if ($Run.Status -eq "Success") {
-                    $ThreadResults.Success++
+                if ($Remove.Status -eq "Success") {
+                    Write-Verbose "[RemoveThreatIndicatorsQuery][Job $JobID] $(Get-Date): Indicator Deleted: $IndicatorName"
+                    $TotalSuccess.Value ++
+                    break
                 }
                 else {
-                    $ThreadResults.Failed++
-                }
-
-                # Pause the rate limit incase the bucket dips below 50
-                if ($RateLimit -lt 50) {
-                    Write-Warning "Delete Rate limit is $RateLimit. Sleeping for 5 seconds to prevent throttling..."
-                    Start-Sleep -Seconds 5
-                }
-                $LoopExecutionTime = ((Get-Date) - $LoopStartTime).TotalMilliseconds
-                $remainingTime = $MinRunTimePerThreadLoop - $LoopExecutionTime
-                if ($remainingTime -gt 0) {
-                    Write-Debug "Sleeping for $remainingTime milliseconds"
-                    Start-Sleep -Milliseconds $remainingTime
-                }
-            } 
-            $ReturnResults = New-Object PSObject -Property $Results
-            return $ReturnResults
-        }
-
-        while ($Jobs.State -eq "Running") {
-            $CurrentSuccess = 0
-            $CurrentFailed = 0
-            $ResultsSync.Keys | ForEach-Object {
-                if (![string]::IsNullOrEmpty($ResultsSync.$_.keys)) {
-                    $CurrentSuccess += $ResultsSync.$_.Success
-                    $CurrentFailed += $ResultsSync.$_.Failed
-                }
-            }
-            if ($ShowProgress) {
-                if ($TotalToDelete -eq -1) {
-                    Write-Progress -Id 0 -Activity "Indicators Status" -Status "Total To Delete: $TotalToDelete | Processing: $TotalProcessed | Deleted: $($TotalResults.Success + $CurrentSuccess) | Failed: $($TotalResults.Failed + $CurrentFailed)"
-                }
-                else {
-                    Write-Progress -Id 0 -Activity "Indicators Status" -Status "Total To Delete: $TotalToDelete | Processing: $TotalProcessed | Deleted: $($TotalResults.Success + $CurrentSuccess) | Failed: $($TotalResults.Failed + $CurrentFailed)" -PercentComplete ((($TotalResults.Success + $CurrentSuccess + $TotalResults.Failed + $CurrentFailed) / $TotalToDelete ) * 100)
+                    $retryCount++
+                    if ($retryCount -eq $maxRetries) {
+                        Write-Error -Message "[RemoveThreatIndicatorsQuery][Job $JobID] $(Get-Date): Failed to delete indicator: $IndicatorName after $retryCount retries: $($_.Exception.Message)" -Exception $_.Exception
+                        $TotalFailed.Value ++
+                        break
+                    }
+                    else {
+                        Write-Warning "[RemoveThreatIndicatorsQuery][Job $JobID] $(Get-Date): Failed to delete indicator. Retrying..."
+                        continue
+                    }
                 }
             }
         }
-        
-        if ($DebugPreference -ne "SilentlyContinue") {
-            Write-Debug "Getting Job Results"
-            $job | Receive-Job -Wait 
-
-        }
-
-        $TotalResults.Success += $CurrentSuccess
-        $TotalResults.Failed += $CurrentFailed
-
-        Write-Debug "Total to Process: $TotalToDelete"
-        Write-Debug "Processed count: $TotalProcessed"
-        Write-Debug "Deleted count: $($TotalResults.Success)"
-        Write-Debug "Failed count: $($TotalResults.Failed)"
+        break
     }
+
+    # Start the Removal Jobs
+    Write-Verbose "[RemoveThreatIndicatorsQuery] $(Get-Date): Starting Removal Jobs"
+    $RemovalJobs = 1 .. $NumberOfThreads | ForEach-Object -ThrottleLimit $NumberOfThreads -AsJob -Parallel $RemoveJobScriptBlock 
+    Start-Sleep -Seconds 3
+
+    # Check each the child jobs for $Jobs and ensure the state is running and the output is "Initialized"
+    $ChildJobs = ($RemovalJobs | Get-Job).ChildJobs
+
+    $StartJobTimeout = 30
+    while ($true) {
+        $ChildJobs = ($RemovalJobs | Get-Job).ChildJobs
+        # If no jobs are running or initialized, exit
+        if ($StartJobTimeout -le 0 -and $ChildJobs.state.Where({ $_ -eq "Running" }).count -eq 0 -or $ChildJobs.Output.Where({ $_ -eq "Initialized" }).count -eq 0) {
+            Write-Error -Message "[RemoveThreatIndicatorsQuery] $(Get-Date): Removal Jobs did not start successfully after 30 seconds. Exiting..."
+            break
+        }
+
+        # If some of the jobs are running and initialized, break the loop with a warning of degraded performance
+        if ($StartJobTimeout -le 0 -and $ChildJobs.state.Where({ $_ -eq "Running" }).count -ne 0 -and $ChildJobs.Output.Where({ $_ -eq "Initialized" }).count -ne 0) {
+            Write-Warning "[RemoveThreatIndicatorsQuery] $(Get-Date): Some Removal Jobs did not start after 30 seconds. Degraded Performance"
+            break
+        }
+
+        # If all jobs are running and initialized, break the loop
+        if ($ChildJobs.state.Where({ $_ -eq "Running" }).count -eq $NumberOfThreads -and $ChildJobs.Output.Where({ $_ -eq "Initialized" }).count -eq $NumberOfThreads) {
+            Write-Verbose "[RemoveThreatIndicatorsQuery] $(Get-Date): All Removal Jobs Started"
+            break
+        }
+        
+        Write-Verbose "[RemoveThreatIndicatorsQuery] $(Get-Date): Waiting for all Removal Jobs to start.  Initialized: $($ChildJobs.Output.Where({ $_ -eq "Initialized" }).count)/$NumberOfThreads"
+        $StartJobTimeout - 5
+        Start-Sleep -Seconds 5
+        continue   
+    }
+
+    # Main loop to get indicators
+    while ($true) {
+        # Show Progress
+        Write-Debug "[RemoveThreatIndicatorsQuery] $(Get-Date): ProgressStatus = Total Collected: $($TotalCollected.value) | Deleted: $($TotalSuccess.Value) | Failed: $($TotalFailed.Value) | Time Elapsed: $(New-TimeSpan -Start $StartTime -End (Get-Date))"
+        Write-Debug "[RemoveThreatIndicatorsQuery] $(Get-Date): ProgressPercentComplete = $((($TotalSuccess.Value + $TotalFailed.Value) / $TotalToDelete) * 100)"
+
+        if ($ShowProgress -and $TotalToDelete -eq -1) {
+            Write-Progress  -Id 0 -Activity "Removing Threat Indicators" -Status "Total Collected: $($TotalCollected.value) | Deleted: $($TotalSuccess.Value) | Failed: $($TotalFailed.Value) | Time Elapsed: $(New-TimeSpan -Start $StartTime -End (Get-Date))" -PercentComplete ((($TotalSuccess.Value + $TotalFailed.Value) / $TotalCollected.value) * 100)
+        }
+        elseif ($ShowProgress) {
+            Write-Progress  -Id 0 -Activity "Removing Threat Indicators" -Status "Total Collected: $($TotalCollected.value) | Deleted: $($TotalSuccess.Value) | Failed: $($TotalFailed.Value) | Time Elapsed: $(New-TimeSpan -Start $StartTime -End (Get-Date))" -PercentComplete ((($TotalSuccess.Value + $TotalFailed.Value) / $TotalToDelete) * 100)
+        }
+
+        # Reset the retry count
+        $retryCount = 0
+
+        # Stop Collecting if the TotalCollected is greater than or equal to TotalToDelete
+        if ($TotalToDelete -ne -1 -and $($TotalCollected.value) -ge $TotalToDelete) {
+            Write-Verbose "[RemoveThreatIndicatorsQuery] $(Get-Date): Total Collected: $($TotalCollected.value). Total to Delete: $TotalToDelete"
+            Write-Verbose "[RemoveThreatIndicatorsQuery] $(Get-Date): Exiting Enqueue Job"
+            break
+        }
+                
+        # Throttling Checks
+        # If there are indicators in the after the first run and is greater than a count 150, sleep for 10 seconds to prevent throttling
+        if ($IndicatorsNameQueue.count -gt 150 -and $IndicatorsFound -eq $true) {
+            Write-Verbose "[RemoveThreatIndicatorsQuery] $(Get-Date): Queue Count: $($IndicatorsNameQueue.count). Sleeping for 10 seconds to prevent throttling"
+            Start-Sleep -Seconds 10
+        }
+        elseif ($IndicatorsFound -eq $true) {
+            # Sleep for 1 second to prevent read throttling
+            Start-Sleep -Seconds 1
+        }
+        elseif ($DeleteBucketSize.Value -lt 100) {
+            # The Deletion Bucket size refills at a rate of 10 per second
+            # If the bucket size is less 40, sleep for the number of seconds it would take to refill the bucket to 200
+            $RefillWait = [math]::Ceiling((200 - $DeleteBucketSize.Value) / $DeleteRefillRatePerSecond)
+            Write-Verbose "[RemoveThreatIndicatorsQuery] $(Get-Date): Delete Bucket Size: $($DeleteBucketSize.Value). Sleeping for $RefillWait seconds to prevent rate limiting"
+            Start-Sleep -Seconds $RefillWait
+        }
+
+        # Set page size to not exceed the total to delete
+
+        Write-Debug "[RemoveThreatIndicatorsQuery] $(Get-Date): Evaluating Page Size. Total Collected: $($TotalCollected.value). Total to Delete: $TotalToDelete"
+        if ($TotalToDelete -ne -1 -and $TotalCollected.Value + $GetThreatIndicatorsQueryParameters.PageSize -ge $TotalToDelete) {
+            $GetThreatIndicatorsQueryParameters.PageSize = $TotalToDelete - $($TotalCollected.value)
+        }
+        Write-Debug "[RemoveThreatIndicatorsQuery] $(Get-Date): Setting Page Size to $($GetThreatIndicatorsQueryParameters.PageSize)"
+
+        # Get Threat Indicators
+        while ($retryCount -lt $maxRetries) {
+            try {
+                $ThreatIndicators = Get-ThreatIndicatorsQuery @GetThreatIndicatorsQueryParameters                
+                Write-Verbose "[RemoveThreatIndicatorsQuery] $(Get-Date): Threat Indicators Count: $($ThreatIndicators.Indicators.Count)"
+                $TotalCollected.Value += $ThreatIndicators.Indicators.Count
+                break
+            }
+            catch {
+                $retryCount++
+                if ($retryCount -eq $maxRetries) {
+                    Write-Error -Message "[RemoveThreatIndicatorsQuery] $(Get-Date): Failed to get indicators after $retryCount retries: $($_.Exception.Message)" -Exception $_.Exception
+                    break
+                }
+                else {
+                    Write-Warning "[RemoveThreatIndicatorsQuery] $(Get-Date): Failed to get indicators. Retrying..."
+                }
+            }
+        }
+
+        # Exit if no indicators found
+        if ($ThreatIndicators.Indicators.Count -eq 0 ) {
+            Write-Verbose "[RemoveThreatIndicatorsQuery] $(Get-Date): No indicators found. Is Initial Run: $IndicatorsFound"
+            Write-Warning "[RemoveThreatIndicatorsQuery] $(Get-Date): No indicators found! Exiting ..."
+            break
+        }
+    
+        # Enqueue Indicators
+        try {
+            Write-Verbose "[RemoveThreatIndicatorsQuery] $(Get-Date): Enqueuing indicators. Current Queue Count: $($IndicatorsNameQueue.Count). Number to Enqueue: $($ThreatIndicators.Indicators.Count)"
+            # Enqueue indicators at a rate of 100 per 10 seconds. The page size is set to 100, so it will enqueue all indicators in the page
+            foreach ($IndicatorName in $ThreatIndicators.Indicators.Name) {
+                $IndicatorsNameQueue.Enqueue($IndicatorName)
+                Write-Debug "[RemoveThreatIndicatorsQuery] $(Get-Date): Enqueued: $IndicatorName"
+            }       
+            # Introduce a delay of 10 seconds after each batch
+            Start-Sleep -Seconds 10
+        }  
+        catch {
+            Write-Error -Message "Failed to enqueue indicators: $($_.Exception.Message)" -Exception $_.Exception
+            break
+        }      
+        Write-Verbose "[RemoveThreatIndicatorsQuery] $(Get-Date): Enqueued indicators count $($IndicatorsNameQueue.Count)"
+    }
+
+    # Enqueue Exit Signal to all Jobs
+    Write-Verbose "[RemoveThreatIndicatorsQuery] $(Get-Date): Sending Exit Signal to all Jobs"
+    0.. $RemovalJobs.ChildJobs.Count  | ForEach-Object { $IndicatorsNameQueue.Enqueue("`0") }
+
+    $StoppingTimeOut = 120
+    # Wait for all jobs to finish
+    while ($RemovalJobs.State -contains "Running") {
+        if ($ShowProgress -and $TotalToDelete -eq -1) {
+            Write-Progress  -Id 0 -Activity "Removing Threat Indicators" -Status "Total Collected: $($TotalCollected.value) | Deleted: $($TotalSuccess.Value) | Failed: $($TotalFailed.Value) | Time Elapsed: $(New-TimeSpan -Start $StartTime -End (Get-Date))"
+        }
+        elseif ($ShowProgress) {
+            Write-Progress  -Id 0 -Activity "Removing Threat Indicators" -Status "Total Collected: $($TotalCollected.value) | Deleted: $($TotalSuccess.Value) | Failed: $($TotalFailed.Value) | Time Elapsed: $(New-TimeSpan -Start $StartTime -End (Get-Date))" -PercentComplete ((($TotalSuccess.Value + $TotalFailed.Value) / $TotalToDelete) * 100)
+        }
+
+        if ($StoppingTimeOut -le 0) {
+            Write-Warning "[RemoveThreatIndicatorsQuery] $(Get-Date): Jobs taking more than 120 seconds. Force stopping removal jobs"
+            $RemovalJobs.where({ $_.State -eq "Running" }).ForEach({
+                    Write-Warning "Stopping Job $($_.Name)"
+                    Stop-Job -Job $_ 
+                })
+        }
+
+        Write-Verbose "[RemoveThreatIndicatorsQuery] $(Get-Date): Waiting for Removal Jobs to finish. Count: $($RemovalJobs.ChildJobs.where({$_.State -eq "Running"}).Count )"
+        0.. $RemovalJobs.ChildJobs.Count  | ForEach-Object { $IndicatorsNameQueue.Enqueue("`0") }
+        $StoppingTimeOut = $StoppingTimeOut - 5
+        Start-Sleep -Seconds 5
+        continue
+    }
+
+    # Cleanup
+    Write-Debug "[RemoveThreatIndicatorsQuery] $(Get-Date): ProgressStatus = Total Collected: $($TotalCollected.value) | Deleted: $($TotalSuccess.Value) | Failed: $($TotalFailed.Value) | Time Elapsed: $(New-TimeSpan -Start $StartTime -End (Get-Date))"
 
     if ($ShowProgress) {
-        Write-Progress -Id 0 -Activity "Indicators Status" -Status "Fetched: $TotalProcessed | Deleted: $($TotalResults.Success) | Failed: $($TotalResults.Failed)" -Completed
+        Write-Progress  -Id 0 -Activity "Removing Threat Indicators" -Status "Total Collected: $($TotalCollected.value) | Deleted: $($TotalSuccess.Value) | Failed: $($TotalFailed.Value) | Time Elapsed: $(New-TimeSpan -Start $StartTime -End (Get-Date))" -Completed
     }
 
-    Write-Information "Finished querying workspace = $WorkspaceName for indicators"
-    Write-Information "Processed count: $TotalProcessed"
-    Write-Information "Deleted count: $($TotalResults.Success)"
-    Write-Information "Failed count: $($TotalResults.Failed)"
+    # Remove Jobs
+    $RemovalJobs | Stop-Job | Remove-Job
 
-    if ($TotalProcessed -eq $TotalResults.Success) {                
-        Write-Information "Successfully deleted all indicators in query scope"
-    }
-
-    $EndTime = Get-Date
-    $ScriptExecutionTime = ($EndTime - $StartTime)
-    Write-Information "Execution Time: $($ScriptExecutionTime.days) days, $($ScriptExecutionTime.hours) hours, $($ScriptExecutionTime.Minutes) minutes,$($ScriptExecutionTime.seconds) seconds"
+    Write-Host "[RemoveThreatIndicatorsQuery] $(Get-Date): Total Indicators Collected: $($($TotalCollected.value))"
+    Write-Host "[RemoveThreatIndicatorsQuery] $(Get-Date): Total Indicators Deleted: $($TotalSuccess.Value)"
+    Write-Host "[RemoveThreatIndicatorsQuery] $(Get-Date): Total Indicators Failed to Delete: $($TotalFailed.Value)"
+    Write-Host "[RemoveThreatIndicatorsQuery] $(Get-Date): Total Time Taken: $((Get-Date) - $StartTime)"
 }
+
 
 #endregion Public Functions
 
 #region Exported Functions
 
-Export-ModuleMember -Function Get-ThreatIndicatorsQuery
-Export-ModuleMember -Function Get-ThreatIndicatorsMetrics
-Export-ModuleMember -Function Remove-ThreatIndicator
-Export-ModuleMember -Function Remove-ThreatIndicatorsQuery
+#Export-ModuleMember -Function Get-ThreatIndicatorsQuery
+#Export-ModuleMember -Function Get-ThreatIndicatorsMetrics
+#Export-ModuleMember -Function Remove-ThreatIndicator
+#Export-ModuleMember -Function Remove-ThreatIndicatorsQuery
 
 #endregion Exported Functions
