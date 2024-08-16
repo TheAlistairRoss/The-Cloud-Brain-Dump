@@ -11,5 +11,5 @@ Sentinel content that doesn't have a home or series, that just gets chucked in t
 - [Code](/Toolshed/Sentinel%20Toolbox/Copy-LogAnalyticsTable.ps1)  
 - 
 - ## Sentinel Threat Intelligence PowerShell Module
-- Blog Post
+- [Blog Post](https://thealistairross.co.uk/2024/08/15/microsoft-sentinel-threat-intelligence-clean-up/)
 - [Docs](/Toolshed/Sentinel%20Toolbox/SentinelThreatIntelligence/README.MD)  
