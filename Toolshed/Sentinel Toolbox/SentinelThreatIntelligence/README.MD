@@ -19,7 +19,7 @@ Ensure the authentication has occurred using Connect-AzAccount prior to running 
 |Version|Date|Download|
 |--|--|--|
 |[1.0.0](./Build/1.0.0)| 05/08/2024|[Download](https://raw.githubusercontent.com/TheAlistairRoss/The-Cloud-Brain-Dump/main/Toolshed/Sentinel%20Toolbox/SentinelThreatIntelligence/Build/1.0.0/SentinelThreatIntelligence.zip)| 
-|[1.0.0](./Build/2.0.0)| 15/08/2024|[Download](https://raw.githubusercontent.com/TheAlistairRoss/The-Cloud-Brain-Dump/main/Toolshed/Sentinel%20Toolbox/SentinelThreatIntelligence/Build/2.0.0/SentinelThreatIntelligence.zip)| 
+|[2.0.0](./Build/2.0.0)| 15/08/2024|[Download](https://raw.githubusercontent.com/TheAlistairRoss/The-Cloud-Brain-Dump/main/Toolshed/Sentinel%20Toolbox/SentinelThreatIntelligence/Build/2.0.0/SentinelThreatIntelligence.zip)| 
 
 
 ## Issues
