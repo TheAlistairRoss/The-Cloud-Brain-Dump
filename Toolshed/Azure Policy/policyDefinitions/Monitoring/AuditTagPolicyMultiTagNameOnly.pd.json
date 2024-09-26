@@ -1,0 +1,115 @@
+{
+  "properties": {
+    "displayName": "TCBD: Audit Multiple Tags",
+    "mode": "indexed",
+    "description": "Audit Multiple Tags",
+    "metadata": {
+      "version": "1.0.0",
+      "category": "Tags"
+    },
+    "version": "1.0.0",
+    "parameters": {
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Effect",
+          "description": "Enable or disable the execution of the policy"
+        },
+        "allowedValues": [
+          "Audit",
+          "Disabled"
+        ],
+        "defaultValue": "Audit"
+      },
+      "tagValues": {
+        "type": "Array",
+        "metadata": {
+          "displayName": "Tags keys on machines",
+          "description": "The list of tags keys that need to exist for getting target machines (case sensitive). Example: [\"tagKey1\", \"tagKey2\"]."
+        },
+        "defaultValue": []
+      },
+      "tagOperator": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Tags operator",
+          "description": "Matching condition for resource tags"
+        },
+        "allowedValues": [
+          "All",
+          "Any"
+        ],
+        "defaultValue": "All"
+      }
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Compute/virtualMachines"
+          },
+          {
+            "anyOf": [
+              {
+                "value": "[empty(parameters('tagValues'))]",
+                "equals": true
+              },
+              {
+                "allOf": [
+                  {
+                    "value": "[empty(field('tags'))]",
+                    "equals": false
+                  },
+                  {
+                    "value": "[parameters('tagOperator')]",
+                    "equals": "Any"
+                  },
+                  {
+                    "count": {
+                      "value": "[parameters('tagValues')]",
+                      "name": "tagKey",
+                      "where": {
+                        "field": "tags",
+                        "containsKey": "[current('tagKey')]"
+                      }
+                    },
+                    "greater": 0
+                  }
+                ]
+              },
+              {
+                "allOf": [
+                  {
+                    "value": "[empty(field('tags'))]",
+                    "equals": false
+                  },
+                  {
+                    "value": "[parameters('tagOperator')]",
+                    "equals": "All"
+                  },
+                  {
+                    "count": {
+                      "value": "[parameters('tagValues')]",
+                      "name": "tagKey",
+                      "where": {
+                        "field": "tags",
+                        "containsKey": "[current('tagKey')]"
+                      }
+                    },
+                    "equals": "[length(parameters('tagValues'))]"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "then": {
+        "effect": "[parameters('effect')]"
+      }
+    }
+  },
+  "id": "/providers/Microsoft.Authorization/policyDefinitions/e1359552-095e-4db7-bd76-72572a4911d4",
+  "name": "e1359552-095e-4db7-bd76-72572a4911d4"
+}

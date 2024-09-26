@@ -1,0 +1,115 @@
+{
+  "properties": {
+    "displayName": "TCBD: Audit Multiple Tags",
+    "mode": "indexed",
+    "description": "Audit Multiple Tags",
+    "metadata": {
+      "version": "1.0.0",
+      "category": "Tags"
+    },
+    "version": "1.0.0",
+    "parameters": {
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Effect",
+          "description": "Enable or disable the execution of the policy"
+        },
+        "allowedValues": [
+          "Audit",
+          "Disabled"
+        ],
+        "defaultValue": "Audit"
+      },
+      "tagValues": {
+        "type": "Array",
+        "metadata": {
+          "displayName": "Tags on machines",
+          "description": "The list of tags that need to matched for getting target machines (case sensitive). Example: [ {\"key\": \"tagKey1\", \"value\": \"value1\"}, {\"key\": \"tagKey2\", \"value\": \"value2\"}]."
+        },
+        "defaultValue": []
+      },
+      "tagOperator": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Tags operator",
+          "description": "Matching condition for resource tags"
+        },
+        "allowedValues": [
+          "All",
+          "Any"
+        ],
+        "defaultValue": "All"
+      }
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Compute/virtualMachines"
+          },
+          {
+            "anyOf": [
+              {
+                "value": "[empty(parameters('tagValues'))]",
+                "equals": true
+              },
+              {
+                "allOf": [
+                  {
+                    "value": "[empty(field('tags'))]",
+                    "equals": false
+                  },
+                  {
+                    "value": "[parameters('tagOperator')]",
+                    "equals": "Any"
+                  },
+                  {
+                    "count": {
+                      "value": "[parameters('tagValues')]",
+                      "name": "tagKvp",
+                      "where": {
+                        "value": "[length(intersection(createObject(current('tagKvp').key, current('tagKvp').value), field('tags')))]",
+                        "greater": 0
+                      }
+                    },
+                    "greater": 0
+                  }
+                ]
+              },
+              {
+                "allOf": [
+                  {
+                    "value": "[empty(field('tags'))]",
+                    "equals": false
+                  },
+                  {
+                    "value": "[parameters('tagOperator')]",
+                    "equals": "All"
+                  },
+                  {
+                    "count": {
+                      "value": "[parameters('tagValues')]",
+                      "name": "tagKvp",
+                      "where": {
+                        "value": "[length(intersection(createObject(current('tagKvp').key, current('tagKvp').value), field('tags')))]",
+                        "greater": 0
+                      }
+                    },
+                    "equals": "[length(parameters('tagValues'))]"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "then": {
+        "effect": "[parameters('effect')]"
+      }
+    }
+  },
+  "id": "/providers/Microsoft.Authorization/policyDefinitions/e73d483b-0821-4dea-8359-44fd440f816c",
+  "name": "e73d483b-0821-4dea-8359-44fd440f816c"
+}
