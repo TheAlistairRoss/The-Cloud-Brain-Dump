@@ -90,7 +90,7 @@
                         "type": "Microsoft.Common.CheckBox",
                         "label": "Deploy Incident Trigger Example",
                         "defaultValue": true,
-                        "toolTip": "This will deploy the Microsoft Sentinel Playbook, demoing an Incident trigger as described [here](https://thealistairross0.wordpress.com/?p=92) ",
+                        "toolTip": "This will deploy the Microsoft Sentinel Playbook, demoing an Incident trigger as described [here](https://thealistairross.co.uk/2023/07/24/microsoft-sentinel-entities-4-of-4-automation) ",
                         "constraints": {
                             "required": false,
                             "validationMessage": "Please choose"
@@ -101,7 +101,7 @@
                         "type": "Microsoft.Common.CheckBox",
                         "label": "Deploy Alert Trigger Example",
                         "defaultValue": true,
-                        "toolTip": "This will deploy the Microsoft Sentinel Playbook, demoing an Alert trigger as described [here](https://thealistairross0.wordpress.com/?p=92) ",
+                        "toolTip": "This will deploy the Microsoft Sentinel Playbook, demoing an Alert trigger as described [here](https://thealistairross.co.uk/2023/07/24/microsoft-sentinel-entities-4-of-4-automation) ",
                         "constraints": {
                             "required": false,
                             "validationMessage": "Please choose"
@@ -112,7 +112,7 @@
                         "type": "Microsoft.Common.CheckBox",
                         "label": "Deploy Entity Trigger Example",
                         "defaultValue": true,
-                        "toolTip": "This will deploy the Microsoft Sentinel Playbook, demoing an Entity trigger as described [here](https://thealistairross0.wordpress.com/?p=92) ",
+                        "toolTip": "This will deploy the Microsoft Sentinel Playbook, demoing an Entity trigger as described [here](https://thealistairross.co.uk/2023/07/24/microsoft-sentinel-entities-4-of-4-automation) ",
                         "constraints": {
                             "required": false,
                             "validationMessage": "Please choose"

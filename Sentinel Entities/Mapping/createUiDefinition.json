@@ -12,7 +12,7 @@
                   "text": "This will deploy two analytics rules to the selected Microsoft Sentinel enabled workpace. They are titled 'thealistairross - Test Entities Rule Source and Destination. You will need to enable Source analytic rule first, and then the Destination analytic rule to generate data for both. Optionally you can reduce the frequency and period down.",
                   "link": {
                     "label": "Learn more",
-                    "uri": "https://thealistairross0.wordpress.com/2023/07/17/microsoft-sentinel-entities-2-of-4-mapping"
+                    "uri": "https://thealistairross.co.uk/2023/07/17/microsoft-sentinel-entities-2-of-4-mapping"
                   }
                 }
               },

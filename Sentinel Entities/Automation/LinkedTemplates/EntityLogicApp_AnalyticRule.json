@@ -15,7 +15,7 @@
             "apiVersion": "2022-11-01-preview",
             "properties": {
                 "displayName": "thealistairross - Test Entities Rule with Automation",
-                "description": "This is the analytics rule will generate a simulated alert with three entities, Account, IP Address and Azure Resource. For more details on this demo visit https://thealistairross0.wordpress.com/2023/07/13/microsoft-sentinel-entities-4-of-4-automation",
+                "description": "This is the analytics rule will generate a simulated alert with three entities, Account, IP Address and Azure Resource. For more details on this demo visit https://thealistairross.co.uk/2023/07/24/microsoft-sentinel-entities-4-of-4-automation",
                 "severity": "Informational",
                 "enabled": true,
                 "query": "print FullName = \"thealistairross@contoso.com\", IPAddress = \"10.0.0.4\", ResourceId = \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/thealistairross/providers/Microsoft.Logic/workflows/thealistairross_Entities_IncidentTrigger\"",
