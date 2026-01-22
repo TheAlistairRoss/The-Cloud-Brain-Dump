@@ -1,0 +1,277 @@
+// Impossible Travel Detection using Entra ID Signin logs and Visit-Based Aggregation with S2 Cell Clustering
+//
+// Parameters 
+//
+// Realistic average speeds for different transport modes (km/h)
+let CarSpeedKmH = 100;       // Average car speed including stops
+let TrainSpeedKmH = 250;     // High-speed rail average
+let PlaneSpeedKmH = 800;     // Commercial aviation average (max possible speed)
+//
+// Number of days to compare against
+let LookbackPeriod = 1d; // Number of days to compare against
+//
+// Minimum time between distinct "Visits"
+let MinTimeBetweenVisitsMinutes = 15; 
+//
+// Minimum distance to consider (filters out nearby cell transitions)
+let MinDistanceKm = 100; 
+//
+// Session gap: if no activity at a location for this long, it's a new visit
+// This handles the A→B→A scenario (e.g., London→Paris→London = 3 separate visits)
+let MaxSessionGap = 4h;
+// S2 Cell Level Reference:
+// https://s2geometry.io/devguide/s2cell_hierarchy
+// Level 5: ~100-200km (regional)
+// Level 6: ~50-100km (sub-regional)
+// Level 7: ~25-50km (large metro area)
+// Level 8: ~10-25km (metro area) <- default
+// Level 9: ~5-10km (city district)
+let S2CellLevel = 8;  // Adjust based on precision needs
+//
+// Define known VPN/Proxy IP ranges (customize for your organization)
+let KnownVPNRanges = dynamic(["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]);
+//
+// PhysicalLocationWatchlist 
+let PhysicalLocationWatchlist = datatable(LocationName:string, city:string, country:string, subnet:string, latitude:real, longitude:real)[
+ //   "Redmond Campus", "Seattle", "United States", "10.0.0.0/8", 47.6370891183, -122.123736172,
+ //   "Thames Valley Park", "Reading", "United Kingdom", "192.168.0.0/16", 51.461308, -0.926993
+];
+// Step 1: Get all successful sign-ins with location data and S2 cell
+let SignIns = 
+    SigninLogs
+    | where TimeGenerated > ago(LookbackPeriod)
+    | where ResultType == 0  // Successful logins only
+    | where not(ipv4_is_in_any_range(IPAddress, KnownVPNRanges)) // Exclude VPN ranges.
+    // Generate S2 cell for geographic clustering
+    | evaluate ipv4_lookup(PhysicalLocationWatchlist, IPAddress, subnet, return_unmatched = true) // Determine if the IP Address is a known location from a watchlist
+    | where (isnotempty(LocationDetails.geoCoordinates.latitude) and isnotempty(LocationDetails.geoCoordinates.longitude)) or
+            (isnotempty(latitude) and isnotempty(longitude)) // Filter out any rows that have no longitude and latitude pairs 
+    | extend 
+        Latitude = coalesce(latitude, toreal(LocationDetails.geoCoordinates.latitude)),
+        Longitude = coalesce(longitude, toreal(LocationDetails.geoCoordinates.longitude)),
+        City = coalesce(city, tostring(LocationDetails.city)),
+        Country = coalesce(country,  tostring(LocationDetails.countryOrRegion))
+    | extend LocationCell = geo_point_to_s2cell(Longitude, Latitude, S2CellLevel) // Aggregate the Locations to an S2 Cell
+    | project 
+        TimeGenerated,
+        UserPrincipalName,
+        IPAddress,
+        Latitude,
+        Longitude,
+        City,
+        Country,
+        LocationCell,
+        AppDisplayName,
+        DeviceDetail,
+        UserAgent,
+        AuthenticationRequirement,
+        IsInteractive;
+// Step 2: Sessionize activities - detect separate visits to the same location
+// If gap between activities at same location > MaxSessionGap, it's a new visit
+let SessionizedSignIns = SignIns
+    | sort by UserPrincipalName, LocationCell, TimeGenerated asc
+    | extend VisitId = row_window_session(TimeGenerated, 1d, MaxSessionGap, UserPrincipalName != prev(UserPrincipalName) or LocationCell != prev(LocationCell));
+// Step 3: Aggregate sign-ins into "Visits" per user per S2 cell per session
+// A Visit = all user activities aggregated together from a single geographic area within a session
+let Visits = SessionizedSignIns
+    | summarize 
+        VisitStart = min(TimeGenerated),
+        VisitEnd = max(TimeGenerated),
+        ActivityCount = count(),
+        // Aggregate location info
+        Cities = make_set(City, 10),
+        Countries = make_set(Country, 5),
+        // Aggregate device/session properties for similarity analysis
+        IPAddresses = make_set(IPAddress, 20),
+        UniqueIPs = dcount(IPAddress),
+        UserAgents = make_set(UserAgent, 10),
+        UniqueUserAgents = dcount(UserAgent),
+        Apps = make_set(AppDisplayName, 10),
+        UniqueApps = dcount(AppDisplayName),
+        // Track if MFA was used (higher trust)
+        MFAUsed = countif(AuthenticationRequirement == "multiFactorAuthentication"),
+        InteractiveLogins = countif(IsInteractive == true)
+    by UserPrincipalName, LocationCell, VisitId
+    // Get the centroid of the S2 cell for distance calculations
+    | extend CellCentroid = geo_s2cell_to_central_point(LocationCell)
+    | extend 
+        CellLatitude = toreal(CellCentroid.coordinates[1]),
+        CellLongitude = toreal(CellCentroid.coordinates[0])
+    | extend 
+        VisitDurationMinutes = datetime_diff('minute', VisitEnd, VisitStart),
+        PrimaryCity = tostring(Cities[0]),
+        PrimaryCountry = tostring(Countries[0])
+    | project-away CellCentroid;
+// Step 4: Compare visits for the same user in different locations/sessions
+Visits
+| join kind=inner (
+    Visits 
+    | project 
+        UserPrincipalName,
+        LocationCell2 = LocationCell,
+        VisitId2 = VisitId,
+        PrimaryCountry2 = PrimaryCountry,
+        VisitStart2 = VisitStart,
+        VisitEnd2 = VisitEnd,
+        ActivityCount2 = ActivityCount,
+        PrimaryCity2 = PrimaryCity,
+        CellLatitude2 = CellLatitude,
+        CellLongitude2 = CellLongitude,
+        IPAddresses2 = IPAddresses,
+        UniqueIPs2 = UniqueIPs,
+        UserAgents2 = UserAgents,
+        UniqueUserAgents2 = UniqueUserAgents,
+        Apps2 = Apps,
+        MFAUsed2 = MFAUsed,
+        InteractiveLogins2 = InteractiveLogins
+    )
+    on UserPrincipalName
+// Compare different visits (different session or different location)
+| where VisitId != VisitId2 or LocationCell != LocationCell2
+// Order visits chronologically - use VisitEnd of first visit to VisitStart of second
+| where VisitEnd < VisitStart2
+// Only flag if the visits are in different locations (same location different sessions is just returning)
+| where LocationCell != LocationCell2
+// Calculate time between visits (from end of Visit 1 to start of Visit 2)
+| extend TimeBetweenVisitsMinutes = datetime_diff('minute', VisitStart2, VisitEnd)
+// Filter: must be reasonably close in time to be suspicious (within 24 hours)
+| where TimeBetweenVisitsMinutes > MinTimeBetweenVisitsMinutes 
+| where TimeBetweenVisitsMinutes < 1440
+// Step 5: Calculate distance and required travel speed using S2 cell centroids
+| extend DistanceKm = geo_distance_2points(CellLongitude, CellLatitude, CellLongitude2, CellLatitude2) / 1000
+| extend RequiredSpeedKmH = DistanceKm / (TimeBetweenVisitsMinutes / 60.0)
+// Apply suspicious travel filter - flag anything requiring faster than car travel
+// This allows categorization by transport mode (car/train/plane/impossible)
+| where RequiredSpeedKmH > CarSpeedKmH
+| where DistanceKm > MinDistanceKm  // Filter out adjacent cell transitions
+// Step 6: Check for shared properties that might indicate legitimate activity
+| extend 
+    SharedIPs = set_intersect(IPAddresses, IPAddresses2),
+    SharedUserAgents = set_intersect(UserAgents, UserAgents2),
+    SharedApps = set_intersect(Apps, Apps2)
+| extend 
+    HasSharedIP = array_length(SharedIPs) > 0,
+    HasSharedUserAgent = array_length(SharedUserAgents) > 0,
+    HasSharedApp = array_length(SharedApps) > 0,
+    IsSameCountry = PrimaryCountry == PrimaryCountry2
+// Suppress if visits share the same IP (likely VPN/proxy not in our list)
+| where not(HasSharedIP)
+// Step 7: Determine travel feasibility by transport mode
+| extend 
+    // Determine which transport modes could achieve this travel
+    PossibleByCar = RequiredSpeedKmH <= CarSpeedKmH,
+    PossibleByTrain = RequiredSpeedKmH <= TrainSpeedKmH,
+    PossibleByPlane = RequiredSpeedKmH <= PlaneSpeedKmH,
+    IsPhysicallyImpossible = RequiredSpeedKmH > PlaneSpeedKmH
+// Step 8: Calculate probability score based on risk factors (higher = more likely compromise)
+| extend 
+    // Authentication risk factors (each adds to probability)
+    MFA_Degradation = MFAUsed > 0 and MFAUsed2 == 0,           // Had MFA, then didn't - suspicious
+    MFA_NeitherVisit = MFAUsed == 0 and MFAUsed2 == 0,         // No MFA anywhere
+    MFA_OnlyVisit2 = MFAUsed == 0 and MFAUsed2 > 0,            // Attacker may have set up MFA
+    InteractiveToNonInteractive = InteractiveLogins > 0 and InteractiveLogins2 == 0,  // Possible token theft
+    BothNonInteractive = InteractiveLogins == 0 and InteractiveLogins2 == 0,          // Token-based access
+    DifferentUserAgents = not(HasSharedUserAgent),
+    DifferentApps = not(HasSharedApp),
+    // Travel-based probability adjustments
+    TravelFeasibility = case(
+        IsPhysicallyImpossible, "Impossible",
+        not(PossibleByTrain) and PossibleByPlane, "Plane Required",
+        not(PossibleByCar) and PossibleByTrain, "Train Required", 
+        PossibleByCar, "Car Possible",
+        "Unknown"
+    )
+| extend 
+    // Calculate probability score (0-100 scale)
+    // Start with base probability from travel feasibility
+    BaseProbability = case(
+        IsPhysicallyImpossible, 70,    // Very suspicious but not definitive alone
+        not(PossibleByTrain), 40,      // Plane required - still possible
+        not(PossibleByCar), 20,        // Train/plane required
+        10                              // Car possible - lower base suspicion
+    ),
+    // Authentication risk score (adds to probability)
+    AuthRiskScore = 
+        iff(MFA_Degradation, 20, 0) +                    // Strong indicator of compromise
+        iff(MFA_NeitherVisit, 10, 0) +                   // Moderate concern
+        iff(MFA_OnlyVisit2, 5, 0) +                      // Slight concern
+        iff(InteractiveToNonInteractive, 15, 0) +        // Token theft indicator
+        iff(BothNonInteractive, 5, 0),                   // Could be legitimate automation
+    // Behavioral risk score
+    BehaviorRiskScore = 
+        iff(DifferentUserAgents, 10, 0) +                // Different device/browser
+        iff(DifferentApps, 5, 0) +                       // Different apps accessed
+        iff(not(IsSameCountry), 10, 0) +                 // International travel
+        iff(TimeBetweenVisitsMinutes < 60, 10, 0)        // Very close in time
+| extend 
+    // Final probability score (capped at 100)
+    CompromiseProbability = min_of(BaseProbability + AuthRiskScore + BehaviorRiskScore, 100)
+| extend 
+    ProbabilityLevel = case(
+        CompromiseProbability >= 80, "Very High",
+        CompromiseProbability >= 60, "High", 
+        CompromiseProbability >= 40, "Medium",
+        CompromiseProbability >= 20, "Low",
+        "Very Low"
+    ),
+    // Build comprehensive risk factors list
+    RiskFactors = strcat_array(
+        array_concat(
+            // Travel factors
+            iff(IsPhysicallyImpossible, dynamic(["Travel physically impossible"]), dynamic([])),
+            iff(not(IsPhysicallyImpossible) and not(PossibleByTrain), dynamic(["Flight required for travel"]), dynamic([])),
+            iff(not(PossibleByCar) and PossibleByTrain, dynamic(["Train/flight required"]), dynamic([])),
+            // Authentication factors
+            iff(MFA_Degradation, dynamic(["MFA in Visit 1, no MFA in Visit 2 (degradation)"]), dynamic([])),
+            iff(MFA_NeitherVisit, dynamic(["No MFA on either visit"]), dynamic([])),
+            iff(MFA_OnlyVisit2, dynamic(["No MFA in Visit 1, MFA in Visit 2"]), dynamic([])),
+            iff(InteractiveToNonInteractive, dynamic(["Interactive login then non-interactive (possible token theft)"]), dynamic([])),
+            iff(BothNonInteractive, dynamic(["Both visits non-interactive (token-based)"]), dynamic([])),
+            // Behavioral factors
+            iff(DifferentUserAgents, dynamic(["Different user agents/devices"]), dynamic([])),
+            iff(DifferentApps, dynamic(["Different applications accessed"]), dynamic([])),
+            iff(not(IsSameCountry), dynamic(["Different countries"]), dynamic([])),
+            iff(IsSameCountry and LocationCell != LocationCell2, dynamic(["Same country, different regions"]), dynamic([])),
+            iff(TimeBetweenVisitsMinutes < 60, dynamic(["Under 1 hour between visits"]), dynamic([])),
+            iff(DistanceKm > 5000, dynamic(["Long distance (>5000km)"]), dynamic([]))
+        ),
+        ", "
+    )
+// Step 9: Output results
+| project 
+    CompromiseProbability,
+    ProbabilityLevel,
+    TravelFeasibility,
+    UserPrincipalName,
+    // Visit 1 details
+    Visit1_Location = strcat(PrimaryCity, ", ", PrimaryCountry),
+    Visit1_Cell = LocationCell,
+    Visit1_Start = VisitStart,
+    Visit1_End = VisitEnd,
+    Visit1_Activities = ActivityCount,
+    Visit1_UniqueIPs = UniqueIPs,
+    Visit1_IPs = IPAddresses,
+    Visit1_MFAUsed = MFAUsed > 0,
+    Visit1_Interactive = InteractiveLogins > 0,
+    // Visit 2 details
+    Visit2_Location = strcat(PrimaryCity2, ", ", PrimaryCountry2),
+    Visit2_Cell = LocationCell2,
+    Visit2_Start = VisitStart2,
+    Visit2_Activities = ActivityCount2,
+    Visit2_UniqueIPs = UniqueIPs2,
+    Visit2_IPs = IPAddresses2,
+    Visit2_MFAUsed = MFAUsed2 > 0,
+    Visit2_Interactive = InteractiveLogins2 > 0,
+    // Travel analysis
+    TimeBetweenVisitsMinutes,
+    DistanceKm = round(DistanceKm, 0),
+    RequiredSpeedKmH = round(RequiredSpeedKmH, 0),
+    IsSameCountry,
+    // Risk breakdown
+    AuthRiskScore,
+    BehaviorRiskScore,
+    // Similarity analysis
+    SharedUserAgents,
+    SharedApps,
+    RiskFactors
+| order by CompromiseProbability desc, TimeBetweenVisitsMinutes asc
