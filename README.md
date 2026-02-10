@@ -39,7 +39,6 @@ Security Orchestration, Automation, and Response templates.
 
 Microsoft Sentinel content solutions including data connectors, parsers, and solution metadata.
 
-- [Forcepoint WSC](/Solutions/Forcepoint%20WSC/README.md) — Sentinel solution for Forcepoint Web Security Cloud with an AMA-based data connector and ASIM web session parser.
 - [Squid Proxy](/Solutions/Squid%20Proxy/) — Data collection configuration for Squid Proxy logs.
 - [Syslog Forwarder](/Solutions/Syslog%20Forwarder/) — Syslog forwarder data connector using Virtual Machine Scale Sets.
 
