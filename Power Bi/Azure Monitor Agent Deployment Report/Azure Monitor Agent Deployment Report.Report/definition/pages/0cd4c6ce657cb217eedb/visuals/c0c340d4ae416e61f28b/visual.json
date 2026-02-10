@@ -1,0 +1,32 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.6.0/schema.json",
+  "name": "c0c340d4ae416e61f28b",
+  "position": {
+    "x": 0,
+    "y": 0.83333333333325754,
+    "z": 7000,
+    "height": 719.55092221331188,
+    "width": 304.85966319166,
+    "tabOrder": 8016
+  },
+  "visualGroup": {
+    "displayName": "Parameters Panel",
+    "groupMode": "ScaleMode",
+    "objects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "isHidden": true
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.6.0/schema.json",
+  "name": "94418190a688246f094c",
+  "position": {
+    "x": 402.5,
+    "y": 5.8333333333333339,
+    "z": 3000,
+    "height": 46.666666666666671,
+    "width": 863.33333333333337,
+    "tabOrder": 3000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "This view gives a view of all the virtual machines, where they have an agent and if they are compliant with their evaluated policies."
+                  }
+                ],
+                "listType": "bullet"
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "This view will not give you an accurate number of the total number of resources, only the total number evaluated by the policy definition."
+                  }
+                ],
+                "listType": "bullet"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

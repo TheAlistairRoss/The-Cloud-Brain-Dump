@@ -1,0 +1,1159 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/bookmark/2.0.0/schema.json",
+  "displayName": "Hide Parameters Panel - Linux Azure Marketplace VM Images",
+  "name": "38f65fdd4d88dc66b414",
+  "options": {
+    "applyOnlyToTargetVisuals": true,
+    "targetVisualNames": [
+      "c0c340d4ae416e61f28b",
+      "16ddb294b9af4b61f260",
+      "1cb4df3ef4ae7cd25cab",
+      "20696e855def5324ed80",
+      "396defd462a8b3ad9cad",
+      "5bb5a2e7e304fb6ad068",
+      "809b4cc950952c49ee5f",
+      "96de2c33a4cfbb4113b5",
+      "ef83968b32866350ae80",
+      "fe5b61cb1ae6bb06e9b9"
+    ],
+    "suppressData": true
+  },
+  "explorationState": {
+    "version": "1.3",
+    "activeSection": "0cd4c6ce657cb217eedb",
+    "sections": {
+      "0cd4c6ce657cb217eedb": {
+        "filters": {
+          "byName": {
+            "3de84921463eb6e575e7": {
+              "name": "3de84921463eb6e575e7",
+              "type": "Categorical",
+              "filter": {
+                "Version": 2,
+                "From": [
+                  {
+                    "Name": "r",
+                    "Entity": "Resources",
+                    "Type": 0
+                  }
+                ],
+                "Where": [
+                  {
+                    "Condition": {
+                      "In": {
+                        "Expressions": [
+                          {
+                            "Column": {
+                              "Expression": {
+                                "SourceRef": {
+                                  "Source": "r"
+                                }
+                              },
+                              "Property": "imageType"
+                            }
+                          }
+                        ],
+                        "Values": [
+                          [
+                            {
+                              "Literal": {
+                                "Value": "'Marketplace Gallery'"
+                              }
+                            }
+                          ]
+                        ]
+                      }
+                    }
+                  }
+                ]
+              },
+              "expression": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Resources"
+                    }
+                  },
+                  "Property": "imageType"
+                }
+              },
+              "howCreated": 1
+            },
+            "19016346ee60418c0364": {
+              "name": "19016346ee60418c0364",
+              "type": "Categorical",
+              "filter": {
+                "Version": 2,
+                "From": [
+                  {
+                    "Name": "r",
+                    "Entity": "Resources",
+                    "Type": 0
+                  }
+                ],
+                "Where": [
+                  {
+                    "Condition": {
+                      "In": {
+                        "Expressions": [
+                          {
+                            "Column": {
+                              "Expression": {
+                                "SourceRef": {
+                                  "Source": "r"
+                                }
+                              },
+                              "Property": "osType"
+                            }
+                          }
+                        ],
+                        "Values": [
+                          [
+                            {
+                              "Literal": {
+                                "Value": "'linux'"
+                              }
+                            }
+                          ]
+                        ]
+                      }
+                    }
+                  }
+                ]
+              },
+              "expression": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Resources"
+                    }
+                  },
+                  "Property": "osType"
+                }
+              },
+              "howCreated": 1
+            }
+          }
+        },
+        "visualContainers": {
+          "02a41a0db0d904b2d9a6": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "532d47f6bdc081046a6c",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Resources"
+                        }
+                      },
+                      "Property": "HasMonitoringAgent"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "06b3734979363ef866d1",
+                  "type": "Advanced",
+                  "expression": {
+                    "Aggregation": {
+                      "Expression": {
+                        "Column": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "Resources"
+                            }
+                          },
+                          "Property": "id"
+                        }
+                      },
+                      "Function": 5
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "pieChart",
+              "objects": {},
+              "orderBy": [
+                {
+                  "Direction": 2,
+                  "Expression": {
+                    "Aggregation": {
+                      "Expression": {
+                        "Column": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "Resources"
+                            }
+                          },
+                          "Property": "id"
+                        }
+                      },
+                      "Function": 5
+                    }
+                  }
+                }
+              ],
+              "activeProjections": {
+                "Category": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Resources"
+                        }
+                      },
+                      "Property": "HasMonitoringAgent"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "16ddb294b9af4b61f260": {
+            "singleVisual": {
+              "visualType": "textbox",
+              "objects": {}
+            }
+          },
+          "1cb4df3ef4ae7cd25cab": {
+            "singleVisual": {
+              "visualType": "shape",
+              "objects": {}
+            }
+          },
+          "20696e855def5324ed80": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "8f34fac03552e2accb04",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Resources"
+                        }
+                      },
+                      "Property": "HasMonitoringAgent"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "data": [
+                    {
+                      "properties": {
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "activeProjections": {
+                "Values": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Resources"
+                        }
+                      },
+                      "Property": "HasMonitoringAgent"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "256a60a5c30571e9eeed": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "935b55876349f54985c4",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Resources"
+                        }
+                      },
+                      "Property": "imagePublisher"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "bf96fcab9ac54f5068d9",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Resources"
+                        }
+                      },
+                      "Property": "imageOffer"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "d3aa5a98ac2e830b2aac",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Resources"
+                        }
+                      },
+                      "Property": "imageSKU"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "f348ba0e6c15beae2d91",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Resources"
+                        }
+                      },
+                      "Property": "Azure VM Linux Supported Image"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "b8ba755a2cada2fa26a9",
+                  "type": "Advanced",
+                  "expression": {
+                    "Aggregation": {
+                      "Expression": {
+                        "Column": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "Resources"
+                            }
+                          },
+                          "Property": "id"
+                        }
+                      },
+                      "Function": 5
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "barChart",
+              "objects": {},
+              "orderBy": [
+                {
+                  "Direction": 2,
+                  "Expression": {
+                    "Aggregation": {
+                      "Expression": {
+                        "Column": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "Resources"
+                            }
+                          },
+                          "Property": "id"
+                        }
+                      },
+                      "Function": 5
+                    }
+                  }
+                }
+              ],
+              "activeProjections": {
+                "Category": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Resources"
+                        }
+                      },
+                      "Property": "imagePublisher"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "396defd462a8b3ad9cad": {
+            "singleVisual": {
+              "visualType": "actionButton",
+              "objects": {}
+            }
+          },
+          "4471085c13b348777223": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "751e998319f37688bd28",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Resources"
+                        }
+                      },
+                      "Property": "Azure VM Linux Supported Image"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "8f9eb754a1f303667ed2",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Resources"
+                        }
+                      },
+                      "Property": "imagePublisher"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "2f042a51ab5e53e941c2",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Resources"
+                        }
+                      },
+                      "Property": "imageOffer"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "f9abfdf3c41f50fa9e91",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Resources"
+                        }
+                      },
+                      "Property": "imageSKU"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "2c8f89f68b2bf83a52cb",
+                  "type": "Categorical",
+                  "expression": {
+                    "HierarchyLevel": {
+                      "Expression": {
+                        "Hierarchy": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "Resources"
+                            }
+                          },
+                          "Hierarchy": "resourceId Hierarchy"
+                        }
+                      },
+                      "Level": "Subscription Name"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "7deb3581c0b5ac43c74f",
+                  "type": "Categorical",
+                  "expression": {
+                    "HierarchyLevel": {
+                      "Expression": {
+                        "Hierarchy": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "Resources"
+                            }
+                          },
+                          "Hierarchy": "resourceId Hierarchy"
+                        }
+                      },
+                      "Level": "resourceGroup"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "014f698b12869beb3d5f",
+                  "type": "Categorical",
+                  "expression": {
+                    "HierarchyLevel": {
+                      "Expression": {
+                        "Hierarchy": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "Resources"
+                            }
+                          },
+                          "Hierarchy": "resourceId Hierarchy"
+                        }
+                      },
+                      "Level": "type"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "d8e01da7e730a9f16899",
+                  "type": "Categorical",
+                  "expression": {
+                    "HierarchyLevel": {
+                      "Expression": {
+                        "Hierarchy": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "Resources"
+                            }
+                          },
+                          "Hierarchy": "resourceId Hierarchy"
+                        }
+                      },
+                      "Level": "name"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "ab7d3d8b657301bf267d",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Measure"
+                        }
+                      },
+                      "Property": "Link"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "417c44220836bb7e3f9d",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Measure"
+                        }
+                      },
+                      "Property": "Has Agent"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "c7811099cb78364ac0f6",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Measure"
+                        }
+                      },
+                      "Property": "No Agent"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "6dd68339204246fbf978",
+                  "type": "Advanced",
+                  "expression": {
+                    "Aggregation": {
+                      "Expression": {
+                        "Column": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "Resources"
+                            }
+                          },
+                          "Property": "id"
+                        }
+                      },
+                      "Function": 5
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "pivotTable",
+              "objects": {},
+              "orderBy": [
+                {
+                  "Direction": 1,
+                  "Expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Measure"
+                        }
+                      },
+                      "Property": "Has Agent"
+                    }
+                  }
+                }
+              ],
+              "activeProjections": {
+                "Rows": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Resources"
+                        }
+                      },
+                      "Property": "Azure VM Linux Supported Image"
+                    }
+                  }
+                ]
+              },
+              "expansionStates": [
+                {
+                  "roles": [
+                    "Rows"
+                  ],
+                  "levels": [
+                    {
+                      "queryRefs": [
+                        "Resources.Azure VM Linux Supported Image"
+                      ],
+                      "isCollapsed": true,
+                      "identityKeys": [
+                        {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Entity": "Resources"
+                              }
+                            },
+                            "Property": "Azure VM Linux Supported Image"
+                          }
+                        }
+                      ],
+                      "isPinned": true
+                    },
+                    {
+                      "queryRefs": [
+                        "Resources.imagePublisher"
+                      ],
+                      "isCollapsed": true,
+                      "identityKeys": [
+                        {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Entity": "Resources"
+                              }
+                            },
+                            "Property": "imagePublisher"
+                          }
+                        }
+                      ],
+                      "isPinned": true
+                    },
+                    {
+                      "queryRefs": [
+                        "Resources.imageOffer"
+                      ],
+                      "isCollapsed": true,
+                      "identityKeys": [
+                        {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Entity": "Resources"
+                              }
+                            },
+                            "Property": "imageOffer"
+                          }
+                        }
+                      ],
+                      "isPinned": true
+                    },
+                    {
+                      "queryRefs": [
+                        "Resources.imageSKU"
+                      ],
+                      "isCollapsed": true,
+                      "identityKeys": [
+                        {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Entity": "Resources"
+                              }
+                            },
+                            "Property": "imageSKU"
+                          }
+                        }
+                      ],
+                      "isPinned": true
+                    },
+                    {
+                      "queryRefs": [
+                        "Resources.resourceId Hierarchy.Subscription Name"
+                      ],
+                      "isCollapsed": true,
+                      "identityKeys": [
+                        {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Entity": "Resources"
+                              }
+                            },
+                            "Property": "Subscription Name"
+                          }
+                        }
+                      ],
+                      "isPinned": true
+                    },
+                    {
+                      "queryRefs": [
+                        "Resources.resourceId Hierarchy.resourceGroup"
+                      ],
+                      "isCollapsed": true,
+                      "identityKeys": [
+                        {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Entity": "Resources"
+                              }
+                            },
+                            "Property": "resourceGroup"
+                          }
+                        }
+                      ],
+                      "isPinned": true
+                    },
+                    {
+                      "queryRefs": [
+                        "Resources.resourceId Hierarchy.type"
+                      ],
+                      "isCollapsed": true,
+                      "isPinned": true
+                    },
+                    {
+                      "queryRefs": [
+                        "Resources.resourceId Hierarchy.name"
+                      ],
+                      "isCollapsed": true,
+                      "isPinned": true
+                    }
+                  ],
+                  "root": {
+                    "identityValues": []
+                  }
+                }
+              ]
+            }
+          },
+          "5bb5a2e7e304fb6ad068": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "1a0f85379a33f70482b1",
+                  "type": "Categorical",
+                  "expression": {
+                    "HierarchyLevel": {
+                      "Expression": {
+                        "Hierarchy": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "ManagementGroups"
+                            }
+                          },
+                          "Hierarchy": "Management Group Hierarchy"
+                        }
+                      },
+                      "Level": "Level1"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "7713837cd4c843b028b5",
+                  "type": "Categorical",
+                  "expression": {
+                    "HierarchyLevel": {
+                      "Expression": {
+                        "Hierarchy": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "ManagementGroups"
+                            }
+                          },
+                          "Hierarchy": "Management Group Hierarchy"
+                        }
+                      },
+                      "Level": "Level2"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "c856918cb066bd6c5ad6",
+                  "type": "Categorical",
+                  "expression": {
+                    "HierarchyLevel": {
+                      "Expression": {
+                        "Hierarchy": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "ManagementGroups"
+                            }
+                          },
+                          "Hierarchy": "Management Group Hierarchy"
+                        }
+                      },
+                      "Level": "Level3"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "fbee7451d996b943fec1",
+                  "type": "Categorical",
+                  "expression": {
+                    "HierarchyLevel": {
+                      "Expression": {
+                        "Hierarchy": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "ManagementGroups"
+                            }
+                          },
+                          "Hierarchy": "Management Group Hierarchy"
+                        }
+                      },
+                      "Level": "Level4"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "8eaf796181d9407b8164",
+                  "type": "Categorical",
+                  "expression": {
+                    "HierarchyLevel": {
+                      "Expression": {
+                        "Hierarchy": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "ManagementGroups"
+                            }
+                          },
+                          "Hierarchy": "Management Group Hierarchy"
+                        }
+                      },
+                      "Level": "Level5"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "470583e022218b603ea8",
+                  "type": "Categorical",
+                  "expression": {
+                    "HierarchyLevel": {
+                      "Expression": {
+                        "Hierarchy": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "ManagementGroups"
+                            }
+                          },
+                          "Hierarchy": "Management Group Hierarchy"
+                        }
+                      },
+                      "Level": "Level6"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "HierarchySlicer1458836712039",
+              "objects": {}
+            }
+          },
+          "667105154a7b768822b9": {
+            "singleVisual": {
+              "visualType": "textbox",
+              "objects": {}
+            }
+          },
+          "793ef2436fd0efdec010": {
+            "singleVisual": {
+              "visualType": "shape",
+              "objects": {}
+            }
+          },
+          "809b4cc950952c49ee5f": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "3a7d304d213eb9e30021",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "ResourceGroups"
+                        }
+                      },
+                      "Property": "subscriptionName"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "4ea3ab73b3d1ded51656",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "ResourceGroups"
+                        }
+                      },
+                      "Property": "name"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "HierarchySlicer1458836712039",
+              "objects": {}
+            }
+          },
+          "96de2c33a4cfbb4113b5": {
+            "singleVisual": {
+              "visualType": "shape",
+              "objects": {}
+            }
+          },
+          "b4dc0c82404c6ea1a5d3": {
+            "singleVisual": {
+              "visualType": "shape",
+              "objects": {}
+            }
+          },
+          "bccfe92ef519e21cfb0a": {
+            "singleVisual": {
+              "visualType": "textbox",
+              "objects": {}
+            }
+          },
+          "dd35092a19a357810540": {
+            "singleVisual": {
+              "visualType": "shape",
+              "objects": {}
+            }
+          },
+          "ee7c0f7568e5f4e91684": {
+            "singleVisual": {
+              "visualType": "shape",
+              "objects": {}
+            }
+          },
+          "ef83968b32866350ae80": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "20e262d20177d33394bc",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Resources"
+                        }
+                      },
+                      "Property": "imageType"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "data": [
+                    {
+                      "properties": {
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "activeProjections": {
+                "Values": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Resources"
+                        }
+                      },
+                      "Property": "imageType"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "f6fa0556ab8b5770e62d": {
+            "singleVisual": {
+              "visualType": "textbox",
+              "objects": {}
+            }
+          },
+          "fa08f1db1ba2eff3e2da": {
+            "singleVisual": {
+              "visualType": "shape",
+              "objects": {}
+            }
+          },
+          "fe5b61cb1ae6bb06e9b9": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "017abfbc66d4c8fae13f",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "ResourceTypes"
+                        }
+                      },
+                      "Property": "PluralDisplayName"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "data": [
+                    {
+                      "properties": {
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "activeProjections": {
+                "Values": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "ResourceTypes"
+                        }
+                      },
+                      "Property": "PluralDisplayName"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "visualContainerGroups": {
+          "c0c340d4ae416e61f28b": {
+            "isHidden": true
+          }
+        }
+      }
+    },
+    "objects": {
+      "merge": {
+        "outspacePane": [
+          {
+            "properties": {
+              "expanded": {
+                "expr": {
+                  "Literal": {
+                    "Value": "false"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

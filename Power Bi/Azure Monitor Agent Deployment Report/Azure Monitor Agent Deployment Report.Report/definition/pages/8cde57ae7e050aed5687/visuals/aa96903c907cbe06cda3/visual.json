@@ -1,0 +1,33 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.6.0/schema.json",
+  "name": "aa96903c907cbe06cda3",
+  "position": {
+    "x": 550,
+    "y": 4.166666666666667,
+    "z": 8000,
+    "height": 52.5,
+    "width": 719.16666666666674,
+    "tabOrder": 8000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "These reports gives you an overview into the deployment of the Azure Monitor Agent, as well alignment to Azure Policy compliance for your selected policy assignments"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

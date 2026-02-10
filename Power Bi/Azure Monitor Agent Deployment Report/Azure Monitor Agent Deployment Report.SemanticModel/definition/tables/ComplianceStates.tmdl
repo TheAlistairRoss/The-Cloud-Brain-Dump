@@ -1,0 +1,51 @@
+table ComplianceStates
+	lineageTag: 7bd384f3-30cc-477b-b35f-0a5b99a994ed
+
+	column ComplianceState
+		lineageTag: 6e1e510c-e6e5-45e3-97ee-178f037f799e
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ComplianceState]
+
+		annotation SummarizationSetBy = Automatic
+
+	column SortOrder
+		formatString: 0
+		lineageTag: 50592878-86c3-43f7-8cf1-7421ec2a589f
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [SortOrder]
+
+		annotation SummarizationSetBy = Automatic
+
+	column DisplayName
+		lineageTag: bc934c2c-d410-40b5-8f56-6fb7072bd15e
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [DisplayName]
+		sortByColumn: SortOrder
+
+		annotation SummarizationSetBy = Automatic
+
+	partition ComplianceStates = calculated
+		mode: import
+		source =
+				
+				DATATABLE(
+				    "ComplianceState", STRING,
+				    "DisplayName", STRING,
+				    "SortOrder", INTEGER,
+				    {
+				        {"noncompliant", "Non-compliant", 1},
+				        {"compliant", "Compliant", 2},
+				        {"error", "Error", 3},
+				        {"conflicting", "Conflicting", 4},
+				        {"protected", "Protected (preview)", 5},
+				        {"exempted", "Exempted", 6},
+				        {"unknown", "Unknown (preview)", 7},
+				        {"No Policy Assignment", "No Policy Assignment", 8}
+				    }
+				)
+
+	annotation PBI_Id = ded093718f1a4fbd89a731c4336e55b3
+

@@ -1,0 +1,290 @@
+table Measure
+	lineageTag: dc3b4b81-5faf-4dea-8898-6f113e6a02ac
+
+	measure 'Agents Failure' = ```
+			
+			COALESCE (
+			    CALCULATE (
+			        DISTINCTCOUNT ( AzureMonitorAgents[vMResourceId] ),
+			        KEEPFILTERS (
+			            FILTER (
+			                AzureMonitorAgents,
+			                NOT ISBLANK ( AzureMonitorAgents[provisioningState] )
+			                    && AzureMonitorAgents[provisioningState] <> "Succeeded"
+			            )
+			        )
+			    ),
+			    0
+			)
+			
+			```
+		formatString: 0
+		lineageTag: 6079d4c4-a4ad-4757-ba01-17105cbbf2d2
+
+	measure 'Agents Succeeded' = ```
+			
+			COALESCE (
+			    CALCULATE (
+			        DISTINCTCOUNT ( AzureMonitorAgents[vMResourceId] ),
+			        KEEPFILTERS ( AzureMonitorAgents[provisioningState] = "Succeeded" )
+			    ),
+			    0
+			)
+			
+			```
+		formatString: 0
+		lineageTag: 4200aa4a-8566-4cca-a85a-ea009374b11a
+
+	measure 'Agent Provisioning State' = ```
+			
+			IF (
+			    ISINSCOPE ( 'Resources'[name] ),
+			    COALESCE (
+			        CALCULATE ( SELECTEDVALUE ( 'AzureMonitorAgents'[provisioningState] ) ),
+			        "No Agent"
+			    ),
+			    BLANK ()
+			)
+			
+			
+			```
+		lineageTag: 0377277b-f030-4fd3-8890-178905e97b28
+
+	measure 'Has Agent' = ```
+			
+			COALESCE (
+			    DISTINCTCOUNT ( AzureMonitorAgents[vMResourceId] ),
+			    0
+			)
+			
+			```
+		formatString: 0
+		lineageTag: 460d0b61-82f6-4271-aa57-56968f30c25f
+
+	measure 'Agent Coverage Status' = ```
+			
+			VAR RPCRows   = COUNTROWS ( ResourcePolicyCompliance )
+			VAR VMs       = COALESCE ( DISTINCTCOUNT ( Resources[id] ), 0 )
+			VAR HasAg     = [Has Agent]
+			VAR NoAg =      MAX ( VMs - HasAg, 0 )
+			VAR Succ      = [Agents Succeeded]
+			VAR Fail      = [Agents Failure]
+			RETURN
+			IF (
+			    ISBLANK ( RPCRows ) || RPCRows = 0,
+			    BLANK(),
+			    SWITCH (
+			        TRUE (),
+			        VMs = 0,                          BLANK(),
+			        NoAg > 0,                         "Agents Missing",
+			        Fail > 0,                         "Agent Failures",
+			        Succ = VMs,                       "Success",
+			        BLANK()
+			    )
+			)
+			
+			
+			```
+		lineageTag: 1878226f-c2bc-4b73-b49b-a07edf53a534
+
+	measure 'No Agent' = MAX ( COALESCE ( DISTINCTCOUNT ( Resources[id] ), 0 ) - [Has Agent], 0 )
+		formatString: 0
+		lineageTag: 21fbcecd-ad7d-46d6-bb25-a5003b720a2c
+
+	measure 'Portal URL (by Level)' = ```
+			
+			VAR TenantId     = SELECTEDVALUE ( Resources[tenantId] )
+			VAR SubName      = SELECTEDVALUE ( Resources[Subscription Name] )
+			VAR RG           = SELECTEDVALUE ( Resources[resourceGroup] )
+			VAR TypePat      = SELECTEDVALUE ( Resources[type] )            // e.g., "Microsoft.Compute/virtualMachines"
+			VAR ResourceName = SELECTEDVALUE ( Resources[name] )
+			
+			// Always try to read the ID from the same Resources rowset
+			VAR SubId =
+			    SWITCH (
+			        TRUE(),
+			        ISINSCOPE ( Resources[Subscription Name] ), SELECTEDVALUE ( Resources[subscriptionId] ),
+			        ISINSCOPE ( Resources[subscriptionId] ),    SELECTEDVALUE ( Resources[subscriptionId] ),
+			        BLANK()   // don't return a string literal like "BOB"
+			    )
+			
+			VAR Base        = "https://portal.azure.com/"
+			VAR ResourceRoot =
+			    IF ( NOT ISBLANK ( TenantId ), "#@" & TenantId & "/resource", "#/resource" )
+			
+			// (Optional) minimal encoding for spaces
+			VAR RG_Enc           = SUBSTITUTE ( RG, " ", "%20" )
+			VAR ResourceName_Enc = SUBSTITUTE ( ResourceName, " ", "%20" )
+			
+			VAR SubUrl =
+			    Base & ResourceRoot
+			    & "/subscriptions/" & SubId & "/resources"
+			
+			VAR RgUrl  =
+			    Base & ResourceRoot
+			    & "/subscriptions/" & SubId
+			    & "/resourceGroups/" & RG_Enc & "/overview"
+			
+			VAR ResUrl =
+			    Base & ResourceRoot
+			    & "/subscriptions/" & SubId
+			    & "/resourceGroups/" & RG_Enc
+			    & "/providers/" & TypePat & "/" & ResourceName_Enc & "/overview"
+			
+			// Level detection: treat either Subscription Id OR Subscription Name as the "subscription level"
+			VAR AtLeaf       = ISINSCOPE ( Resources[name] )
+			VAR AtRG         = ISINSCOPE ( Resources[resourceGroup] ) && NOT ISINSCOPE ( Resources[type] )
+			VAR AtSubById    = ISINSCOPE ( Resources[subscriptionId] ) && NOT ISINSCOPE ( Resources[resourceGroup] )
+			VAR AtSubByName  = ISINSCOPE ( Resources[Subscription Name] ) && NOT ISINSCOPE ( Resources[resourceGroup] )
+			VAR AtSubOnly    = AtSubById || AtSubByName
+			
+			RETURN
+			SWITCH (
+			    TRUE (),
+			
+			    // Resource (leaf)
+			    AtLeaf
+			        && NOT ( ISBLANK ( SubId ) || ISBLANK ( RG ) || ISBLANK ( TypePat ) || ISBLANK ( ResourceName ) ),
+			        ResUrl,
+			
+			    // Resource group level
+			    AtRG
+			        && NOT ( ISBLANK ( SubId ) || ISBLANK ( RG ) ),
+			        RgUrl,
+			
+			    // Subscription level (by id or by name)
+			    AtSubOnly
+			        && NOT ISBLANK ( SubId ),
+			        SubUrl,
+			
+			    BLANK ()
+			)
+			
+			```
+		lineageTag: 8cd90bf9-afd3-44a9-b674-13dbdd99af0a
+		dataCategory: WebUrl
+
+	measure Link = ```
+			
+			SWITCH (
+			    TRUE(),
+			    ISINSCOPE ( Resources[name] ),            "🔗",  -- resource level
+			    ISINSCOPE ( Resources[resourceGroup] )
+			        && NOT ISINSCOPE ( Resources[type] ), "🔗",  -- RG level
+			    ISINSCOPE ( Resources[subscriptionId] )
+			        || ISINSCOPE ( Resources[Subscription Name] ), "🔗",  -- subscription level
+			    BLANK()
+			)
+			
+			```
+		lineageTag: 328cd2ac-e11d-4de1-abd9-8106941afb7e
+		dataCategory: Uncategorized
+
+	measure 'Total VMs With Agents (Ignore HasMonitoringAgent Slicer)' = ```
+			
+			CALCULATE (
+			    DISTINCTCOUNT ( Resources[id] ),
+			    // 1) Remove any external filter coming from the slicer on this column
+			    REMOVEFILTERS ( Resources[HasMonitoringAgent] ),
+			    // 2) Re-apply the condition you want for the calculation itself
+			    KEEPFILTERS ( LOWER ( Resources[HasMonitoringAgent] ) = "true" )
+			)
+			
+			```
+		formatString: 0
+		lineageTag: ebe408dc-33f5-48b6-8210-f845c635fb3b
+
+	measure 'Total VMs Target' = (1 / [Total VMs (ignore HasMonitoringAgent)] ) * [Total VMs With Agents (Ignore HasMonitoringAgent Slicer)]
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: e0aee4ac-4e0e-48c3-9e3a-dbd8d547e568
+
+	measure 'Total VMs (ignore HasMonitoringAgent)' = ```
+			
+			COALESCE(
+			        CALCULATE (
+			        DISTINCTCOUNT ( Resources[id] ),
+			        REMOVEFILTERS ( Resources[HasMonitoringAgent] )   -- remove ONLY this column’s filter
+			    ),
+			    0
+			)
+			
+			```
+		formatString: 0
+		lineageTag: 4e3c28e3-de6b-40c4-aeef-55ce5d1ba989
+
+	measure 'Total VMs Callout Value' = ```
+			
+			    VAR TotalVMs =  [Total VMs (ignore HasMonitoringAgent)]
+			    VAR TotalVMSWithAgent = [Total VMs With Agents (Ignore HasMonitoringAgent Slicer)]
+			    VAR PercentageValue = (100 / TotalVMs ) * TotalVMSWithAgent
+			RETURN 
+			    MROUND(PercentageValue,2) & "% (" & TotalVMSWithAgent & ")"
+			```
+		lineageTag: df812a87-3730-4741-9b15-eb4950216387
+
+	measure 'Policy Compliance Status' = ```
+			
+			// Get the compliance state from the ResourcePolicyCompliance bridge table
+			// Returns BLANK() when no data in scope (causes row to hide in matrix)
+			VAR RowCount = COUNTROWS(ResourcePolicyCompliance)
+			VAR StatesInScope = VALUES(ResourcePolicyCompliance[complianceState])
+			VAR WorstRank = 
+			    MINX(
+			        StatesInScope,
+			        SWITCH(
+			            TRUE(),
+			            ResourcePolicyCompliance[complianceState] = "noncompliant", 1,
+			            ResourcePolicyCompliance[complianceState] = "compliant", 2,
+			            ResourcePolicyCompliance[complianceState] = "error", 3,
+			            ResourcePolicyCompliance[complianceState] = "conflicting", 4,
+			            ResourcePolicyCompliance[complianceState] = "protected", 5,
+			            ResourcePolicyCompliance[complianceState] = "exempted", 6,
+			            ResourcePolicyCompliance[complianceState] = "unknown", 7,
+			            ResourcePolicyCompliance[complianceState] = "No Policy Assignment", 8,
+			            999
+			        )
+			    )
+			RETURN
+			    IF(
+			        RowCount = 0 || ISBLANK(WorstRank) || WorstRank = 999,
+			        BLANK(),
+			        SWITCH(
+			            WorstRank,
+			            1, "Non-compliant",
+			            2, "Compliant",
+			            3, "Error",
+			            4, "Conflicting",
+			            5, "Protected (preview)",
+			            6, "Exempted",
+			            7, "Unknown (preview)",
+			            8, "No Policy Assignment",
+			            BLANK()
+			        )
+			    )
+			```
+		lineageTag: d1e2f3a4-b5c6-7890-abcd-200000000002
+
+	measure 'Distinct Resource Count' =
+			
+			DISTINCTCOUNT(ResourcePolicyCompliance[resourceId])
+		formatString: 0
+		lineageTag: d1e2f3a4-b5c6-7890-abcd-200000000003
+
+	column Column
+		isHidden
+		formatString: 0
+		lineageTag: 4162aec5-d14a-4765-b6f3-855a50bf69a6
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Column]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Measure = calculated
+		mode: import
+		source = Row("Column", BLANK())
+
+	annotation PBI_Id = 9834d092345a4dd9a8accc3b8ce6228d
+
+	annotation 436ba87b-9c83-4389-a31b-ebd06a36be98 = {"Expression":""}
+

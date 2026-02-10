@@ -1,0 +1,64 @@
+table Subscriptions
+	lineageTag: f3d1daf4-4f9e-40e4-8503-1980216f4620
+
+	column id
+		dataType: string
+		lineageTag: 91e3ad83-1fed-4cd1-8d62-c0923d10b53e
+		summarizeBy: none
+		sourceColumn: id
+
+		annotation SummarizationSetBy = Automatic
+
+	column name
+		dataType: string
+		lineageTag: 3e41b03a-3779-4d53-8071-9d84fe961c99
+		summarizeBy: none
+		sourceColumn: name
+
+		annotation SummarizationSetBy = Automatic
+
+	column tenantId
+		dataType: string
+		lineageTag: eeb2a0c6-216b-41c4-b510-d2d0869df38c
+		summarizeBy: none
+		sourceColumn: tenantId
+
+		annotation SummarizationSetBy = Automatic
+
+	column subscriptionId
+		dataType: string
+		lineageTag: b46e992f-6f2c-4c97-908a-7916a2b27aef
+		summarizeBy: none
+		sourceColumn: subscriptionId
+
+		annotation SummarizationSetBy = Automatic
+
+	column managementGroupId
+		dataType: string
+		lineageTag: 93c05e00-f048-46de-b466-e65a6c462910
+		summarizeBy: none
+		sourceColumn: managementGroupId
+
+		annotation SummarizationSetBy = Automatic
+
+	column mgId
+		dataType: string
+		lineageTag: 3c23f309-7b03-4057-8bf1-a1efa28ec2b2
+		summarizeBy: none
+		sourceColumn: mgId
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Subscriptions = m
+		mode: import
+		queryGroup: Scope
+		source =
+				let
+				    Query = AzureResourceGraph.Query("resourcecontainers#(lf)| where type == ""microsoft.resources/subscriptions""#(lf)| join kind=leftouter (#(lf)resources#(lf)| where ['type'] in~ (    #(lf)    'microsoft.compute/virtualmachines', #(lf)    'microsoft.compute/virtualmachinescalesets', #(lf)    'microsoft.hybridcompute/machines'#(lf))#(lf)| distinct subscriptionId#(lf)) on subscriptionId#(lf)| extend mgChain = properties.managementGroupAncestorsChain#(lf)| extend chainLength = array_length(mgChain)#(lf)| extend managementGroupId = tostring(mgChain[0].name)#(lf)| extend tenantId = tostring(mgChain[chainLength - 1].name)#(lf)| extend mgId = strcat(tenantId, ""/"", managementGroupId)#(lf)| project id, name, subscriptionId, managementGroupId, tenantId, mgId ", null, null, null, [resultTruncated=false])
+				in
+				    Query
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

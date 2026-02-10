@@ -1,0 +1,48 @@
+table ResourceGroups
+	lineageTag: 059acea3-16ce-407c-8f6b-40d2daf5dc91
+
+	column id
+		dataType: string
+		lineageTag: c413a746-cd82-4f87-9bf6-c09208f34ea5
+		summarizeBy: none
+		sourceColumn: id
+
+		annotation SummarizationSetBy = Automatic
+
+	column name
+		dataType: string
+		lineageTag: e7680026-67aa-4d36-9461-6286bcf8bdd0
+		summarizeBy: none
+		sourceColumn: name
+
+		annotation SummarizationSetBy = Automatic
+
+	column subscriptionId
+		dataType: string
+		lineageTag: d6de8af7-c703-4cbb-88ea-c726d4eb71f3
+		summarizeBy: none
+		sourceColumn: subscriptionId
+
+		annotation SummarizationSetBy = Automatic
+
+	column subscriptionName
+		dataType: string
+		lineageTag: 44a4a61a-aa7a-4597-a85a-fd972004bcf0
+		summarizeBy: none
+		sourceColumn: subscriptionName
+
+		annotation SummarizationSetBy = Automatic
+
+	partition ResourceGroups = m
+		mode: import
+		queryGroup: Scope
+		source =
+				let
+				    Source = AzureResourceGraph.Query("resourcecontainers#(lf)| where type == ""microsoft.resources/subscriptions/resourcegroups""#(lf)| join kind=leftouter (#(lf)resources#(lf)| where ['type'] in~ (    #(lf)    'microsoft.compute/virtualmachines', #(lf)    'microsoft.compute/virtualmachinescalesets', #(lf)    'microsoft.hybridcompute/machines'#(lf))#(lf)| distinct subscriptionId, resourceGroup#(lf)) on subscriptionId, resourceGroup#(lf)| join kind=inner (#(lf)resourcecontainers#(lf)| where type == ""microsoft.resources/subscriptions""#(lf)| project #(lf)    subscriptionId, #(lf)    subscriptionName = name#(lf)) on subscriptionId#(lf)| project-away subscriptionId1#(lf)| project id = tolower(id), name, subscriptionId, subscriptionName", null, null, null, [resultTruncated=false])
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

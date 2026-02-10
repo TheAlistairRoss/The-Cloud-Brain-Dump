@@ -1,0 +1,11 @@
+EVALUATE
+FILTER(
+    SUMMARIZE(
+        PolicyStates,
+        PolicyStates[resourceId],
+        PolicyStates[policyDefinitionId],
+        "RowCount", COUNTROWS(PolicyStates)
+    ),
+    [RowCount] > 1
+)
+ORDER BY [RowCount] DESC
