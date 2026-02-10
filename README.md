@@ -54,6 +54,8 @@ A collection of standalone scripts, queries, and modules that don't belong to a 
     - [Copy Log Analytics Table](/Toolshed/Sentinel%20Toolbox/Copy-LogAnalyticsTable.ps1) — PowerShell script to copy Log Analytics table schemas to custom log tables.
     - [Sentinel Threat Intelligence Module](/Toolshed/Sentinel%20Toolbox/SentinelThreatIntelligence/README.MD) — PowerShell module for querying and deleting threat intelligence indicators via the Sentinel API.
     - [Analytics to Basic Log Template Generator](/Toolshed/Sentinel%20Toolbox/Analytics%20to%20Basic%20Log%20via%20KQL%20Transformation%20Template%20Generator/README.md) — Sentinel workbook that generates ARM templates to split data between Analytics and Basic Log tables using DCR transformations, reducing ingestion costs.
+- **[Scripts](/Toolshed/Scripts/)** — Standalone PowerShell scripts for Azure operations.
+    - [Get-ResourceTypeActions](/Toolshed/Scripts/Get-ResourceTypeActions/README.md) — PowerShell script that discovers all resource types in a scope — including extension providers — and retrieves their control plane and data plane operations.
 - **[Azure Policy](/Toolshed/Azure%20Policy/policyDefinitions/Monitoring/)** — Custom Azure Policy definitions for monitoring.
 - [Managed Identities Permissions Script](/Toolshed/AssignManagedIdentitiesPermissions.ps1) — PowerShell script to assign permissions to Azure Managed Identities.
 
