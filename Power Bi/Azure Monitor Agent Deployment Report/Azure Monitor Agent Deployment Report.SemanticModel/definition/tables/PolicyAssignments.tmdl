@@ -1,0 +1,65 @@
+/// Gets all Azure Policy Assignments that related to a policy definition (or definition set) which contains "AzureMonitorLinuxAgent" or "AzureMonitorWindowsAgent"
+table PolicyAssignments
+	lineageTag: 8b04f335-22d6-44e3-816e-535c2ac9df3e
+
+	column id
+		dataType: string
+		lineageTag: 942bcb82-ca0e-495b-876b-6782c10a4783
+		summarizeBy: none
+		sourceColumn: id
+
+		annotation SummarizationSetBy = Automatic
+
+	column tenantId
+		dataType: string
+		lineageTag: 81c6b698-9e33-4613-ac24-c6228285f051
+		summarizeBy: none
+		sourceColumn: tenantId
+
+		annotation SummarizationSetBy = Automatic
+
+	column displayName
+		dataType: string
+		lineageTag: 7c927d12-88f4-441c-b8d4-e98e8ff39373
+		summarizeBy: none
+		sourceColumn: displayName
+
+		annotation SummarizationSetBy = Automatic
+
+	column scope
+		dataType: string
+		lineageTag: b0359eee-a801-44ac-84ec-2185eb833c46
+		summarizeBy: none
+		sourceColumn: scope
+
+		annotation SummarizationSetBy = Automatic
+
+	column policyDefinitionId
+		dataType: string
+		lineageTag: 79268d37-9dcf-4d81-87a6-0bfeba5f5a94
+		summarizeBy: none
+		sourceColumn: policyDefinitionId
+
+		annotation SummarizationSetBy = Automatic
+
+	column definitionType
+		dataType: string
+		lineageTag: bd5fa042-9662-47a5-b720-86e78df8fd4c
+		summarizeBy: none
+		sourceColumn: definitionType
+
+		annotation SummarizationSetBy = Automatic
+
+	partition PolicyAssignments = m
+		mode: import
+		queryGroup: Generic
+		source =
+				let
+				    Query = AzureResourceGraph.Query("policyresources #(lf)| where ['type'] == 'microsoft.authorization/policyassignments'#(lf)| extend policyAssignmentId = tolower(id)#(lf)| join kind = inner (#(lf)    policyresources #(lf)    | where ['type'] == 'microsoft.policyinsights/policystates'#(lf)    | where properties.resourceType in~ (#(lf)        'microsoft.compute/virtualmachines', #(lf)        'microsoft.compute/virtualmachinescalesets', #(lf)        'microsoft.hybridcompute/machines'#(lf)    )#(lf)    | extend policyDefinitionId = tolower(tostring(properties.policyDefinitionId))#(lf)    | extend policyAssignmentId = tolower(tostring(properties.policyAssignmentId))#(lf)    | join kind = innerunique (#(lf)        policyresources#(lf)        | where ['type'] == 'microsoft.authorization/policydefinitions'#(lf)        | where properties.policyRule has_any ('AzureMonitorLinuxAgent', 'AzureMonitorWindowsAgent')#(lf)        | extend policyDefinitionId = tolower(id)#(lf)    )#(lf)    on policyDefinitionId#(lf)    | distinct policyAssignmentId#(lf)) on policyAssignmentId#(lf)| project id, #(lf)    tenantId, #(lf)    displayName =tostring(properties.displayName), #(lf)    scope = tostring(properties.scope), #(lf)    policyDefinitionId = tostring(properties.policyDefinitionId)#(lf)| extend definitionType = iff(#(lf)    policyDefinitionId has 'policySetDefinitions', #(lf)        'Microsoft.Authorization/policySetDefinitions', #(lf)        'Microsoft.Authorization/policyDefinitions'#(lf))", null, null, null, [resultTruncated=false])
+				in
+				    Query
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

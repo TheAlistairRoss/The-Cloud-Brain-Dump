@@ -1,0 +1,32 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.6.0/schema.json",
+  "name": "6b371b2f350cfa48343b",
+  "position": {
+    "x": 6.1433447098976108,
+    "y": 12.901023890784982,
+    "z": 1000,
+    "height": 25.187713310580207,
+    "width": 25.187713310580207,
+    "tabOrder": 10000
+  },
+  "visualGroup": {
+    "displayName": "Menu Icon",
+    "groupMode": "ScaleMode",
+    "objects": {
+      "lockAspect": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "parentGroupName": "133fb62cbc493bb0e634"
+}

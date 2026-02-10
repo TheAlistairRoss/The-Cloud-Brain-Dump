@@ -1,0 +1,91 @@
+table ResourceTypes
+	lineageTag: f63fc0f7-a365-4b22-88b6-d085c6250453
+
+	column ResourceType
+		dataType: string
+		lineageTag: 7ba79472-051d-4a9e-b5f5-42126e1df3cb
+		summarizeBy: none
+		sourceColumn: ResourceType
+
+		annotation SummarizationSetBy = Automatic
+
+	column SingularDisplayName
+		dataType: string
+		lineageTag: 788d87e0-53e4-4158-8271-c53b45ff27c3
+		summarizeBy: none
+		sourceColumn: SingularDisplayName
+
+		annotation SummarizationSetBy = Automatic
+
+	column PluralDisplayName
+		dataType: string
+		lineageTag: 4b89316e-264b-47c1-b411-6a28294fab88
+		summarizeBy: none
+		sourceColumn: PluralDisplayName
+
+		annotation SummarizationSetBy = Automatic
+
+	column LowerSingularDisplayName
+		dataType: string
+		lineageTag: a609d927-3158-4ee1-bc37-5eb8b8fa439d
+		summarizeBy: none
+		sourceColumn: LowerSingularDisplayName
+
+		annotation SummarizationSetBy = Automatic
+
+	column LowerPluralDisplayName
+		dataType: string
+		lineageTag: 43e9547d-b987-41f7-aece-c5c7d052c75e
+		summarizeBy: none
+		sourceColumn: LowerPluralDisplayName
+
+		annotation SummarizationSetBy = Automatic
+
+	column IsPreview
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 0529fb79-953b-4711-880f-4111bae04da5
+		summarizeBy: none
+		sourceColumn: IsPreview
+
+		annotation SummarizationSetBy = Automatic
+
+	column Description
+		dataType: string
+		lineageTag: afb8cc22-c8bb-4ace-bb2c-7d2cbb0848b1
+		summarizeBy: none
+		sourceColumn: Description
+
+		annotation SummarizationSetBy = Automatic
+
+	column Icon
+		dataType: string
+		lineageTag: 45688ebb-2a0d-4100-87d1-e64f60a80f20
+		summarizeBy: none
+		sourceColumn: Icon
+
+		annotation SummarizationSetBy = Automatic
+
+	column Links
+		dataType: string
+		lineageTag: 52f681fa-052e-4f51-ae69-7123f68b233a
+		summarizeBy: none
+		sourceColumn: Links
+
+		annotation SummarizationSetBy = Automatic
+
+	partition ResourceTypes = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(Web.Contents("https://github.com/microsoft/finops-toolkit/releases/latest/download/ResourceTypes.csv"),[Delimiter=",", Columns=9, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"ResourceType", type text}, {"SingularDisplayName", type text}, {"PluralDisplayName", type text}, {"LowerSingularDisplayName", type text}, {"LowerPluralDisplayName", type text}, {"IsPreview", type logical}, {"Description", type text}, {"Icon", type text}, {"Links", type text}}),
+				    #"Filtered Rows" = Table.SelectRows(#"Changed Type", each ([ResourceType] = "microsoft.compute/virtualmachines" or [ResourceType] = "microsoft.compute/virtualmachinescalesets" or [ResourceType] = "microsoft.hybridcompute/machines"))
+				in
+				    #"Filtered Rows"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

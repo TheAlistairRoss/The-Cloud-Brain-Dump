@@ -1,0 +1,73 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.6.0/schema.json",
+  "name": "667105154a7b768822b9",
+  "position": {
+    "x": 664.44444444444446,
+    "y": 324.44444444444446,
+    "z": 2000,
+    "height": 102.22222222222221,
+    "width": 607.77777777777771,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Based on Policy: ",
+                    "textStyle": {
+                      "fontWeight": "bold",
+                      "color": "#242424"
+                    }
+                  },
+                  {
+                    "value": "Configure Linux virtual machines to run Azure Monitor Agent with system-assigned managed identity-based authentication",
+                    "textStyle": {
+                      "color": "#242424"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Version:",
+                    "textStyle": {
+                      "fontWeight": "bold"
+                    }
+                  },
+                  {
+                    "value": " 3.8.0"
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": ""
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Policy Rule",
+                    "textStyle": {
+                      "fontWeight": "bold"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

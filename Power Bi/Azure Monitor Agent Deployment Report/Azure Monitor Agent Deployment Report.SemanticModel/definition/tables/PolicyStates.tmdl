@@ -1,0 +1,190 @@
+table PolicyStates
+	lineageTag: fd77e0c6-7022-4a9d-a930-6599090d2cea
+
+	column id
+		dataType: string
+		lineageTag: f4314dd7-7735-48ea-8e23-e0285cb9c346
+		summarizeBy: none
+		sourceColumn: id
+
+		annotation SummarizationSetBy = Automatic
+
+	column tenantId
+		dataType: string
+		lineageTag: 9bd6c7eb-2b96-4775-80f6-c25089cdd153
+		summarizeBy: none
+		sourceColumn: tenantId
+
+		annotation SummarizationSetBy = Automatic
+
+	column policyAssignmentScope
+		dataType: string
+		lineageTag: 084bcd93-2ebc-4826-8a13-445e804e9d76
+		summarizeBy: none
+		sourceColumn: policyAssignmentScope
+
+		annotation SummarizationSetBy = Automatic
+
+	column policyDefinitionId
+		dataType: string
+		lineageTag: 9338dce3-9c32-47d4-88f3-7e72713b4114
+		summarizeBy: none
+		sourceColumn: policyDefinitionId
+
+		annotation SummarizationSetBy = Automatic
+
+	column policyAssignmentId
+		dataType: string
+		lineageTag: 6defe348-9176-410e-a608-0ae970defece
+		summarizeBy: none
+		sourceColumn: policyAssignmentId
+
+		annotation SummarizationSetBy = Automatic
+
+	column policySetDefinitionId
+		dataType: string
+		lineageTag: 059b026e-a6ed-4ae7-afd1-3e685912fce1
+		summarizeBy: none
+		sourceColumn: policySetDefinitionId
+
+		annotation SummarizationSetBy = Automatic
+
+	column complianceState
+		dataType: string
+		lineageTag: ddb7f77a-9f3e-4493-a169-f606d176776f
+		summarizeBy: none
+		sourceColumn: complianceState
+
+		annotation SummarizationSetBy = Automatic
+
+	column resourceLocation
+		dataType: string
+		lineageTag: 45bcacc9-2379-4602-937c-3b471ae967e0
+		summarizeBy: none
+		sourceColumn: resourceLocation
+
+		annotation SummarizationSetBy = Automatic
+
+	column resourceId
+		dataType: string
+		lineageTag: f0009972-ddb4-4e27-aca7-e42cbbc64c28
+		summarizeBy: none
+		sourceColumn: resourceId
+
+		annotation SummarizationSetBy = Automatic
+
+	column isDeleted
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: c26a448a-7e88-475a-bb11-541515be4649
+		summarizeBy: none
+		sourceColumn: isDeleted
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+	column resourceType
+		dataType: string
+		lineageTag: 3506e5ef-e3bc-4e71-8879-fc81ca372101
+		summarizeBy: none
+		sourceColumn: resourceType
+
+		annotation SummarizationSetBy = Automatic
+
+	column PolicyAssignmentDisplayName = COALESCE(RELATED(PolicyAssignments[displayName]), PolicyStates[id])
+		lineageTag: 31d00867-fdaf-46a1-a645-45807c83cfca
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column policyDefinitionDisplayName = COALESCE(RELATED(PolicyDefinitions[displayName]), PolicyStates[policyDefinitionId])
+		lineageTag: e866d666-6fdd-491f-a7ad-5939f1f40d8c
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column policySetDefinitionDisplayName = COALESCE(RELATED(PolicySetDefinitions[displayName]), PolicyStates[policySetDefinitionId])
+		lineageTag: fbb6adf0-8164-48a7-8f31-da2c18bf5007
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column ResourceSubscriptionId = RELATED(Resources[subscriptionId])
+		lineageTag: e44d2ad6-b5d7-4e09-b66b-4f9ea27786de
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column ResourceSubscriptionName = RELATED(Resources[Subscription Name])
+		lineageTag: dac6e22c-c512-4234-bfac-6a26989bcfc4
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column ResourceResourceGroup = RELATED(Resources[resourceGroup])
+		lineageTag: 4cce2133-7bad-4121-9b5b-9aa9ad0fcbb5
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column ResourceName = RELATED(Resources[name])
+		lineageTag: 635cb5ac-c445-4dba-9e08-556cb89e0f15
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column PolicyInitiativeDisplay =
+			
+			IF(
+			    ISBLANK(PolicyStates[policySetDefinitionId]),
+			    "(Directly Assigned Policies)",
+			    "(Initiative) " & COALESCE(RELATED(PolicySetDefinitions[displayName]), PolicyStates[policySetDefinitionId])
+			)
+		lineageTag: 8e87bd5a-8eab-4962-9b21-bd1cbedbcc12
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column PolicyDefinitionDisplay = ```
+			"(Policy) " & COALESCE(RELATED(PolicyDefinitions[displayName]), PolicyStates[policyDefinitionId])
+			
+			```
+		lineageTag: 59ac142a-9050-41b3-8060-2f718a250ed9
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	hierarchy 'Resource Hierarchy'
+		lineageTag: 959887bb-6314-4629-a15c-2987454d0ab7
+
+		level ResourceSubscriptionName
+			lineageTag: 72fa43af-b445-4bb9-8650-e4fa1f0a830e
+			column: ResourceSubscriptionName
+
+		level ResourceResourceGroup
+			lineageTag: 420bce82-988a-4b13-a200-12c3fbbd4c06
+			column: ResourceResourceGroup
+
+		level resourceType
+			lineageTag: 8a4dd72e-60a6-4f37-ae14-3a678db3fe4c
+			column: resourceType
+
+		level ResourceName
+			lineageTag: 91627a77-18c6-4008-b84d-d9b026755d2d
+			column: ResourceName
+
+	partition PolicyStates = m
+		mode: import
+		queryGroup: Generic
+		source =
+				let
+				    Query = AzureResourceGraph.Query("policyresources #(lf)| where ['type'] == 'microsoft.policyinsights/policystates'#(lf)| where properties.resourceType in~ (#(lf)    'microsoft.compute/virtualmachines', #(lf)    'microsoft.compute/virtualmachinescalesets', #(lf)    'microsoft.hybridcompute/machines'#(lf))#(lf)| extend policyDefinitionId = tolower(tostring(properties.policyDefinitionId))#(lf)| extend policyAssignmentId = tolower(tostring(properties.policyAssignmentId))#(lf)| join kind = inner (#(lf)    policyresources#(lf)    | where ['type'] == 'microsoft.authorization/policydefinitions'#(lf)    | where properties.policyRule has_any ('AzureMonitorLinuxAgent', 'AzureMonitorWindowsAgent')#(lf)    | extend policyDefinitionId = tolower(id)#(lf))#(lf)on policyDefinitionId#(lf)| project #(lf)    id, #(lf)    tenantId, policyAssignmentScope = tolower(tostring(properties.policyAssignmentScope)), #(lf)    policyDefinitionId = tolower(tostring(properties.policyDefinitionId)), #(lf)    policyAssignmentId = tolower(tostring(properties.policyAssignmentId)), #(lf)    policySetDefinitionId = tolower(tostring(properties.policySetDefinitionId)), #(lf)    complianceState = tolower(tostring(properties.complianceState)), #(lf)    resourceLocation = tolower(tostring(properties.resourceLocation)), #(lf)    resourceId = tolower(tostring(properties.resourceId)), #(lf)    resourceType= tolower(tostring(properties.resourceType)), #(lf)    isDeleted = tolower(tostring(properties.isDeleted))", null, null, null, [resultTruncated=false]),
+				    #"Replaced Value" = Table.ReplaceValue(Query,"",null,Replacer.ReplaceValue,{"policySetDefinitionId"})
+				in
+				    #"Replaced Value"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

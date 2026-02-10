@@ -1,0 +1,35 @@
+table PolicySetDefinitionsToPolicyDefinitions
+	lineageTag: eefd3a4e-e6ee-43f9-89f8-9779253c7bf4
+
+	column policyDefinitionId
+		dataType: string
+		lineageTag: aac7c230-e94c-4fc1-a625-eacb3f79cf92
+		summarizeBy: none
+		sourceColumn: policyDefinitionId
+
+		annotation SummarizationSetBy = Automatic
+
+	column policySetDefinitionId
+		dataType: string
+		lineageTag: f8a4521b-50d9-43e2-876b-2e9cc8f822ba
+		summarizeBy: none
+		sourceColumn: policySetDefinitionId
+
+		annotation SummarizationSetBy = Automatic
+
+	partition PolicySetDefinitionsToPolicyDefinitions = m
+		mode: import
+		queryGroup: Generic
+		source =
+				let
+				    Source = PolicySetDefinitions,
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"policyDefinitionIds", "policySetDefinitionId"}),
+				    #"Expanded policyDefinitionIds" = Table.ExpandListColumn(#"Removed Other Columns", "policyDefinitionIds"),
+				    #"Renamed Columns" = Table.RenameColumns(#"Expanded policyDefinitionIds",{{"policyDefinitionIds", "policyDefinitionId"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Exception
+

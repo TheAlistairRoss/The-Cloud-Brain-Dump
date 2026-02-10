@@ -1,0 +1,16 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.6.0/schema.json",
+  "name": "133fb62cbc493bb0e634",
+  "position": {
+    "x": 0,
+    "y": 0,
+    "z": 6000,
+    "height": 719.38566552901023,
+    "width": 39.317406143344712,
+    "tabOrder": 7000
+  },
+  "visualGroup": {
+    "displayName": "Parameters Panel Hidden",
+    "groupMode": "ScaleMode"
+  }
+}

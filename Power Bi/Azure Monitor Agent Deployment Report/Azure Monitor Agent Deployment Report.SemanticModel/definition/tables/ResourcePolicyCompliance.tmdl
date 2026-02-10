@@ -1,0 +1,152 @@
+/// Bridge table that combines all resources with their policy compliance status.
+/// Includes resources WITHOUT policies as "No Policy Assignment".
+/// This table enables cross-filtering between compliance bar chart and policy matrix.
+table ResourcePolicyCompliance
+	lineageTag: c1a2b3d4-e5f6-7890-abcd-ef1234567890
+
+	column resourceId
+		lineageTag: a1b2c3d4-e5f6-7890-abcd-100000000001
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [resourceId]
+
+		annotation SummarizationSetBy = Automatic
+
+	column complianceState
+		lineageTag: a1b2c3d4-e5f6-7890-abcd-100000000002
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [complianceState]
+
+		annotation SummarizationSetBy = Automatic
+
+	column policyAssignmentId
+		lineageTag: a1b2c3d4-e5f6-7890-abcd-100000000003
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [policyAssignmentId]
+
+		annotation SummarizationSetBy = Automatic
+
+	column policySetDefinitionId
+		lineageTag: a1b2c3d4-e5f6-7890-abcd-100000000004
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [policySetDefinitionId]
+
+		annotation SummarizationSetBy = Automatic
+
+	column policyDefinitionId
+		lineageTag: a1b2c3d4-e5f6-7890-abcd-100000000005
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [policyDefinitionId]
+
+		annotation SummarizationSetBy = Automatic
+
+	column PolicyInitiativeDisplay
+		lineageTag: a1b2c3d4-e5f6-7890-abcd-100000000006
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [PolicyInitiativeDisplay]
+
+		annotation SummarizationSetBy = Automatic
+
+	column PolicyDefinitionDisplay
+		lineageTag: a1b2c3d4-e5f6-7890-abcd-100000000007
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [PolicyDefinitionDisplay]
+
+		annotation SummarizationSetBy = Automatic
+
+	column ResourceName
+		lineageTag: a1b2c3d4-e5f6-7890-abcd-100000000008
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ResourceName]
+
+		annotation SummarizationSetBy = Automatic
+
+	column ResourceSubscriptionName
+		lineageTag: a1b2c3d4-e5f6-7890-abcd-100000000009
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ResourceSubscriptionName]
+
+		annotation SummarizationSetBy = Automatic
+
+	column ResourceResourceGroup
+		lineageTag: a1b2c3d4-e5f6-7890-abcd-100000000010
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ResourceResourceGroup]
+
+		annotation SummarizationSetBy = Automatic
+
+	column resourceType
+		lineageTag: a1b2c3d4-e5f6-7890-abcd-100000000011
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [resourceType]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition ResourcePolicyCompliance = calculated
+		mode: import
+		source = ```
+				// Combine PolicyStates data with Resources that have no policy
+				VAR ResourcesWithPolicy = 
+				    SELECTCOLUMNS(
+				        PolicyStates,
+				        "resourceId", PolicyStates[resourceId],
+				        "complianceState", PolicyStates[complianceState],
+				        "policyAssignmentId", PolicyStates[policyAssignmentId],
+				        "policySetDefinitionId", PolicyStates[policySetDefinitionId],
+				        "policyDefinitionId", PolicyStates[policyDefinitionId],
+				        "PolicyInitiativeDisplay", PolicyStates[PolicyInitiativeDisplay],
+				        "PolicyDefinitionDisplay", PolicyStates[PolicyDefinitionDisplay],
+				        "ResourceName", PolicyStates[ResourceName],
+				        "ResourceSubscriptionName", PolicyStates[ResourceSubscriptionName],
+				        "ResourceResourceGroup", PolicyStates[ResourceResourceGroup],
+				        "resourceType", PolicyStates[resourceType]
+				    )
+				
+				VAR AllResourceIds = 
+				    SELECTCOLUMNS(Resources, "resourceId", Resources[id])
+				
+				VAR ResourcesWithPolicyIds = 
+				    DISTINCT(SELECTCOLUMNS(ResourcesWithPolicy, "resourceId", [resourceId]))
+				
+				VAR ResourcesWithoutPolicy = 
+				    SELECTCOLUMNS(
+				        NATURALLEFTOUTERJOIN(
+				            EXCEPT(AllResourceIds, ResourcesWithPolicyIds),
+				            SELECTCOLUMNS(
+				                Resources,
+				                "resourceId", Resources[id],
+				                "ResourceName", Resources[name],
+				                "ResourceSubscriptionName", Resources[Subscription Name],
+				                "ResourceResourceGroup", Resources[resourceGroup],
+				                "resourceType", Resources[type]
+				            )
+				        ),
+				        "resourceId", [resourceId],
+				        "complianceState", "No Policy Assignment",
+				        "policyAssignmentId", BLANK(),
+				        "policySetDefinitionId", BLANK(),
+				        "policyDefinitionId", BLANK(),
+				        "PolicyInitiativeDisplay", "(No Policy)",
+				        "PolicyDefinitionDisplay", "(No Policy)",
+				        "ResourceName", [ResourceName],
+				        "ResourceSubscriptionName", [ResourceSubscriptionName],
+				        "ResourceResourceGroup", [ResourceResourceGroup],
+				        "resourceType", [resourceType]
+				    )
+				
+				RETURN
+				    UNION(ResourcesWithPolicy, ResourcesWithoutPolicy)
+				```
+
+	annotation PBI_Id = c1a2b3d4e5f67890abcdef1234567890
+

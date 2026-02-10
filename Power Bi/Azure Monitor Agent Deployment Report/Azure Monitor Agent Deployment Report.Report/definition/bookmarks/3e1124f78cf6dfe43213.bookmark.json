@@ -1,0 +1,849 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/bookmark/2.0.0/schema.json",
+  "displayName": "Hide Parameters Panel - Azure Policy Compliance Matrix",
+  "name": "3e1124f78cf6dfe43213",
+  "options": {
+    "applyOnlyToTargetVisuals": true,
+    "targetVisualNames": [
+      "56a75d8ef12b362486c0",
+      "063d5f466e6b5418270c",
+      "0bf628e2faa4ebc5e3c0",
+      "176f8eaebc9b39a9a1d5",
+      "22d9cbac3b8d92075b63",
+      "2b1e872c4d0665c174b7",
+      "58c053b56287771d4158",
+      "9a4b33eafd77bcf2b385",
+      "9afd62c874a5b8fe6172",
+      "ad94a940af397068a0d2",
+      "af009be73b3463ec1f90",
+      "b0f0ebc84cf42e388297",
+      "c26b5cd1491021a0a693",
+      "d7b2d834e6e5c02aad10"
+    ],
+    "suppressData": true
+  },
+  "explorationState": {
+    "version": "1.3",
+    "activeSection": "715dccf0123581ab1008",
+    "sections": {
+      "715dccf0123581ab1008": {
+        "visualContainers": {
+          "063d5f466e6b5418270c": {
+            "singleVisual": {
+              "visualType": "actionButton",
+              "objects": {}
+            }
+          },
+          "0bf628e2faa4ebc5e3c0": {
+            "singleVisual": {
+              "visualType": "shape",
+              "objects": {}
+            }
+          },
+          "176f8eaebc9b39a9a1d5": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "7f49efd31737bdd2c839",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "ResourceTypes"
+                        }
+                      },
+                      "Property": "PluralDisplayName"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "data": [
+                    {
+                      "properties": {
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "activeProjections": {
+                "Values": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "ResourceTypes"
+                        }
+                      },
+                      "Property": "PluralDisplayName"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "22d9cbac3b8d92075b63": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "fe5afd4a07320d60191f",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "ResourceGroups"
+                        }
+                      },
+                      "Property": "subscriptionName"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "8918095968f44169d41f",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "ResourceGroups"
+                        }
+                      },
+                      "Property": "name"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "HierarchySlicer1458836712039",
+              "objects": {}
+            }
+          },
+          "2b1e872c4d0665c174b7": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "c63ed576f0fbdcb3d344",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "PolicyStates"
+                        }
+                      },
+                      "Property": "policyDefinitionDisplayName"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "data": [
+                    {
+                      "properties": {
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "activeProjections": {
+                "Values": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "PolicyStates"
+                        }
+                      },
+                      "Property": "policyDefinitionDisplayName"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "3f1807307793b13edd07": {
+            "singleVisual": {
+              "visualType": "shape",
+              "objects": {}
+            }
+          },
+          "572cc3ceeb74526316c0": {
+            "singleVisual": {
+              "visualType": "textbox",
+              "objects": {}
+            }
+          },
+          "58c053b56287771d4158": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "5cf06aed23556b23434a",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Resources"
+                        }
+                      },
+                      "Property": "imageType"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "data": [
+                    {
+                      "properties": {
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "activeProjections": {
+                "Values": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Resources"
+                        }
+                      },
+                      "Property": "imageType"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "5989fb455aab83d48151": {
+            "singleVisual": {
+              "visualType": "shape",
+              "objects": {}
+            }
+          },
+          "94418190a688246f094c": {
+            "singleVisual": {
+              "visualType": "textbox",
+              "objects": {}
+            }
+          },
+          "9a33627056f8a31b18df": {
+            "singleVisual": {
+              "visualType": "shape",
+              "objects": {}
+            }
+          },
+          "9a4b33eafd77bcf2b385": {
+            "singleVisual": {
+              "visualType": "shape",
+              "objects": {}
+            }
+          },
+          "9afd62c874a5b8fe6172": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "e860b3cf2fcd112915a3",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "PolicyAssignments"
+                        }
+                      },
+                      "Property": "displayName"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "data": [
+                    {
+                      "properties": {
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "activeProjections": {
+                "Values": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "PolicyAssignments"
+                        }
+                      },
+                      "Property": "displayName"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "ad94a940af397068a0d2": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "1c2035255f28cbab23f2",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Resources"
+                        }
+                      },
+                      "Property": "osType"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "data": [
+                    {
+                      "properties": {
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "activeProjections": {
+                "Values": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Resources"
+                        }
+                      },
+                      "Property": "osType"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "af009be73b3463ec1f90": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "5c4b96f48c27f57ba80c",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "PolicyStates"
+                        }
+                      },
+                      "Property": "policySetDefinitionDisplayName"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "data": [
+                    {
+                      "properties": {
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "activeProjections": {
+                "Values": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "PolicyStates"
+                        }
+                      },
+                      "Property": "policySetDefinitionDisplayName"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "b0f0ebc84cf42e388297": {
+            "singleVisual": {
+              "visualType": "textbox",
+              "objects": {}
+            }
+          },
+          "b798990aebe2d8094dc9": {
+            "filters": {
+              "byName": {
+                "4e91ead1ca1e5ba69e2c": {
+                  "name": "4e91ead1ca1e5ba69e2c",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "PolicyStates"
+                        }
+                      },
+                      "Property": "PolicyAssignmentDisplayName"
+                    }
+                  },
+                  "howCreated": 1
+                }
+              },
+              "byExpr": [
+                {
+                  "name": "45a384e8a34d32aff7b2",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "ResourcePolicyCompliance"
+                        }
+                      },
+                      "Property": "PolicyInitiativeDisplay"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "1fb0da504a59f5970071",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "ResourcePolicyCompliance"
+                        }
+                      },
+                      "Property": "PolicyDefinitionDisplay"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "f5cbb5001a127a95e65d",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "ResourcePolicyCompliance"
+                        }
+                      },
+                      "Property": "ResourceName"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "0323438c1c37af333451",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Measure"
+                        }
+                      },
+                      "Property": "Distinct Resource Count"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "5c4075f5766adffb03c3",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Measure"
+                        }
+                      },
+                      "Property": "Policy Compliance Status"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "c474e1d8ffc051996f1e",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Measure"
+                        }
+                      },
+                      "Property": "Agent Coverage Status"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "pivotTable",
+              "objects": {},
+              "activeProjections": {
+                "Rows": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "ResourcePolicyCompliance"
+                        }
+                      },
+                      "Property": "PolicyInitiativeDisplay"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "b9f8eb70caba899d6e58": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "7823de39e8e48872aeb4",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "ComplianceStates"
+                        }
+                      },
+                      "Property": "DisplayName"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "7ac6e13ff70fd13b6315",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Measure"
+                        }
+                      },
+                      "Property": "Distinct Resource Count"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "hundredPercentStackedBarChart",
+              "objects": {}
+            }
+          },
+          "bf02be26a12957f649ba": {
+            "singleVisual": {
+              "visualType": "shape",
+              "objects": {}
+            }
+          },
+          "c26b5cd1491021a0a693": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "e816aa1f9ed543bff9e9",
+                  "type": "Categorical",
+                  "expression": {
+                    "HierarchyLevel": {
+                      "Expression": {
+                        "Hierarchy": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "ManagementGroups"
+                            }
+                          },
+                          "Hierarchy": "Management Group Hierarchy"
+                        }
+                      },
+                      "Level": "Level1"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "9e6ec50395f32a4f573d",
+                  "type": "Categorical",
+                  "expression": {
+                    "HierarchyLevel": {
+                      "Expression": {
+                        "Hierarchy": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "ManagementGroups"
+                            }
+                          },
+                          "Hierarchy": "Management Group Hierarchy"
+                        }
+                      },
+                      "Level": "Level2"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "2c3c9677eefa6232ab09",
+                  "type": "Categorical",
+                  "expression": {
+                    "HierarchyLevel": {
+                      "Expression": {
+                        "Hierarchy": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "ManagementGroups"
+                            }
+                          },
+                          "Hierarchy": "Management Group Hierarchy"
+                        }
+                      },
+                      "Level": "Level3"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "6d329f9e42b2230477db",
+                  "type": "Categorical",
+                  "expression": {
+                    "HierarchyLevel": {
+                      "Expression": {
+                        "Hierarchy": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "ManagementGroups"
+                            }
+                          },
+                          "Hierarchy": "Management Group Hierarchy"
+                        }
+                      },
+                      "Level": "Level4"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "371896892e928bdd4dda",
+                  "type": "Categorical",
+                  "expression": {
+                    "HierarchyLevel": {
+                      "Expression": {
+                        "Hierarchy": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "ManagementGroups"
+                            }
+                          },
+                          "Hierarchy": "Management Group Hierarchy"
+                        }
+                      },
+                      "Level": "Level5"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "0de0ff7d43adedea661c",
+                  "type": "Categorical",
+                  "expression": {
+                    "HierarchyLevel": {
+                      "Expression": {
+                        "Hierarchy": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Entity": "ManagementGroups"
+                            }
+                          },
+                          "Hierarchy": "Management Group Hierarchy"
+                        }
+                      },
+                      "Level": "Level6"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "HierarchySlicer1458836712039",
+              "objects": {}
+            }
+          },
+          "d7b2d834e6e5c02aad10": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "a74e9abda49c74d84416",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Resources"
+                        }
+                      },
+                      "Property": "HasMonitoringAgent"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "data": [
+                    {
+                      "properties": {
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "activeProjections": {
+                "Values": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Resources"
+                        }
+                      },
+                      "Property": "HasMonitoringAgent"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "fd1532fca3f4c2cacde9": {
+            "singleVisual": {
+              "visualType": "shape",
+              "objects": {}
+            }
+          }
+        },
+        "visualContainerGroups": {
+          "56a75d8ef12b362486c0": {
+            "isHidden": true
+          }
+        }
+      }
+    },
+    "objects": {
+      "merge": {
+        "outspacePane": [
+          {
+            "properties": {
+              "expanded": {
+                "expr": {
+                  "Literal": {
+                    "Value": "false"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

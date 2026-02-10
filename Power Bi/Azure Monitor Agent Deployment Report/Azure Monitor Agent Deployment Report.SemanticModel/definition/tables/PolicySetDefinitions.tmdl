@@ -1,0 +1,48 @@
+table PolicySetDefinitions
+	lineageTag: 921eaf97-5df3-4793-a3bf-dba2cc27a45e
+
+	column id
+		dataType: string
+		lineageTag: 9dc4c846-02ed-4886-ad9b-b5cc2347a8cd
+		summarizeBy: none
+		sourceColumn: id
+
+		annotation SummarizationSetBy = Automatic
+
+	column displayName
+		dataType: string
+		lineageTag: f7a4f10e-2d48-4fd3-abb6-8df957d34d30
+		summarizeBy: none
+		sourceColumn: displayName
+
+		annotation SummarizationSetBy = Automatic
+
+	column policyDefinitionIds
+		dataType: string
+		lineageTag: e24a8fe4-d526-4029-96e3-5f5d40e454d3
+		summarizeBy: none
+		sourceColumn: policyDefinitionIds
+
+		annotation SummarizationSetBy = Automatic
+
+	column policySetDefinitionId
+		dataType: string
+		lineageTag: 66803809-45cf-4c0c-bcf3-3e52031cf720
+		summarizeBy: none
+		sourceColumn: policySetDefinitionId
+
+		annotation SummarizationSetBy = Automatic
+
+	partition PolicySetDefinitions = m
+		mode: import
+		queryGroup: Generic
+		source =
+				let
+				    Query = AzureResourceGraph.Query("policyresources#(lf)| where ['type'] == 'microsoft.authorization/policysetdefinitions'#(lf)| extend policySetDefinitionId = tolower(id)#(lf)| extend policyDefinitions = properties.policyDefinitions#(lf)| mv-expand policyDefinitions#(lf)| extend policyDefinitionId = tolower(tostring(policyDefinitions.policyDefinitionId))#(lf)| join kind = inner (#(lf)        policyresources#(lf)        | where ['type'] == 'microsoft.authorization/policydefinitions'#(lf)        | where properties.policyRule has_any ('AzureMonitorLinuxAgent', 'AzureMonitorWindowsAgent')#(lf)        | extend policyDefinitionId = tolower(id)#(lf)    )#(lf)on policyDefinitionId#(lf)| extend  displayName = tostring(properties.displayName)#(lf)| summarize policyDefinitionIds = make_set(policyDefinitionId),  displayName = any(displayName) by policySetDefinitionId#(lf)| extend id = policySetDefinitionId", null, null, null, [resultTruncated=false])
+				in
+				    Query
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Exception
+

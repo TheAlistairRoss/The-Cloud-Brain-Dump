@@ -1,0 +1,33 @@
+/// All Policy Definitons that contain 'AzureMonitorLinuxAgent' or 'AzureMonitorWindowsAgent'
+table PolicyDefinitions
+	lineageTag: 3977450e-b29f-409e-956c-3d84a9d177ce
+
+	column displayName
+		dataType: string
+		lineageTag: b6b08904-fd51-433d-b413-adcb9dc5f7dd
+		summarizeBy: none
+		sourceColumn: displayName
+
+		annotation SummarizationSetBy = Automatic
+
+	column policyDefinitionId
+		dataType: string
+		lineageTag: 493b101d-d52c-46bf-955d-693dbb267bff
+		summarizeBy: none
+		sourceColumn: policyDefinitionId
+
+		annotation SummarizationSetBy = Automatic
+
+	partition PolicyDefinitions = m
+		mode: import
+		queryGroup: Generic
+		source =
+				let
+				    Query = AzureResourceGraph.Query("policyresources#(lf)| where ['type'] == 'microsoft.authorization/policydefinitions'#(lf)| where properties.policyRule has_any ('AzureMonitorLinuxAgent', 'AzureMonitorWindowsAgent')#(lf)| project #(lf)    policyDefinitionId = tolower(id),#(lf)    displayName =tostring(properties.displayName)", null, null, null, [resultTruncated=false])
+				in
+				    Query
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

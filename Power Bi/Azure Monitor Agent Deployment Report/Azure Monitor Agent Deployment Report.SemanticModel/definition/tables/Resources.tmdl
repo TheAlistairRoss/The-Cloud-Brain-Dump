@@ -1,0 +1,696 @@
+table Resources
+	lineageTag: f56b802b-74da-4bec-9483-2ade36b1fd26
+
+	measure 'VM Count' = ```
+			
+			DISTINCTCOUNT ( Resources[id] )
+			
+			```
+		formatString: 0
+		lineageTag: c40683ad-de70-4aa8-bd38-f7d0a015c0a7
+
+	measure 'VM Count Status vs Parent' = ```
+			
+			VAR ThisLevelCount = [VM Count]
+			VAR ParentCount =
+			    SWITCH (
+			        TRUE (),
+			        ISINSCOPE ( Resources[name] ),
+			            CALCULATE ( [VM Count], REMOVEFILTERS ( Resources[name] ) ),
+			        ISINSCOPE ( Resources[type] ),
+			            CALCULATE ( [VM Count], REMOVEFILTERS ( Resources[type] ) ),
+			        ISINSCOPE ( Resources[resourceGroup] ),
+			            CALCULATE ( [VM Count], REMOVEFILTERS ( Resources[resourceGroup] ) ),
+			        ISINSCOPE ( Resources[subscriptionId] ),
+			            CALCULATE ( [VM Count], REMOVEFILTERS ( Resources[subscriptionId] ) ),
+			        -- Top level has no parent: treat parent = current (so status = 0)
+			        [VM Count]
+			    )
+			RETURN
+			SIGN ( ThisLevelCount - ParentCount )
+			
+			```
+		formatString: 0
+		lineageTag: ca6e5277-9f57-4b64-942d-24a60285cebe
+
+	column id
+		dataType: string
+		lineageTag: 0ae0ca34-7d7d-4a85-9a4f-a8d1ca247bb4
+		summarizeBy: none
+		sourceColumn: id
+
+		annotation SummarizationSetBy = Automatic
+
+	column name
+		dataType: string
+		lineageTag: 875148c8-4c57-47af-8c0c-b85fa5dff559
+		summarizeBy: none
+		sourceColumn: name
+
+		annotation SummarizationSetBy = Automatic
+
+	column type
+		dataType: string
+		lineageTag: ddbba5bc-41d5-4cde-9590-f42ff64a0d4b
+		summarizeBy: none
+		sourceColumn: type
+
+		annotation SummarizationSetBy = Automatic
+
+	column tenantId
+		dataType: string
+		lineageTag: 78986c06-f1ba-4171-af6b-de9b4b8ca296
+		summarizeBy: none
+		sourceColumn: tenantId
+
+		annotation SummarizationSetBy = Automatic
+
+	column location
+		dataType: string
+		lineageTag: e2c60440-fdde-48dc-ab8f-a2b6622a368c
+		summarizeBy: none
+		sourceColumn: location
+
+		annotation SummarizationSetBy = Automatic
+
+	column tags
+		dataType: string
+		lineageTag: eb67ae22-dda6-4735-a43a-5be001e955f8
+		summarizeBy: none
+		sourceColumn: tags
+
+		annotation SummarizationSetBy = Automatic
+
+	column resourceGroup
+		dataType: string
+		lineageTag: ef82a94e-b6aa-4188-a8f5-91392289f96f
+		summarizeBy: none
+		sourceColumn: resourceGroup
+
+		annotation SummarizationSetBy = Automatic
+
+	column subscriptionId
+		dataType: string
+		lineageTag: 6f612aaf-20da-4e2e-9347-b9368cf181b2
+		summarizeBy: none
+		sourceColumn: subscriptionId
+
+		annotation SummarizationSetBy = Automatic
+
+	column imageType
+		dataType: string
+		lineageTag: 1a82860b-8e3a-402c-88ce-d2a4dabdb3fb
+		summarizeBy: none
+		sourceColumn: imageType
+
+		annotation SummarizationSetBy = Automatic
+
+	column imageId
+		dataType: string
+		lineageTag: 8f044466-a997-4b42-9037-b8e931e74830
+		summarizeBy: none
+		sourceColumn: imageId
+
+		annotation SummarizationSetBy = Automatic
+
+	column imagePublisher
+		dataType: string
+		lineageTag: 57c67f2f-c61e-4710-aeb8-26bfa4113884
+		summarizeBy: none
+		sourceColumn: imagePublisher
+
+		annotation SummarizationSetBy = Automatic
+
+	column imageOffer
+		dataType: string
+		lineageTag: e80053b8-66ff-468f-a91b-af76bdc7b2eb
+		summarizeBy: none
+		sourceColumn: imageOffer
+
+		annotation SummarizationSetBy = Automatic
+
+	column imageSKU
+		dataType: string
+		lineageTag: fc6d534b-1351-45b3-82e9-f844ea3dc821
+		summarizeBy: none
+		sourceColumn: imageSKU
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Subscription Name' = RELATED ( Subscriptions[name] )
+		lineageTag: 372fe356-ba64-4f8a-b1c0-ca59cbb2a2b9
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column osType
+		dataType: string
+		lineageTag: f75ee5b8-6ff6-4bf0-85ec-4431a27e2a2e
+		summarizeBy: none
+		sourceColumn: osType
+
+		annotation SummarizationSetBy = Automatic
+
+	column HasMonitoringAgent = ```
+			
+			VAR AgentId = RELATED ( AzureMonitorAgents[vMResourceId] )
+			RETURN NOT ISBLANK ( AgentId )
+			
+			```
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: a6451c9f-45c2-4e00-b6f1-4d495f228bea
+		summarizeBy: none
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Azure VM Windows Supported Image' = ```
+			
+			VAR TypeOk =
+			    LOWER ( COALESCE ( Resources[type], "" ) ) = "microsoft.compute/virtualmachines"
+			VAR IsMarketPlace = 
+			    LOWER (COALESCE(Resources[imageType], "") ) = "marketplace gallery"
+			VAR Location =
+			    LOWER ( COALESCE ( Resources[location], "" ) )
+			VAR OSTypeOk = 
+			        LOWER ( COALESCE ( Resources[osType], "" ) ) = "windows"
+			VAR LocationOk =
+			    Location IN {
+			              "australiacentral",
+			              "australiacentral2",
+			              "australiaeast",
+			              "australiasoutheast",
+			              "brazilsouth",
+			              "brazilsoutheast",
+			              "canadacentral",
+			              "canadaeast",
+			              "centralindia",
+			              "centralus",
+			              "centraluseuap",
+			              "eastasia",
+			              "eastus",
+			              "eastus2",
+			              "eastus2euap",
+			              "francecentral",
+			              "francesouth",
+			              "germanynorth",
+			              "germanywestcentral",
+			              "israelcentral",
+			              "italynorth",
+			              "japaneast",
+			              "japanwest",
+			              "jioindiacentral",
+			              "jioindiawest",
+			              "koreacentral",
+			              "koreasouth",
+			              "malaysiasouth",
+			              "mexicocentral",
+			              "northcentralus",
+			              "northeurope",
+			              "norwayeast",
+			              "norwaywest",
+			              "polandcentral",
+			              "qatarcentral",
+			              "southafricanorth",
+			              "southafricawest",
+			              "southcentralus",
+			              "southeastasia",
+			              "southindia",
+			              "spaincentral",
+			              "swedencentral",
+			              "swedensouth",
+			              "switzerlandnorth",
+			              "switzerlandwest",
+			              "taiwannorth",
+			              "taiwannorthwest",
+			              "uaecentral",
+			              "uaenorth",
+			              "uksouth",
+			              "ukwest",
+			              "westcentralus",
+			              "westeurope",
+			              "westindia",
+			              "westus",
+			              "westus2",
+			              "westus3",
+			              "chilecentral"
+			            }           
+			
+			/* ---------- Image matching (the big anyOf) ---------- */
+			VAR Pub   = LOWER ( COALESCE ( Resources[imagePublisher], "" ) )
+			VAR Offer = LOWER ( COALESCE ( Resources[imageOffer], "" ) )
+			VAR Sku   = LOWER ( COALESCE ( Resources[imageSku], "" ) )
+			
+			
+			/* Branch 3: WindowsServer publisher/offer + specific SKU prefixes */
+			VAR Branch3_WinServerSku =
+			    Pub = "microsoftwindowsserver"
+			        && Offer = "windowsserver"
+			        && (
+			            LEFT ( Sku, LEN ( "2008-r2-sp1" ) ) = "2008-r2-sp1"
+			            || LEFT ( Sku, LEN ( "2012-" ) ) = "2012-"
+			            || LEFT ( Sku, LEN ( "2016-" ) ) = "2016-"
+			            || LEFT ( Sku, LEN ( "2019-" ) ) = "2019-"
+			            || LEFT ( Sku, LEN ( "2022-" ) ) = "2022-"
+			            || LEFT ( Sku, LEN ( "2025-" ) ) = "2025-"
+			        )
+			
+			/* Branch 4: WindowsServerSemiAnnual + specific SKUs */
+			VAR Branch4_SemiAnnual =
+			    Pub = "microsoftwindowsserver"
+			        && Offer = "windowsserversemiannual"
+			        && Sku IN {
+			            "datacenter-core-1709-smalldisk",
+			            "datacenter-core-1709-with-containers-smalldisk",
+			            "datacenter-core-1803-with-containers-smalldisk"
+			        }
+			
+			/* Branch 5: WindowsServerHPCPack */
+			VAR Branch5_HPC =
+			    Pub = "microsoftwindowsserverhpcpack"
+			        && Offer = "windowsserverhpcpack"
+			
+			/* Branch 6: SQL Server publisher with offer suffixes (*-WSxxxx[/BYOL]) */
+			VAR Branch6_Sql_WindowsOffer =
+			    Pub = "microsoftsqlserver"
+			        && (
+			            RIGHT ( Offer, 7 )  = "-ws2025"
+			            || RIGHT ( Offer, 12 ) = "-ws2025-byol"
+			            || RIGHT ( Offer, 7 )  = "-ws2022"
+			            || RIGHT ( Offer, 12 ) = "-ws2022-byol"
+			            || RIGHT ( Offer, 7 )  = "-ws2019"
+			            || RIGHT ( Offer, 12 ) = "-ws2019-byol"
+			            || RIGHT ( Offer, 7 )  = "-ws2016"
+			            || RIGHT ( Offer, 12 ) = "-ws2016-byol"
+			            || RIGHT ( Offer, 9 )  = "-ws2012r2"
+			            || RIGHT ( Offer, 14 ) = "-ws2012r2-byol"
+			        )
+			
+			/* Branch 7: MicrosoftRServer / MLServer-WS2016 */
+			VAR Branch7_RServer =
+			    Pub = "microsoftrserver"
+			        && Offer = "mlserver-ws2016"
+			
+			/* Branch 8: Visual Studio images */
+			VAR Branch8_VS =
+			    Pub = "microsoftvisualstudio"
+			        && Offer IN { "visualstudio", "windows" }
+			
+			/* Branch 9: Dynamics AX onebox */
+			VAR Branch9_DynamicsAX =
+			    Pub = "microsoftdynamicsax"
+			        && Offer = "dynamics"
+			        && Sku = "pre-req-ax7-onebox-u8"
+			
+			/* Branch 10: Data Science VM (Windows) */
+			VAR Branch10_DSVM =
+			    Pub = "microsoft-ads"
+			        && Offer = "windows-data-science-vm"
+			
+			/* Branch 11: Windows Desktop offers like "Windows-1*" */
+			VAR Branch11_WindowsDesktop =
+			    Pub = "microsoftwindowsdesktop"
+			        && LEFT ( Offer, LEN ( "windows-1" ) ) = "windows-1"
+			
+			/* anyOf aggregate */
+			VAR ImageOk =
+			    Branch3_WinServerSku
+			        || Branch4_SemiAnnual
+			        || Branch5_HPC
+			        || Branch6_Sql_WindowsOffer
+			        || Branch7_RServer
+			        || Branch8_VS
+			        || Branch9_DynamicsAX
+			        || Branch10_DSVM
+			        || Branch11_WindowsDesktop
+			
+			/* Final allOf */
+			
+			RETURN
+			SWITCH (
+			    TRUE(),
+			    OSTypeOk && IsMarketPlace && TypeOk && LocationOk && ImageOk,   TRUE(),
+			                                                                    FALSE()
+			)
+			
+			
+			
+			
+			```
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: f5991a3a-2e82-4d61-ba6d-351a8af1a463
+		summarizeBy: none
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Azure VM Linux Supported Image' = ```
+			
+			VAR TypeOk =
+			    LOWER ( COALESCE ( Resources[type], "" ) ) = "microsoft.compute/virtualmachines"
+			
+			VAR IsMarketPlace =
+			    LOWER ( TRIM ( COALESCE ( Resources[imageType], "" ) ) ) = "marketplace gallery"
+			
+			VAR OSTypeOk =
+			    LOWER ( COALESCE ( Resources[osType], "" ) ) = "linux"
+			
+			VAR Location =
+			    LOWER ( COALESCE ( Resources[location], "" ) )
+			
+			VAR LocationOk =
+			    Location IN {
+			              "australiacentral",
+			              "australiacentral2",
+			              "australiaeast",
+			              "australiasoutheast",
+			              "brazilsouth",
+			              "brazilsoutheast",
+			              "canadacentral",
+			              "canadaeast",
+			              "centralindia",
+			              "centralus",
+			              "centraluseuap",
+			              "chilecentral",
+			              "eastasia",
+			              "eastus",
+			              "eastus2",
+			              "eastus2euap",
+			              "francecentral",
+			              "francesouth",
+			              "germanynorth",
+			              "germanywestcentral",
+			              "indonesiacentral",
+			              "israelcentral",
+			              "italynorth",
+			              "japaneast",
+			              "japanwest",
+			              "jioindiacentral",
+			              "jioindiawest",
+			              "koreacentral",
+			              "koreasouth",
+			              "malaysiasouth",
+			              "malaysiawest",
+			              "mexicocentral",
+			              "newzealandnorth",
+			              "northcentralus",
+			              "northeurope",
+			              "norwayeast",
+			              "norwaywest",
+			              "polandcentral",
+			              "qatarcentral",
+			              "southafricanorth",
+			              "southafricawest",
+			              "southcentralus",
+			              "southeastasia",
+			              "southindia",
+			              "spaincentral",
+			              "swedencentral",
+			              "swedensouth",
+			              "switzerlandnorth",
+			              "switzerlandwest",
+			              "taiwannorth",
+			              "taiwannorthwest",
+			              "uaecentral",
+			              "uaenorth",
+			              "uksouth",
+			              "ukwest",
+			              "westcentralus",
+			              "westeurope",
+			              "westindia",
+			              "westus",
+			              "westus2",
+			              "westus3"    
+			            }
+			
+			/* ---------- Image matching (the big anyOf) ---------- */
+			VAR Pub   = LOWER ( COALESCE ( Resources[imagePublisher], "" ) )
+			VAR Offer = LOWER ( COALESCE ( Resources[imageOffer], "" ) )
+			VAR Sku   = LOWER ( COALESCE ( Resources[imageSku], "" ) )
+			
+			/* Red Hat */
+			VAR B_RedHat =
+			    Pub = "redhat"
+			    && Offer IN {
+			        "rhel","rhel-arm64","rhel-byos","rhel-ha","rhel-sap","rhel-sap-apps","rhel-sap-ha","rhel-sap-hana"
+			    }
+			    && (
+			        LEFT ( Sku, 1 ) IN { "7","8","9","1" }     -- "10*" starts with "1"
+			        || LEFT ( Sku, LEN ( "rhel-lvm7" ) ) = "rhel-lvm7"
+			        || LEFT ( Sku, LEN ( "rhel-lvm8" ) ) = "rhel-lvm8"
+			        || LEFT ( Sku, LEN ( "rhel-lvm9" ) ) = "rhel-lvm9"
+			        || LEFT ( Sku, LEN ( "rhel-lvm10" ) ) = "rhel-lvm10"
+			    )
+			
+			/* SUSE: standard SLES offers with 12* / 15* skus */
+			VAR B_SUSE_SLES_Core =
+			    Pub = "suse"
+			    && Offer IN {
+			        "sles","sles-hpc","sles-hpc-priority","sles-sap","sles-sap-byos","sles-priority",
+			        "sles-byos","sles-sapcal","sles-standard"
+			    }
+			    && ( LEFT ( Sku, 2 ) IN { "12","15" } )
+			
+			/* SUSE: offers like "sles-12*" or "sles-15*" with sku in {gen1, gen2} */
+			VAR B_SUSE_SLES_Like =
+			    Pub = "suse"
+			    && (
+			        LEFT ( Offer, LEN ( "sles-12" ) ) = "sles-12"
+			        || LEFT ( Offer, LEN ( "sles-15" ) ) = "sles-15"
+			    )
+			    && Sku IN { "gen1","gen2" }
+			
+			/* Canonical (Ubuntu) */
+			VAR B_Canonical =
+			    Pub = "canonical"
+			    && (
+			        Offer = "ubuntuserver"
+			        || LEFT ( Offer, LEN ( "0001-com-ubuntu-server-" ) ) = "0001-com-ubuntu-server-"
+			        || LEFT ( Offer, LEN ( "0001-com-ubuntu-pro-" ) ) = "0001-com-ubuntu-pro-"
+			        || LEFT ( Offer, LEN ( "ubuntu-24_04-lts" ) ) = "ubuntu-24_04-lts"
+			    )
+			    && Sku IN {
+			        "14.04.0-lts","14.04.1-lts","14.04.2-lts","14.04.3-lts","14.04.4-lts","14.04.5-lts",
+			        "16_04_0-lts-gen2","16_04-lts-gen2","16.04-lts","16.04.0-lts",
+			        "18_04-lts-arm64","18_04-lts-gen2","18.04-lts",
+			        "20_04-lts-arm64","20_04-lts-gen2","20_04-lts",
+			        "22_04-lts-arm64","22_04-lts-gen2","22_04-lts",
+			        "server-arm64","server",
+			        "pro-16_04-lts-gen2","pro-16_04-lts",
+			        "pro-18_04-lts-gen2","pro-18_04-lts",
+			        "pro-20_04-lts-gen2","pro-20_04-lts",
+			        "pro-22_04-lts-gen2","pro-22_04-lts",
+			        "24_04-gen2","pro-24_04"
+			    }
+			
+			/* Oracle Linux */
+			VAR B_Oracle =
+			    Pub = "oracle"
+			    && Offer = "oracle-linux"
+			    && (
+			        LEFT ( Sku, 1 ) IN { "7","8" }
+			        || LEFT ( Sku, 3 ) IN { "ol7","ol8","ol9" }
+			    )
+			
+			/* OpenLogic (CentOS) */
+			VAR B_OpenLogic =
+			    Pub = "openlogic"
+			    && Offer IN { "centos","centos-lvm","centos-sriov" }
+			    && LEFT ( Sku, 1 ) IN { "7","8" }
+			
+			/* Cloudera on CentOS */
+			VAR B_Cloudera =
+			    Pub = "cloudera"
+			    && Offer = "cloudera-centos-os"
+			    && LEFT ( Sku, 1 ) = "7"
+			
+			/* AlmaLinux */
+			VAR B_Alma =
+			    Pub = "almalinux"
+			    && LEFT ( Offer, LEN ( "almalinux" ) ) = "almalinux"
+			    && LEFT ( Sku, 1 ) IN { "8","9" }
+			
+			/* Rocky Linux – CIQ */
+			VAR B_Rocky_CIQ =
+			    Pub = "ciq"
+			    && Offer = "rocky-community-editions"
+			    && Sku IN { "rocky-community-8-arm","rocky-community-9-arm","rocky-community-8","rocky-community-9" }
+			
+			/* Rocky Linux – RESF */
+			VAR B_Rocky_RESF =
+			    Pub = "resf"
+			    && Offer = "rockylinux-x86_64"
+			    && Sku IN { "8-lvm","9-base" }
+			
+			/* Debian (publisher: credativ) */
+			VAR B_Debian_Credativ =
+			    Pub = "credativ"
+			    && Offer = "debian"
+			    && Sku = "9"
+			
+			/* Debian (publisher: Debian) */
+			VAR B_Debian =
+			    Pub = "debian"
+			    && Offer IN { "debian-10","debian-11","debian-12" }
+			    && Sku IN {
+			        "10","10-gen2","11","11-gen2","12","12-gen2","11-backports-arm64","12-backports-arm64"
+			    }
+			
+			/* CBL-Mariner / Azure Linux */
+			VAR B_CBLMariner =
+			    Pub = "microsoftcblmariner"
+			    && Offer IN { "cbl-mariner","azure-linux-3" }
+			    && Sku IN {
+			        "1-gen2","cbl-mariner-1","cbl-mariner-2","cbl-mariner-2-arm64","cbl-mariner-2-gen2",
+			        "azure-linux-3","azure-linux-3-arm64","azure-linux-3-gen2"
+			    }
+			
+			/* anyOf aggregate */
+			VAR ImageOk =
+			    B_RedHat
+			    || B_SUSE_SLES_Core
+			    || B_SUSE_SLES_Like
+			    || B_Canonical
+			    || B_Oracle
+			    || B_OpenLogic
+			    || B_Cloudera
+			    || B_Alma
+			    || B_Rocky_CIQ
+			    || B_Rocky_RESF
+			    || B_Debian_Credativ
+			    || B_Debian
+			    || B_CBLMariner
+			
+			/* Final allOf + your N/A gate */
+			RETURN
+			SWITCH (
+			    TRUE (),
+			    OSTypeOk && IsMarketPlace && TypeOk && LocationOk && ImageOk,   TRUE(),
+			                                                                    FALSE()
+			)
+			
+			```
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 10b4bdab-25d4-49c9-98d5-5f746ae37ce0
+		summarizeBy: none
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+	column imageIdDisplay = ```
+			
+			VAR RidRaw = Resources[imageId]
+			VAR Rid    = TRIM ( RidRaw )
+			
+			-- Treat "" as blank
+			VAR HasIdStrict = NOT ( ISBLANK ( Rid ) || Rid = "" )
+			
+			-- Only proceed if it looks like a gallery image ARM id
+			VAR LooksLikeGalleryImage =
+			    HasIdStrict
+			        && CONTAINSSTRING ( Rid, "/galleries/" )
+			        && CONTAINSSTRING ( Rid, "/images/" )
+			        && CONTAINSSTRING ( Rid, "/versions/" )
+			
+			VAR ImagePath = SUBSTITUTE ( Rid, "/", "|" )
+			
+			VAR RG          = IF ( LooksLikeGalleryImage, PATHITEM ( ImagePath, 5 ), BLANK () )
+			VAR Gallery     = IF ( LooksLikeGalleryImage, PATHITEM ( ImagePath, 9 ), BLANK () )
+			VAR Image       = IF ( LooksLikeGalleryImage, PATHITEM ( ImagePath, 11 ), BLANK () )
+			VAR ImageVersion= IF ( LooksLikeGalleryImage, PATHITEM ( ImagePath, 13 ), BLANK () )
+			
+			-- Optional truncation
+			VAR ImageShort =
+			    IF ( NOT ISBLANK ( Image ) && LEN ( Image ) > 60, LEFT ( Image, 57 ) & "…", Image )
+			
+			-- Build only from non-blank parts (use ROW/UNION; DATATABLE requires literals)
+			VAR PartsUnfiltered =
+			    UNION (
+			        ROW ( "p", Gallery ),
+			        ROW ( "p", ImageShort ),
+			        ROW ( "p", IF ( NOT ISBLANK ( ImageVersion ), "v" & ImageVersion, BLANK () ) )
+			    )
+			
+			VAR Parts = FILTER ( PartsUnfiltered, NOT ISBLANK ( [p] ) )
+			
+			RETURN
+			IF ( LooksLikeGalleryImage, CONCATENATEX ( Parts, [p], " • " ), BLANK () )
+			
+			```
+		lineageTag: 5a233f94-c075-4f0c-868a-0e9bb613e6fd
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Policy Supported Image' =
+			
+			VAR Win = Resources[Azure VM Windows Supported Image]
+			VAR Linux = Resources[Azure VM Linux Supported Image]
+			RETURN
+			OR(Win, Linux)
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: bc09de5a-d0d2-429f-b159-1bcc20549724
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column AgentState = ```
+			
+			VAR AgentId = RELATED ( AzureMonitorAgents[vMResourceId] )
+			RETURN 
+			    IF(ISBLANK(AgentId), "No Agent", RELATED(AzureMonitorAgents[provisioningState])
+			
+			)
+			```
+		lineageTag: 8ae8ffaa-8c87-41b6-8d71-b576366f6d3f
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column ResourceGroupId
+		dataType: string
+		lineageTag: c88108fb-7429-47f1-a730-d2fce13db133
+		summarizeBy: none
+		sourceColumn: ResourceGroupId
+
+		annotation SummarizationSetBy = Automatic
+
+	hierarchy 'resourceId Hierarchy'
+		lineageTag: 66de917e-d093-4207-874a-05bc19d4c373
+
+		level 'Subscription Name'
+			lineageTag: bc5f4e3d-70f9-4e02-b2eb-bbc2dc4181a6
+			column: 'Subscription Name'
+
+		level resourceGroup
+			lineageTag: d6fc3831-a069-4fd8-a3cf-469ecca33354
+			column: resourceGroup
+
+		level type
+			lineageTag: a47cbafb-3e19-4c83-a293-735024fde70b
+			column: type
+
+		level name
+			lineageTag: 8c31ef5e-6f8c-4959-b7a6-e76304bc87f7
+			column: name
+
+	partition Resources = m
+		mode: import
+		source =
+				let
+				    Query = AzureResourceGraph.Query("resources#(lf)| where ['type'] in~ (    #(lf)    'microsoft.compute/virtualmachines', #(lf)    'microsoft.compute/virtualmachinescalesets', #(lf)    'microsoft.hybridcompute/machines'#(lf)) #(lf)| extend osType = case(#(lf)    type =~ ""microsoft.hybridcompute/machines"",  tolower(tostring(properties.osType)),#(lf)    type =~ ""microsoft.compute/virtualmachinescalesets"", tolower(tostring(properties.virtualMachineProfile.storageProfile.osDisk.osType)),#(lf)    tolower(tostring(properties.storageProfile.osDisk.osType))#(lf))#(lf)| extend imagePublisher = case(#(lf)    type =~ ""microsoft.hybridcompute/machines"",  tostring(""""),#(lf)    type =~ ""microsoft.compute/virtualmachinescalesets"", tolower(tostring(properties.virtualMachineProfile.storageProfile.imageReference.publisher)),#(lf)    tostring(properties.storageProfile.imageReference.publisher)#(lf))#(lf)| extend imageOffer = case(#(lf)    type =~ ""microsoft.hybridcompute/machines"",  tostring(""""),#(lf)    type =~ ""microsoft.compute/virtualmachinescalesets"", tolower(tostring(properties.virtualMachineProfile.storageProfile.imageReference.offer)),#(lf)    tostring(properties.storageProfile.imageReference.offer)#(lf))#(lf)| extend imageSKU = case(#(lf)    type =~ ""microsoft.hybridcompute/machines"",  tostring(""""),#(lf)    type =~ ""microsoft.compute/virtualmachinescalesets"", tolower(tostring(properties.virtualMachineProfile.storageProfile.imageReference.sku)),#(lf)    tostring(properties.storageProfile.imageReference.sku)#(lf))#(lf)| extend imageId = case(#(lf)    type =~ ""microsoft.hybridcompute/machines"",  tostring(""""),#(lf)    type =~ ""microsoft.compute/virtualmachinescalesets"", tolower(tostring(properties.virtualMachineProfile.storageProfile.imageReference.id)),#(lf)    tostring(properties.storageProfile.imageReference.id)#(lf))#(lf)| extend imageType = case(#(lf)    isnotempty(imagePublisher), ""Marketplace Gallery"",#(lf)    isnotempty(imageId), ""Custom Gallery"",#(lf)    tostring(properties.storageProfile.osDisk.createOption) =~ ""Attach"", ""Attached"",#(lf)    type =~ ""microsoft.hybridcompute/machines"", ""Azure Arc"",#(lf)    ""Unknown""#(lf))#(lf)| project#(lf)    id = tolower(id), #(lf)    name, #(lf)    ['type'], #(lf)    tenantId, #(lf)    location, #(lf)    tags, #(lf)    resourceGroup, #(lf)    subscriptionId,#(lf)    osType,#(lf)    imageType,#(lf)    imageId,#(lf)    imagePublisher,#(lf)    imageOffer,#(lf)    imageSKU#(lf)", null, null, null, [resultTruncated=false]),
+				    #"Removed Duplicates" = Table.Distinct(Query, {"id"}),
+				    #"Inserted Text Before Delimiter" = Table.AddColumn(#"Removed Duplicates", "ResourceGroupId", each Text.Lower(Text.BeforeDelimiter([id], "/", 4)), type text)
+				in
+				    #"Inserted Text Before Delimiter"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,53 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.6.0/schema.json",
+  "name": "fe813a698cdf6ad76287",
+  "position": {
+    "x": 45.833333333333336,
+    "y": 7.5,
+    "z": 6000,
+    "height": 69.166666666666671,
+    "width": 1225.8333333333335,
+    "tabOrder": 6000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Azure VM Marketplace Images - Windows",
+                    "textStyle": {
+                      "fontWeight": "bold",
+                      "fontFamily": "Segoe UI Semibold",
+                      "fontSize": "14pt",
+                      "textDecoration": "underline"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "This view gives an interactive overview of the Azure Virtual machines, deployed from the Azure Marketplace gallery and their agent status."
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Evaluation if an image is supported is done based on a built in Azure Policy, but evaluated within Power Bi using DAX. This does not evaluate the configuration of the parameters on assignment."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

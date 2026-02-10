@@ -1,0 +1,73 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.6.0/schema.json",
+  "name": "486966e0a388554ddc0f",
+  "position": {
+    "x": 664.16666666666674,
+    "y": 324.16666666666669,
+    "z": 2000,
+    "height": 92.5,
+    "width": 607.5,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Based on Policy:",
+                    "textStyle": {
+                      "fontWeight": "bold",
+                      "color": "#242424"
+                    }
+                  },
+                  {
+                    "value": " Configure Windows virtual machines to run Azure Monitor Agent using system-assigned managed identity",
+                    "textStyle": {
+                      "color": "#242424"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Version:",
+                    "textStyle": {
+                      "fontWeight": "bold"
+                    }
+                  },
+                  {
+                    "value": " 4.6.0"
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": ""
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Policy Rule",
+                    "textStyle": {
+                      "fontWeight": "bold"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

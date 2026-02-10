@@ -1,0 +1,218 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 882.88354443946957,
+            "y": 534.07418821060787
+          },
+          "nodeIndex": "PolicyStates",
+          "nodeLineageTag": "fd77e0c6-7022-4a9d-a930-6599090d2cea",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 10,
+          "expandedHeight": 300
+        },
+        {
+          "location": {
+            "x": 858.60317476293073,
+            "y": 931.275587900704
+          },
+          "nodeIndex": "AzureMonitorAgents",
+          "nodeLineageTag": "8eef6526-5029-4e11-8450-db7fd939de2a",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 9,
+          "expandedHeight": 176
+        },
+        {
+          "location": {
+            "x": 854.1587811490366,
+            "y": 279.81548431137583
+          },
+          "nodeIndex": "PolicyAssignments",
+          "nodeLineageTag": "8b04f335-22d6-44e3-816e-535c2ac9df3e",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 5,
+          "expandedHeight": 224
+        },
+        {
+          "location": {
+            "x": 852.8771385237884,
+            "y": 82.165259724708889
+          },
+          "nodeIndex": "PolicyDefinitions",
+          "nodeLineageTag": "3977450e-b29f-409e-956c-3d84a9d177ce",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 6,
+          "expandedHeight": 152
+        },
+        {
+          "location": {
+            "x": 507.26765419279923,
+            "y": 1051.3401970677705
+          },
+          "nodeIndex": "Resources",
+          "nodeLineageTag": "f56b802b-74da-4bec-9483-2ade36b1fd26",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 13,
+          "expandedHeight": 272
+        },
+        {
+          "location": {
+            "x": 1240.3785092465043,
+            "y": 0
+          },
+          "nodeIndex": "PolicySetDefinitionsToPolicyDefinitions",
+          "nodeLineageTag": "eefd3a4e-e6ee-43f9-89f8-9779253c7bf4",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 7,
+          "expandedHeight": 152
+        },
+        {
+          "location": {
+            "x": 1246.4484932030346,
+            "y": 456.10603511671894
+          },
+          "nodeIndex": "PolicySetDefinitions",
+          "nodeLineageTag": "921eaf97-5df3-4793-a3bf-dba2cc27a45e",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 8,
+          "expandedHeight": 128
+        },
+        {
+          "location": {
+            "x": 1216.2036500023898,
+            "y": 1172.1257619566043
+          },
+          "nodeIndex": "Subscriptions",
+          "nodeLineageTag": "f3d1daf4-4f9e-40e4-8503-1980216f4620",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 11,
+          "expandedHeight": 176
+        },
+        {
+          "location": {
+            "x": 277.72082797960769,
+            "y": 25.430382692734383
+          },
+          "nodeIndex": "Measure",
+          "nodeLineageTag": "dc3b4b81-5faf-4dea-8898-6f113e6a02ac",
+          "size": {
+            "height": 72,
+            "width": 234
+          },
+          "zIndex": 14,
+          "expandedHeight": 200
+        },
+        {
+          "location": {
+            "x": 1567.3410986763859,
+            "y": 1187.744012811052
+          },
+          "nodeIndex": "ManagementGroups",
+          "nodeLineageTag": "8ec45247-7fe3-4c44-91d1-741b6413e6c5",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 4,
+          "expandedHeight": 176
+        },
+        {
+          "location": {
+            "x": 847.97684523537589,
+            "y": 1183.9430073531382
+          },
+          "nodeIndex": "ResourceGroups",
+          "nodeLineageTag": "059acea3-16ce-407c-8f6b-40d2daf5dc91",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 12,
+          "expandedHeight": 152
+        },
+        {
+          "location": {
+            "x": 878.41699790767279,
+            "y": 749.64719349842358
+          },
+          "nodeIndex": "ResourceTypes",
+          "nodeLineageTag": "f63fc0f7-a365-4b22-88b6-d085c6250453",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 1,
+          "expandedHeight": 296
+        },
+        {
+          "location": {
+            "x": 289.15851018503326,
+            "y": 573.57671692441011
+          },
+          "nodeIndex": "ComplianceStates",
+          "nodeLineageTag": "7bd384f3-30cc-477b-b35f-0a5b99a994ed",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 2,
+          "expandedHeight": 200
+        },
+        {
+          "location": {
+            "x": 280.97829049387337,
+            "y": 811.86810383539239
+          },
+          "nodeIndex": "ResourceComplianceStatus",
+          "nodeLineageTag": "b35f572f-6683-49dc-b905-bbaba186bf9b",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 3,
+          "expandedHeight": 200
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 63.287087723234514,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

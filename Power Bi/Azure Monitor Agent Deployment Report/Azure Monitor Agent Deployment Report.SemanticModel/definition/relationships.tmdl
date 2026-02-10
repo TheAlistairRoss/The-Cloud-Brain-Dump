@@ -1,0 +1,54 @@
+relationship d3ceb836-9296-2116-455f-3cd68b11fa41
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: AzureMonitorAgents.vMResourceId
+	toColumn: Resources.id
+
+relationship f41a0029-94bd-5ef4-fbe6-082d56f7d510
+	crossFilteringBehavior: bothDirections
+	fromColumn: PolicyStates.resourceId
+	toColumn: Resources.id
+
+relationship 0279ea61-fe74-53b7-aace-ba58d444b02d
+	fromColumn: PolicyStates.policySetDefinitionId
+	toColumn: PolicySetDefinitions.id
+
+relationship f175e5d8-cedb-26f6-afcd-2cea7245e7fa
+	fromColumn: PolicyStates.policyAssignmentId
+	toColumn: PolicyAssignments.id
+
+relationship AutoDetected_bcec0142-297f-4a7a-9f07-b519286a2e7a
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: PolicyAssignments.policyDefinitionId
+	toColumn: PolicyDefinitions.policyDefinitionId
+
+relationship AutoDetected_c5c54e49-baf3-4bc1-8028-e0f896ade06d
+	fromColumn: PolicySetDefinitionsToPolicyDefinitions.policyDefinitionId
+	toColumn: PolicyDefinitions.policyDefinitionId
+
+relationship AutoDetected_4a8da043-8487-4c38-b00f-35722ff76028
+	fromColumn: PolicySetDefinitionsToPolicyDefinitions.policySetDefinitionId
+	toColumn: PolicySetDefinitions.policySetDefinitionId
+
+relationship e7fe8bf5-12b8-4295-f4d6-eeb665f1a2d7
+	fromColumn: Resources.ResourceGroupId
+	toColumn: ResourceGroups.id
+
+relationship AutoDetected_94cbd810-7fa6-4c3b-b046-89f6903a03d6
+	fromColumn: ResourceGroups.subscriptionId
+	toColumn: Subscriptions.subscriptionId
+
+relationship 587d378a-038e-8e16-ad63-cb069a08f686
+	fromColumn: Subscriptions.mgId
+	toColumn: ManagementGroups.mgId
+
+relationship 4261ce16-d3c3-0a1d-73b7-0142760ae80a
+	fromColumn: Resources.type
+	toColumn: ResourceTypes.ResourceType
+
+relationship ResourcePolicyCompliance_ComplianceState_Rel
+	crossFilteringBehavior: bothDirections
+	fromColumn: ResourcePolicyCompliance.complianceState
+	toColumn: ComplianceStates.ComplianceState
+

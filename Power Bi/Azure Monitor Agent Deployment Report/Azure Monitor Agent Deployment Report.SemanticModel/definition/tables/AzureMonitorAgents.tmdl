@@ -1,0 +1,60 @@
+table AzureMonitorAgents
+	lineageTag: 8eef6526-5029-4e11-8450-db7fd939de2a
+
+	column id
+		dataType: string
+		lineageTag: e1890943-7c5b-4397-9e31-395f6aec5f39
+		summarizeBy: none
+		sourceColumn: id
+
+		annotation SummarizationSetBy = Automatic
+
+	column name
+		dataType: string
+		lineageTag: 10324fcd-5462-4935-b303-c5008958788f
+		summarizeBy: none
+		sourceColumn: name
+
+		annotation SummarizationSetBy = Automatic
+
+	column vMResourceId
+		dataType: string
+		lineageTag: 9e16efe3-5314-4187-8f08-8ca8b6d6ac29
+		summarizeBy: none
+		sourceColumn: vMResourceId
+
+		annotation SummarizationSetBy = Automatic
+
+	column provisioningState
+		dataType: string
+		lineageTag: 9c2f802f-c49b-4a46-8ac2-3d8f3dd2a172
+		summarizeBy: none
+		sourceColumn: provisioningState
+
+		annotation SummarizationSetBy = Automatic
+
+	column SuccessCount
+		dataType: int64
+		formatString: 0
+		lineageTag: 386375d9-931b-4327-9058-8af12af103b6
+		summarizeBy: sum
+		sourceColumn: SuccessCount
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+	partition AzureMonitorAgents = m
+		mode: import
+		queryGroup: Generic
+		source =
+				let
+				    Query = AzureResourceGraph.Query("resources#(lf)| where ['type'] in~ ('microsoft.compute/virtualmachines/extensions', 'microsoft.hybridcompute/machines/extensions')#(lf)| where name in ('AzureMonitorLinuxAgent', 'AzureMonitorWindowsAgent')#(lf)| project #(lf)    id, #(lf)    name, #(lf)    vMResourceId = tolower(substring(id, 0, indexof(id, strcat('/extensions/', name)))),#(lf)    provisioningState = tostring(properties.provisioningState)#(lf)| extend SuccessCount = iff(provisioningState =~ ""Succeeded"", 1,0)#(lf)", null, null, null, [resultTruncated=false]),
+				    #"Removed Duplicates" = Table.Distinct(Query, {"id"})
+				in
+				    #"Removed Duplicates"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

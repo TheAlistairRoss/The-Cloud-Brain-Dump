@@ -1,0 +1,125 @@
+table ManagementGroups
+	lineageTag: 8ec45247-7fe3-4c44-91d1-741b6413e6c5
+
+	column id
+		dataType: string
+		lineageTag: f3057408-5615-4c4c-911a-cb5a6e12714f
+		summarizeBy: none
+		sourceColumn: id
+
+		annotation SummarizationSetBy = Automatic
+
+	column name
+		dataType: string
+		lineageTag: df1c75ca-8470-47f7-8217-98f815585e17
+		summarizeBy: none
+		sourceColumn: name
+
+		annotation SummarizationSetBy = Automatic
+
+	column parentId
+		dataType: string
+		lineageTag: 9126b05a-a6e4-4152-a55a-6376ce5681e8
+		summarizeBy: none
+		sourceColumn: parentId
+
+		annotation SummarizationSetBy = Automatic
+
+	column Path = PATH('ManagementGroups'[id], 'ManagementGroups'[parentId])
+		lineageTag: a139babe-8d44-4dc3-b85e-11429253c06d
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column tenantId
+		dataType: string
+		lineageTag: 1293a752-9d6e-4f6c-94e8-a6488d3c0299
+		summarizeBy: none
+		sourceColumn: tenantId
+
+		annotation SummarizationSetBy = Automatic
+
+	column Level1 = LOOKUPVALUE('ManagementGroups'[name], 'ManagementGroups'[id], PATHITEM('ManagementGroups'[Path], 1))
+		lineageTag: 941f3e1b-b74e-4a34-b72c-d8df9a3bfa1b
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column Level2 = LOOKUPVALUE('ManagementGroups'[name], 'ManagementGroups'[id], PATHITEM('ManagementGroups'[Path], 2))
+		lineageTag: 22744c2f-e6f1-486b-bc66-9738e2b0fd04
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column Level3 = LOOKUPVALUE('ManagementGroups'[name], 'ManagementGroups'[id], PATHITEM('ManagementGroups'[Path], 3))
+		lineageTag: 46b11b7a-ec06-411a-9f13-91307c9d56f9
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column Level4 = LOOKUPVALUE('ManagementGroups'[name], 'ManagementGroups'[id], PATHITEM('ManagementGroups'[Path], 4))
+		lineageTag: 7121fac5-2501-4b86-a53b-0b6387ba795f
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column Level5 = LOOKUPVALUE('ManagementGroups'[name], 'ManagementGroups'[id], PATHITEM('ManagementGroups'[Path], 5))
+		lineageTag: 2899fb4a-9d1f-47bb-a3ec-ccb87b9aa3ab
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column Level6 = LOOKUPVALUE('ManagementGroups'[name], 'ManagementGroups'[id], PATHITEM('ManagementGroups'[Path], 6))
+		lineageTag: 8ba9a36f-bb54-46cd-a6c2-e2d4a0a3b1fa
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column mgId
+		dataType: string
+		lineageTag: 782b82b7-d96d-4eb1-a4ce-b42c5b5507b0
+		summarizeBy: none
+		sourceColumn: mgId
+
+		annotation SummarizationSetBy = Automatic
+
+	hierarchy 'Management Group Hierarchy'
+		lineageTag: 864ef681-5cb3-4b24-8618-ade7b84ab783
+
+		level Level1
+			lineageTag: 7f563483-f7de-40fc-a1f3-322f8c1443ca
+			column: Level1
+
+		level Level2
+			lineageTag: a6eb0889-aaf7-41a9-ac30-31de9b7faf04
+			column: Level2
+
+		level Level3
+			lineageTag: 4b799a9f-ee2d-4210-abce-09e29a7c3241
+			column: Level3
+
+		level Level4
+			lineageTag: 78fc46f4-cf03-41f7-8d17-b7c74c258eec
+			column: Level4
+
+		level Level5
+			lineageTag: 041ee2c6-7dfb-4e9e-9f58-ee83ad01ffda
+			column: Level5
+
+		level Level6
+			lineageTag: b5ddb8d4-c3fd-4294-aeab-37f9d10a378c
+			column: Level6
+
+	partition ManagementGroups = m
+		mode: import
+		queryGroup: Scope
+		source =
+				let
+				    Source = AzureResourceGraph.Query("resourcecontainers#(lf)| where type == ""microsoft.resources/subscriptions""#(lf)| join kind=leftouter (#(lf)resources#(lf)| where ['type'] in~ (    #(lf)    'microsoft.compute/virtualmachines', #(lf)    'microsoft.compute/virtualmachinescalesets', #(lf)    'microsoft.hybridcompute/machines'#(lf))#(lf)| distinct subscriptionId#(lf)) on subscriptionId#(lf)| extend mgChain = properties.managementGroupAncestorsChain#(lf)| extend chainLength = array_length(mgChain)#(lf)| mv-expand with_itemindex=idx mgItem = mgChain#(lf)| extend id = tostring(mgItem.name)#(lf)| extend name = tostring(mgItem.displayName)#(lf)| extend parentId = iff(idx == chainLength - 1, tostring(mgItem.name), tostring(mgChain[idx + 1].name))#(lf)| extend tenantId = tostring(mgChain[chainLength - 1].name)#(lf)| extend name = iff(id == tenantId, strcat(name, "" ("", tenantId,"")""),name)#(lf)| project id, name, parentId, tenantId#(lf)| distinct id, name, parentId, tenantId#(lf)| extend mgId = strcat(tenantId,""/"",id)", null, null, null, [resultTruncated=false])
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
