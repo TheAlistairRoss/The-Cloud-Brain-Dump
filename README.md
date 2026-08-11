@@ -49,6 +49,7 @@ A collection of standalone scripts, queries, and modules that don't belong to a 
 - **[KQL Toolbox](/Toolshed/KQL%20Toolbox/README.md)** — Miscellaneous KQL queries and functions.
     - [The Luhn Algorithm and KQL](/Toolshed/KQL%20Toolbox/the%20Luhn%20Algorithm.txt) — KQL implementation of the Luhn checksum algorithm for validating identification numbers.
     - [Evaluate Column Sizes](/Toolshed/KQL%20Toolbox/Evaluate%20Column%20Sizes.txt) — KQL query to evaluate and report on column sizes within a Log Analytics table.
+- **[Log Analytics V1 Table Workbook](/Toolshed/Log%20Analytics%20V1%20Table%20Workbook/README.md)** — Azure Workbook wizard for discovering classic tables and deploying DCR-based Logs Ingestion API migrations.
 - **[Sentinel Toolbox](/Toolshed/Sentinel%20Toolbox/README.md)** — PowerShell scripts and tools for Microsoft Sentinel operations.
     - [Export Hunts](/Toolshed/Sentinel%20Toolbox/Export-Hunts.ps1) — PowerShell script to export Sentinel Hunts (Preview) to ARM templates.
     - [Copy Log Analytics Table](/Toolshed/Sentinel%20Toolbox/Copy-LogAnalyticsTable.ps1) — PowerShell script to copy Log Analytics table schemas to custom log tables.

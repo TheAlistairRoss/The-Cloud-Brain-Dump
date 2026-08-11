@@ -1,0 +1,100 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string"
+    },
+    "createNewDce": {
+      "type": "bool"
+    },
+    "newDceName": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "existingDceResourceId": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "dcrName": {
+      "type": "string"
+    },
+    "tableName": {
+      "type": "string"
+    },
+    "workspaceResourceId": {
+      "type": "string"
+    },
+    "inputColumns": {
+      "type": "array"
+    },
+    "transformKql": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "dceResourceId": "[if(parameters('createNewDce'), resourceId('Microsoft.Insights/dataCollectionEndpoints', parameters('newDceName')), parameters('existingDceResourceId'))]",
+    "inputStream": "[format('Custom-{0}-Input', parameters('tableName'))]",
+    "outputStream": "[format('Custom-{0}', parameters('tableName'))]",
+    "workspaceDestination": "workspaceDestination"
+  },
+  "resources": [
+    {
+      "condition": "[parameters('createNewDce')]",
+      "type": "Microsoft.Insights/dataCollectionEndpoints",
+      "apiVersion": "2023-03-11",
+      "name": "[parameters('newDceName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "networkAcls": {
+          "publicNetworkAccess": "Enabled"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Insights/dataCollectionRules",
+      "apiVersion": "2023-03-11",
+      "name": "[parameters('dcrName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": "[if(parameters('createNewDce'), createArray(resourceId('Microsoft.Insights/dataCollectionEndpoints', parameters('newDceName'))), json('[]'))]",
+      "properties": {
+        "dataCollectionEndpointId": "[variables('dceResourceId')]",
+        "streamDeclarations": {
+          "[variables('inputStream')]": {
+            "columns": "[parameters('inputColumns')]"
+          }
+        },
+        "dataFlows": [
+          {
+            "streams": [
+              "[variables('inputStream')]"
+            ],
+            "destinations": [
+              "[variables('workspaceDestination')]"
+            ],
+            "transformKql": "[parameters('transformKql')]",
+            "outputStream": "[variables('outputStream')]"
+          }
+        ],
+        "destinations": {
+          "logAnalytics": [
+            {
+              "workspaceResourceId": "[parameters('workspaceResourceId')]",
+              "name": "[variables('workspaceDestination')]"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "dataCollectionRuleResourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Insights/dataCollectionRules', parameters('dcrName'))]"
+    },
+    "dataCollectionEndpointResourceId": {
+      "type": "string",
+      "value": "[variables('dceResourceId')]"
+    }
+  }
+}
