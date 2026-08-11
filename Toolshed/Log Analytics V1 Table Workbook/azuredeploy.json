@@ -56,7 +56,9 @@
       "apiVersion": "2023-03-11",
       "name": "[parameters('dcrName')]",
       "location": "[parameters('location')]",
-      "dependsOn": "[if(parameters('createNewDce'), createArray(resourceId('Microsoft.Insights/dataCollectionEndpoints', parameters('newDceName'))), json('[]'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Insights/dataCollectionEndpoints', parameters('newDceName'))]"
+      ],
       "properties": {
         "dataCollectionEndpointId": "[variables('dceResourceId')]",
         "streamDeclarations": {
