@@ -10,7 +10,9 @@
     },
     "newDceName": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "minLength": 3,
+      "maxLength": 44
     },
     "existingDceResourceId": {
       "type": "string",

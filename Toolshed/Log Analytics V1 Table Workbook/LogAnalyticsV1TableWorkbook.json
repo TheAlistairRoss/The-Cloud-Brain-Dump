@@ -30,7 +30,7 @@
         "version": "KqlParameterItem/1.0",
         "parameters": [
           {
-            "id": "bbcbe56a-1f1e-46bc-8cdc-75c74af4fc44",
+            "id": "b8314294-b307-428e-8ece-e70bf16520ed",
             "version": "KqlParameterItem/1.0",
             "name": "ShowHelp",
             "label": "Show Help",
@@ -43,7 +43,7 @@
             "jsonData": "[\r\n    {\"value\":\"true\", \"label\": \"Yes\", \"selected\": true},\r\n    {\"value\":\"false\", \"label\": \"No\", \"selected\": false}\r\n]"
           },
           {
-            "id": "007fa7d6-2824-404b-85db-98d65f118215",
+            "id": "4f17eb92-0510-4d61-93cf-3a9cd9fd9ba7",
             "version": "KqlParameterItem/1.0",
             "name": "ApiVersion",
             "type": 1,
@@ -91,7 +91,7 @@
         "version": "KqlParameterItem/1.0",
         "parameters": [
           {
-            "id": "5d187e6f-249a-467c-97f2-1dfd0c25a211",
+            "id": "27b77084-f1f4-4ed1-bc18-a162efdf7cb8",
             "version": "KqlParameterItem/1.0",
             "name": "Subscriptions",
             "type": 6,
@@ -113,7 +113,7 @@
             "resourceType": "microsoft.resourcegraph/resources"
           },
           {
-            "id": "d1524fce-2547-4073-b593-ae72413e5852",
+            "id": "2c8e0072-75b2-4845-a2a9-4cadb7ee2a62",
             "version": "KqlParameterItem/1.0",
             "name": "Workspace",
             "type": 5,
@@ -130,7 +130,7 @@
             "resourceType": "microsoft.resourcegraph/resources"
           },
           {
-            "id": "4a37962e-4b20-4694-afc1-88e67fd05d01",
+            "id": "fece76b4-53f0-47eb-a295-6edc2c6819dd",
             "version": "KqlParameterItem/1.0",
             "name": "TimeRange",
             "label": "Time Range",
@@ -164,7 +164,7 @@
             }
           },
           {
-            "id": "dd426051-2bd8-4418-a897-ac4a8bb92e0c",
+            "id": "833a9b9b-7a6d-4d31-8898-b5f536b581ea",
             "version": "KqlParameterItem/1.0",
             "name": "ResourceGroupId",
             "type": 1,
@@ -177,7 +177,7 @@
             "resourceType": "microsoft.resourcegraph/resources"
           },
           {
-            "id": "49048aaa-bbb1-493f-9ced-c18319584466",
+            "id": "b2844b10-559a-4526-970d-33d3521bb135",
             "version": "KqlParameterItem/1.0",
             "name": "WorkspaceLocation",
             "type": 1,
@@ -190,7 +190,7 @@
             "resourceType": "microsoft.resourcegraph/resources"
           },
           {
-            "id": "4e76c16d-192d-47f9-9533-4152dc5f71e7",
+            "id": "6c5f9eb0-af6f-424f-bee8-72be1e08fedf",
             "version": "KqlParameterItem/1.0",
             "name": "WorkspaceCustomerId",
             "type": 1,
@@ -263,7 +263,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"2d0d8824-b626-4c56-8043-3c268276e783\",\"mergeType\":\"leftouter\",\"leftTable\":\"query ResourceManager - ClassicTables\",\"rightTable\":\"query LogAnalytics - Usage\",\"leftColumn\":\"name\",\"rightColumn\":\"DataType\"}],\"projectRename\":[{\"originalName\":\"[query ResourceManager - ClassicTables].name\",\"mergedName\":\"name\",\"fromId\":\"unknown\"},{\"originalName\":\"[query ResourceManager - ClassicTables].tableSubType\",\"mergedName\":\"tableSubType\",\"fromId\":\"unknown\"},{\"originalName\":\"[query ResourceManager - ClassicTables].plan\",\"mergedName\":\"plan\",\"fromId\":\"unknown\"},{\"originalName\":\"[query ResourceManager - ClassicTables].retentionInDays\",\"mergedName\":\"retentionInDays\",\"fromId\":\"unknown\"},{\"originalName\":\"[query LogAnalytics - Usage].DataType\",\"mergedName\":\"DataType\",\"fromId\":\"2d0d8824-b626-4c56-8043-3c268276e783\"},{\"originalName\":\"[query LogAnalytics - Usage].TotalMB\",\"mergedName\":\"TotalMB\",\"fromId\":\"2d0d8824-b626-4c56-8043-3c268276e783\"},{\"originalName\":\"[query LogAnalytics - Usage].Trend\",\"mergedName\":\"Trend\",\"fromId\":\"2d0d8824-b626-4c56-8043-3c268276e783\"}]}",
+        "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"3bce5a9f-4b44-4bb4-9558-5a68f69156fc\",\"mergeType\":\"leftouter\",\"leftTable\":\"query ResourceManager - ClassicTables\",\"rightTable\":\"query LogAnalytics - Usage\",\"leftColumn\":\"name\",\"rightColumn\":\"DataType\"}],\"projectRename\":[{\"originalName\":\"[query ResourceManager - ClassicTables].name\",\"mergedName\":\"name\",\"fromId\":\"unknown\"},{\"originalName\":\"[query ResourceManager - ClassicTables].tableSubType\",\"mergedName\":\"tableSubType\",\"fromId\":\"unknown\"},{\"originalName\":\"[query ResourceManager - ClassicTables].plan\",\"mergedName\":\"plan\",\"fromId\":\"unknown\"},{\"originalName\":\"[query ResourceManager - ClassicTables].retentionInDays\",\"mergedName\":\"retentionInDays\",\"fromId\":\"unknown\"},{\"originalName\":\"[query LogAnalytics - Usage].DataType\",\"mergedName\":\"DataType\",\"fromId\":\"3bce5a9f-4b44-4bb4-9558-5a68f69156fc\"},{\"originalName\":\"[query LogAnalytics - Usage].TotalMB\",\"mergedName\":\"TotalMB\",\"fromId\":\"3bce5a9f-4b44-4bb4-9558-5a68f69156fc\"},{\"originalName\":\"[query LogAnalytics - Usage].Trend\",\"mergedName\":\"Trend\",\"fromId\":\"3bce5a9f-4b44-4bb4-9558-5a68f69156fc\"}]}",
         "size": 1,
         "queryType": 7,
         "title": "Classic (V1) tables in workspace - select a table to migrate",
@@ -432,7 +432,7 @@
         "version": "KqlParameterItem/1.0",
         "parameters": [
           {
-            "id": "49ef1829-e784-428f-a831-11645d9da019",
+            "id": "85cb66db-8423-450b-8115-835fa1129490",
             "version": "KqlParameterItem/1.0",
             "name": "SelectedTableDetails",
             "type": 1,
@@ -508,7 +508,7 @@
         "version": "KqlParameterItem/1.0",
         "parameters": [
           {
-            "id": "48d1b5c1-39e4-41bd-b688-449ae4aa3581",
+            "id": "4f6765ff-43cb-4945-9850-27f692712886",
             "version": "KqlParameterItem/1.0",
             "name": "DcrArtifacts",
             "type": 1,
@@ -521,7 +521,7 @@
             "resourceType": "microsoft.operationalinsights/workspaces"
           },
           {
-            "id": "616fb65b-43af-412a-ae75-800131c6b7cd",
+            "id": "75e31a5e-1d72-4c27-8b2a-1f861dbb4fd7",
             "version": "KqlParameterItem/1.0",
             "name": "HasCollisions",
             "type": 1,
@@ -534,7 +534,7 @@
             "resourceType": "microsoft.operationalinsights/workspaces"
           },
           {
-            "id": "c70c1a2a-a987-4dfc-be97-aecdfa27e9f9",
+            "id": "a00345b6-41f4-4ab3-a66c-7b9f895abcdf",
             "version": "KqlParameterItem/1.0",
             "name": "CollisionCount",
             "type": 1,
@@ -547,7 +547,7 @@
             "resourceType": "microsoft.operationalinsights/workspaces"
           },
           {
-            "id": "0d3059f2-18bf-41ae-8e73-badbc35db31d",
+            "id": "f4beb780-1933-4342-8e27-d944111d053f",
             "version": "KqlParameterItem/1.0",
             "name": "InputColumnsJson",
             "type": 1,
@@ -560,7 +560,7 @@
             "resourceType": "microsoft.operationalinsights/workspaces"
           },
           {
-            "id": "7f9ec811-f459-40ad-a889-2e3de92d9df1",
+            "id": "77ba6722-c40c-4b76-a6fc-aba2ebe969ee",
             "version": "KqlParameterItem/1.0",
             "name": "TransformKqlText",
             "type": 1,
@@ -628,7 +628,7 @@
         "version": "KqlParameterItem/1.0",
         "parameters": [
           {
-            "id": "1574b72d-0eb6-422e-a133-386e05967d23",
+            "id": "41e49cfb-bd7a-4e31-a86c-4a9d9022ef27",
             "version": "KqlParameterItem/1.0",
             "name": "DcrName",
             "label": "Data Collection Rule name",
@@ -654,7 +654,7 @@
             }
           },
           {
-            "id": "d671d9fb-400e-457a-ba48-121b548cfa43",
+            "id": "93d51e15-5746-4cc5-aa43-4da806f66475",
             "version": "KqlParameterItem/1.0",
             "name": "CreateNewDce",
             "label": "Data Collection Endpoint",
@@ -680,7 +680,7 @@
         "version": "KqlParameterItem/1.0",
         "parameters": [
           {
-            "id": "7729326c-f946-4dc2-95f7-6d6b8f664a4d",
+            "id": "2ee98459-832c-4b90-a32e-a744bf306173",
             "version": "KqlParameterItem/1.0",
             "name": "DceMode",
             "type": 1,
@@ -705,7 +705,7 @@
         "version": "KqlParameterItem/1.0",
         "parameters": [
           {
-            "id": "3ac7b2af-a74f-4624-bba8-bd20180f15ec",
+            "id": "0da44ccf-8a38-4293-ae3b-bcb85f367d09",
             "version": "KqlParameterItem/1.0",
             "name": "NewDceName",
             "label": "New DCE name",
@@ -716,10 +716,19 @@
                 "criteriaContext": {
                   "operator": "Default",
                   "resultValType": "static",
-                  "resultVal": "dce-{SelectedTableName}"
+                  "resultVal": "dce-v1-ingestion"
                 }
               }
-            ]
+            ],
+            "typeSettings": {
+              "paramValidationRules": [
+                {
+                  "match": true,
+                  "regExp": "^[a-zA-Z0-9](?:[a-zA-Z0-9-]{1,42}[a-zA-Z0-9])$",
+                  "message": "3-44 letters, numbers or hyphens; cannot start or end with a hyphen"
+                }
+              ]
+            }
           }
         ],
         "style": "pills",
@@ -739,7 +748,7 @@
         "version": "KqlParameterItem/1.0",
         "parameters": [
           {
-            "id": "6d31a227-627c-4a96-865e-b2a512135765",
+            "id": "6dbe2ab7-7e8e-417c-8571-a1e6fd866bf1",
             "version": "KqlParameterItem/1.0",
             "name": "ExistingDce",
             "label": "Existing DCE",
@@ -861,11 +870,11 @@
         "version": "KqlParameterItem/1.0",
         "parameters": [
           {
-            "id": "451f45dd-d713-42ae-be1c-2ed4bcfd4685",
+            "id": "6bd90ae0-19b0-49b5-a8cb-1d97b509ff54",
             "version": "KqlParameterItem/1.0",
             "name": "DeploymentReady",
             "type": 1,
-            "query": "let createNew = tolower(\"{CreateNewDce}\") == \"true\";\r\nlet dceReady = iif(createNew, isnotempty(\"{NewDceName}\"), isnotempty(\"{ExistingDce}\"));\r\nprint value = tolower(tostring(isnotempty(\"{DcrName}\") and dceReady))",
+            "query": "let createNew = tolower(\"{CreateNewDce}\") == \"true\";\r\nlet validDcrName = \"{DcrName}\" matches regex @'^[a-zA-Z0-9_-]{1,64}$';\r\nlet validNewDceName = \"{NewDceName}\" matches regex @'^[a-zA-Z0-9](?:[a-zA-Z0-9-]{1,42}[a-zA-Z0-9])$';\r\nlet dceReady = iif(createNew, validNewDceName, isnotempty(\"{ExistingDce}\"));\r\nprint value = tolower(tostring(validDcrName and dceReady))",
             "crossComponentResources": [
               "{Workspace}"
             ],
@@ -892,7 +901,7 @@
         "style": "nav",
         "links": [
           {
-            "id": "07d3031a-f7e7-4086-8335-427aa53ee9cc",
+            "id": "0e8de325-3f5f-4362-b20a-7d528175ea04",
             "linkTarget": "ArmTemplate",
             "linkLabel": "Review and Deploy Data Collection Rule",
             "style": "primary",

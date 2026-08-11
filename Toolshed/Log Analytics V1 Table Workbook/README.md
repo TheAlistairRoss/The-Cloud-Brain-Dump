@@ -40,8 +40,9 @@ and generated parameters while users move back through the workflow to review or
    or reuse an existing one in the resource group. The DCR/DCE are always created in the same resource
    group and region as the workspace. Shows a preview of the computed input-stream columns and the
    generated transformation KQL. The DCE choice dynamically reveals either the new-DCE name or the
-   existing-DCE picker. The multiline transformation is passed safely to the hosted ARM template as a
-   typed string parameter.
+   existing-DCE picker. New DCE names are validated against Azure's 3–44 character, alphanumeric-and-hyphen
+   naming rules. The multiline transformation is passed safely to the hosted ARM template as a typed string
+   parameter.
 4. **Step 4 — Review & deploy**: Opens Azure's native ARM deployment experience using the hosted
    [azuredeploy.json](./azuredeploy.json) template. Workbook values are passed as typed deployment parameters,
    including the generated input-column array and transformation. Select **View template** in the deployment

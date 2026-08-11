@@ -561,7 +561,14 @@ step3_params_newdce = [
     {
         "id": g(), "version": "KqlParameterItem/1.0", "name": "NewDceName", "label": "New DCE name",
         "type": 1, "isRequired": True,
-        "criteriaData": [{"criteriaContext": {"operator": "Default", "resultValType": "static", "resultVal": "dce-{SelectedTableName}"}}],
+        "criteriaData": [{"criteriaContext": {"operator": "Default", "resultValType": "static", "resultVal": "dce-v1-ingestion"}}],
+        "typeSettings": {"paramValidationRules": [
+            {
+                "match": True,
+                "regExp": "^[a-zA-Z0-9](?:[a-zA-Z0-9-]{1,42}[a-zA-Z0-9])$",
+                "message": "3-44 letters, numbers or hyphens; cannot start or end with a hyphen",
+            }
+        ]},
     },
 ]
 step3_params_existingdce = [
@@ -683,8 +690,10 @@ step4_items = [
             "type": 1,
             "query": (
                 "let createNew = tolower(\"{CreateNewDce}\") == \"true\";\r\n"
-                "let dceReady = iif(createNew, isnotempty(\"{NewDceName}\"), isnotempty(\"{ExistingDce}\"));\r\n"
-                "print value = tolower(tostring(isnotempty(\"{DcrName}\") and dceReady))"
+                "let validDcrName = \"{DcrName}\" matches regex @'^[a-zA-Z0-9_-]{1,64}$';\r\n"
+                "let validNewDceName = \"{NewDceName}\" matches regex @'^[a-zA-Z0-9](?:[a-zA-Z0-9-]{1,42}[a-zA-Z0-9])$';\r\n"
+                "let dceReady = iif(createNew, validNewDceName, isnotempty(\"{ExistingDce}\"));\r\n"
+                "print value = tolower(tostring(validDcrName and dceReady))"
             ),
             "crossComponentResources": ["{Workspace}"],
             "isHiddenWhenLocked": True,
