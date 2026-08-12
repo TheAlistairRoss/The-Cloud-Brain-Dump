@@ -600,6 +600,35 @@ table_state_parameters = [
     },
 ]
 
+step2_choice_parameters = [
+    {
+        "id": g(), "version": "KqlParameterItem/1.0", "name": "ProceedWithoutMigration",
+        "label": "Build the DCR now and migrate the table later", "type": 10, "isRequired": True,
+        "jsonData": (
+            "[\r\n    {\"value\":\"false\", \"label\": \"No - migrate the table first (recommended)\", "
+            "\"selected\": true},\r\n    {\"value\":\"true\", \"label\": \"Yes - build the DCR now, migrate later\", "
+            "\"selected\": false}\r\n]"
+        ),
+        "conditionalVisibility": {
+            "parameterName": "SelectedTableSubTypeLive", "comparison": "isEqualTo", "value": "Classic"
+        },
+    },
+    {
+        "id": g(),
+        "version": "KqlParameterItem/1.0",
+        "name": "StepForwardReady",
+        "type": 1,
+        "query": (
+            "print value = tolower(tostring("
+            "\"{TableDcrReady}\" == \"true\" or \"{ProceedWithoutMigration}\" == \"true\"))"
+        ),
+        "crossComponentResources": ["{Workspace}"],
+        "isHiddenWhenLocked": True,
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+    },
+]
+
 step2_items = [
     params_item(table_state_parameters, "parameters - Selected Table State"),
     text(
@@ -648,6 +677,18 @@ step2_items = [
         style="info",
         cv={"parameterName": "SelectedTableSubTypeLive", "comparison": "isEqualTo", "value": "Classic"}
     ),
+    params_item(step2_choice_parameters, "parameters - Step2 Proceed Choice") | {"conditionalVisibility": {
+        "parameterName": "SelectedTableSubTypeLive", "comparison": "isEqualTo", "value": "Classic"
+    }},
+    text(
+        "**Deployment will fail until this table is migrated.** You can build and review the DCR now, but Azure "
+        "rejects a Data Collection Rule whose output stream targets a Classic table "
+        "(`InvalidOutputTable`). Come back to this step and run **Migrate table to DCR-based ingestion** before "
+        "you deploy in Step 5.",
+        "text - step2 proceed without migration warning",
+        style="warning",
+        cv={"parameterName": "ProceedWithoutMigration", "comparison": "isEqualTo", "value": "true"}
+    ),
     text(
         "**Ready:** `{SelectedTableName}` is already DCR-capable. Continue to inspect its schema and any DCRs "
         "currently targeting it.",
@@ -660,7 +701,8 @@ step2_items = [
 step2_visibility = {"parameterName": "SelectedTableName", "comparison": "isNotEqualTo", "value": ""}
 step2_page_items = [text(
     "# 2 | Migrate or verify\n"
-    "Classic tables must be migrated before Azure accepts a DCR that targets them.",
+    "Classic tables must be migrated before Azure accepts a DCR that targets them. You may optionally build the "
+    "DCR first and migrate later, but deployment will fail until migration completes.",
     "text - section 2",
     style="warning",
 )]
@@ -671,7 +713,7 @@ step2_page_items.extend(step2_items)
 step2_page_items.append(wizard_nav_item(
     "Step2 Next",
     [("Next: reveal schema and existing DCRs below", "RevealStep3", "primary")],
-    {"parameterName": "TableDcrReady", "comparison": "isEqualTo", "value": "true"},
+    {"parameterName": "StepForwardReady", "comparison": "isEqualTo", "value": "true"},
 ))
 items.append(wizard_page(step2_page_items, "Migrate or verify", "RevealStep2"))
 
@@ -814,7 +856,7 @@ artifact_parameters.append({
     "type": 1,
     "query": (
         "print value = tolower(tostring("
-        "\"{TableDcrReady}\" == \"true\" and isnotempty(\"{InputColumnsJson:base64}\")))"
+        "\"{StepForwardReady}\" == \"true\" and isnotempty(\"{InputColumnsJson:base64}\")))"
     ),
     "crossComponentResources": ["{Workspace}"],
     "isHiddenWhenLocked": True,
@@ -908,7 +950,16 @@ step3_schema_items.append(text(
     cv={"parameterName": "ExistingDcrCount", "comparison": "isNotEqualTo", "value": "0"}
 ))
 
-step3_schema_visibility = {"parameterName": "TableDcrReady", "comparison": "isEqualTo", "value": "true"}
+step3_schema_items.append(text(
+    "**Not yet migrated:** `{SelectedTableName}` is still a Classic table. You can continue reviewing and "
+    "configuring the DCR, but **deployment in Step 5 will fail** until this table is migrated. Return to Step 2 "
+    "to run the migrate action first.",
+    "text - step3 not migrated warning",
+    style="warning",
+    cv={"parameterName": "TableDcrReady", "comparison": "isEqualTo", "value": "false"}
+))
+
+step3_schema_visibility = {"parameterName": "StepForwardReady", "comparison": "isEqualTo", "value": "true"}
 step3_page_items = [text(
     "# 3 | Inspect schema and existing DCRs\n"
     "Review the proposed input mapping and confirm whether another DCR already targets **{SelectedTableName}**.",
@@ -1058,6 +1109,13 @@ step4_config_items = [
         "```kusto\n{TransformKqlText}\n```",
         "text - step3 transform preview"
     ),
+    text(
+        "**Not yet migrated:** `{SelectedTableName}` is still a Classic table. Deployment in Step 5 will fail "
+        "until you migrate it in Step 2.",
+        "text - step4 not migrated warning",
+        style="warning",
+        cv={"parameterName": "TableDcrReady", "comparison": "isEqualTo", "value": "false"}
+    ),
 ]
 step4_config_visibility = {"parameterName": "ConfigurationReady", "comparison": "isEqualTo", "value": "true"}
 step4_page_items = [text(
@@ -1132,6 +1190,14 @@ step5_items = [
         "Collection Rule and, if selected, a new Data Collection Endpoint.",
         "text - step5 intro"
     ),
+    text(
+        "**Deployment will fail - table not migrated.** `{SelectedTableName}` is still a Classic table. Azure "
+        "rejects a DCR whose output stream targets a Classic table (`InvalidOutputTable`). Go back to **Step 2** "
+        "and run **Migrate table to DCR-based ingestion** before deploying below.",
+        "text - step5 not migrated warning",
+        style="error",
+        cv={"parameterName": "TableDcrReady", "comparison": "isEqualTo", "value": "false"}
+    ),
     mode_group([
         arm_template_item(
             label="Review and Deploy Data Collection Rule",
@@ -1174,7 +1240,7 @@ step5_items = [
         cv={"parameterName": "ConfigurationReady", "comparison": "isEqualTo", "value": "true"}
     ),
 ]
-step5_visibility = {"parameterName": "ConfigurationReady", "comparison": "isEqualTo", "value": "true"}
+step5_visibility = {"parameterName": "StepForwardReady", "comparison": "isEqualTo", "value": "true"}
 step5_page_items = [text(
     "# 5 | Review and deploy\n"
     "Open the native ARM deployment to review the hosted template before deploying **{DcrName}**.",

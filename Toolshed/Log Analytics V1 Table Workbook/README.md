@@ -36,7 +36,11 @@ use `loadType: always`, and export their parameters, so progressive disclosure d
    without a matching DCR display a count of `0`.
 2. **Step 2 — Migrate or verify**: Reads the selected table's live subtype. For Classic tables, it presents
    the one-way migration impact and invokes the Tables `migrate` action. After migration, refresh the Step 1
-   inventory and reselect the table. DCR-based tables continue immediately.
+   inventory and reselect the table. DCR-based tables continue immediately. Migration is **optional at this
+   point**: a Classic table can choose **"Yes - build the DCR now, migrate later"** to continue through the
+   wizard. A persistent warning follows the table through Steps 2–5 and appears again next to the deploy button,
+   because Azure rejects a DCR whose output stream targets a Classic table (`InvalidOutputTable`) until the
+   table is migrated.
 3. **Step 3 — Inspect schema and DCRs**: Reads the selected table's live columns, strips known legacy suffixes to
    compute clean input-stream names and DCR data types, and detects **collisions** (two+ columns that
    would collapse to the same clean name, e.g. `Computer_s` and `Computer_d`). If a collision is found,
