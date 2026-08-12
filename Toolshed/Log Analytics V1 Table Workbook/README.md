@@ -1,9 +1,8 @@
 # Log Analytics V1 Table Workbook
 
-An Azure Workbook that finds Log Analytics **custom tables (classic / V1, HTTP Data Collector API)** in a
-workspace, shows their ingestion volume, and provides a guided wizard to generate and deploy a
-**Data Collection Rule (DCR)** that migrates ingestion to the **Logs Ingestion API** — without changing
-the destination table's existing column names.
+An Azure Workbook that inventories Log Analytics custom tables, migrates **Classic / V1** tables so they
+can receive DCR-based ingestion, discovers existing matching Data Collection Rules (DCRs), and provides a
+guided wizard to deploy a DCR for the **Logs Ingestion API** without changing destination column names.
 
 ## Why
 
@@ -21,29 +20,31 @@ compatibility mode. The **output stream** always targets the table's existing, u
 
 ## What it does
 
-The workbook uses a **single, always-loaded canvas** rather than expandable/collapsible groups. Each section
-unlocks automatically when the preceding stage has produced valid input. This preserves the selected table
-and generated parameters while users move back through the workflow to review or change a choice.
+The workbook uses five **untitled, always-loaded wizard pages**. Only the current page is visible, and explicit
+**Back/Next** controls change the page. The underlying groups have no displayed title or collapse control, use
+`loadType: always`, and export their parameters, so navigation doesn't discard wizard state.
 
-1. **Step 1 — Discover & monitor**: Lists all tables in the selected workspace via the
-   [Tables API](https://learn.microsoft.com/en-us/rest/api/loganalytics/tables), filters the result to
-   `Classic` (V1) tables, and shows total ingestion volume plus an ingestion-trend sparkline for the
-   selected time range so you can prioritize which tables to migrate.
-2. **Step 2 — Inspect schema**: Reads the selected table's live columns, strips known legacy suffixes to
+1. **Step 1 — Discover & monitor**: Lists all custom log tables from the
+   [Tables API](https://learn.microsoft.com/en-us/rest/api/loganalytics/tables), including both `Classic` and
+   DCR-based tables. It adds ingestion volume/trend and correlates existing DCRs by output stream and selected
+   workspace destination. Migrated tables therefore remain visible after their subtype changes.
+2. **Step 2 — Migrate or verify**: Reads the selected table's live subtype. For Classic tables, it presents
+   the one-way migration impact and invokes the Tables `migrate` action. After migration, refresh the Step 1
+   inventory and reselect the table. DCR-based tables continue immediately.
+3. **Step 3 — Inspect schema and DCRs**: Reads the selected table's live columns, strips known legacy suffixes to
    compute clean input-stream names and DCR data types, and detects **collisions** (two+ columns that
    would collapse to the same clean name, e.g. `Computer_s` and `Computer_d`). If a collision is found,
    compatibility mode retains all original column names so the input stream remains unique and the wizard
-   can continue without changing the table schema. The table resource is retrieved
-   automatically by hidden text parameters; schema and DCR artifact helpers require no row selection.
-   Collision state is normalized to lowercase `true`/`false` for consistent conditional visibility.
-3. **Step 3 — Configure the DCR**: Pick a DCR name and either create a new Data Collection Endpoint (DCE)
+   can continue without changing the table schema. The page reports legacy-suffix evidence and lists every
+   DCR whose output stream and workspace destination match the selected table.
+4. **Step 4 — Configure the DCR**: Pick a DCR name and either create a new Data Collection Endpoint (DCE)
    or reuse an existing one in the resource group. The DCR/DCE are always created in the same resource
    group and region as the workspace. Shows a preview of the computed input-stream columns and the
    generated transformation KQL. The DCE choice dynamically reveals either the new-DCE name or the
    existing-DCE picker. New DCE names are validated against Azure's 3–44 character, alphanumeric-and-hyphen
    naming rules. The multiline transformation is passed safely to the hosted ARM template as a typed string
    parameter.
-4. **Step 4 — Review & deploy**: Opens Azure's native ARM deployment experience using the hosted
+5. **Step 5 — Review & deploy**: Opens Azure's native ARM deployment experience using the hosted
    [azuredeploy.json](./azuredeploy.json) template. Workbook values are passed as typed deployment parameters,
    including the generated input-column array and transformation. Select **View template** in the deployment
    blade to inspect everything before deployment.
@@ -80,6 +81,7 @@ The deployment button expects the workbook files to be published at:
 
 | Action | Built-in role |
 |---|---|
+| Migrate a Classic table | Log Analytics Contributor (`Microsoft.OperationalInsights/workspaces/tables/migrate/action`) |
 | Create/modify a Data Collection Endpoint | Monitoring Contributor (`Microsoft.Insights/dataCollectionEndpoints/write`) |
 | Create/modify a Data Collection Rule | Monitoring Contributor (`Microsoft.Insights/DataCollectionRules/write`) |
 | Deploy via `Microsoft.Resources/deployments` (used by the workbook's Deploy button) | Contributor, or any role with `Microsoft.Resources/deployments/write` on the resource group |
@@ -88,14 +90,15 @@ The deployment button expects the workbook files to be published at:
 
 - This workbook generates the DCR/DCE for **one table at a time**. Run the wizard again for additional
   tables.
-- The workflow has no collapsible groups. To restart or change direction, select another table in Step 1;
-  the downstream schema, DCR preview, and template refresh automatically.
+- Table migration is one-way. MMA custom text logs can no longer write to a migrated table. If legacy HTTP
+  Data Collector API ingestion continues temporarily, don't change the table schema.
+- Azure doesn't expose durable "formerly Classic" history. For DCR-based tables, legacy-suffixed columns,
+  historical `SourceSystem == "RestAPI"` records, existing matching DCRs, and the tags added by this workbook
+  are evidence rather than proof.
+- DCRs created by this workbook are tagged with `ManagedBy`, `MigrationSource`, and `SourceTable` provenance.
+- To restart or change direction, use **Back** to return to Step 1 and select another table.
 - If source columns collide after suffix removal, the entire input stream uses original column names for
   consistency and uniqueness. Logs Ingestion API payloads must use those original suffixed names. If clean
   payload names are required, resolve the ambiguity in the sending application before ingestion.
-- The wizard does not modify the destination table schema, and does not migrate the table from V1 to V2
-  (`az monitor log-analytics workspace table migrate`) — do that separately per the
-  [migration guide](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/custom-logs-migrate) if
-  you also want to enable DCR-based features on the table itself.
 - Because this workbook deploys live Azure resources, validate it in a test workspace/resource group before
   using it against production tables, and use **View template** in the deployment blade before running it.
