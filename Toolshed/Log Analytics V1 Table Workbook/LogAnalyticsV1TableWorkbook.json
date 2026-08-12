@@ -30,7 +30,7 @@
         "version": "KqlParameterItem/1.0",
         "parameters": [
           {
-            "id": "6f1b7c10-fe3b-41e0-930c-7a5dbab1554d",
+            "id": "df13c442-fcc7-41b7-8791-ab055f1652cd",
             "version": "KqlParameterItem/1.0",
             "name": "ShowHelp",
             "label": "Show Help",
@@ -43,7 +43,7 @@
             "jsonData": "[\r\n    {\"value\":\"true\", \"label\": \"Yes\", \"selected\": true},\r\n    {\"value\":\"false\", \"label\": \"No\", \"selected\": false}\r\n]"
           },
           {
-            "id": "0de499fd-8bd5-4e40-a908-62eef7c01d9e",
+            "id": "e3dc8bbd-52ee-414d-91e6-6eaa0ece89cf",
             "version": "KqlParameterItem/1.0",
             "name": "ApiVersion",
             "type": 1,
@@ -59,7 +59,7 @@
             ]
           },
           {
-            "id": "1b7ecb43-13fe-425d-9756-98bfcfeb1fcb",
+            "id": "7b6615e2-f9ba-4a77-bb83-8dba4813cef1",
             "version": "KqlParameterItem/1.0",
             "name": "MigrateApiVersion",
             "type": 1,
@@ -75,7 +75,7 @@
             ]
           },
           {
-            "id": "4756cb17-50a6-4711-bbd8-8dbba8265940",
+            "id": "73d2a199-a4fa-4379-ae53-d88a0784c8ac",
             "version": "KqlParameterItem/1.0",
             "name": "WizardStep",
             "type": 1,
@@ -131,7 +131,7 @@
               "version": "KqlParameterItem/1.0",
               "parameters": [
                 {
-                  "id": "a685b650-f031-47f2-8edb-52d0fcfd961d",
+                  "id": "73e37864-444e-4a56-b538-6c789717b3a4",
                   "version": "KqlParameterItem/1.0",
                   "name": "Subscriptions",
                   "type": 6,
@@ -153,7 +153,7 @@
                   "resourceType": "microsoft.resourcegraph/resources"
                 },
                 {
-                  "id": "5c93afff-a9a2-48e4-8b23-683f2c774c44",
+                  "id": "9b6bacd9-547e-42d8-8a2c-0bb16bc098e6",
                   "version": "KqlParameterItem/1.0",
                   "name": "Workspace",
                   "type": 5,
@@ -170,7 +170,7 @@
                   "resourceType": "microsoft.resourcegraph/resources"
                 },
                 {
-                  "id": "a3e4c2e5-d089-4ec1-a32b-9e8bdd0f60ee",
+                  "id": "2a65a3ec-ab24-4a97-9f62-2059fb27373a",
                   "version": "KqlParameterItem/1.0",
                   "name": "TimeRange",
                   "label": "Time Range",
@@ -204,7 +204,7 @@
                   }
                 },
                 {
-                  "id": "3dc8964d-8888-48ed-90b3-4973eae88a27",
+                  "id": "70ee4541-1331-4136-9651-db580c0212b7",
                   "version": "KqlParameterItem/1.0",
                   "name": "ResourceGroupId",
                   "type": 1,
@@ -217,7 +217,7 @@
                   "resourceType": "microsoft.resourcegraph/resources"
                 },
                 {
-                  "id": "26a3bb80-d80b-4709-85ef-df798bfeea17",
+                  "id": "9a37cf48-f9b5-4439-97c5-ae0226ec07cc",
                   "version": "KqlParameterItem/1.0",
                   "name": "WorkspaceLocation",
                   "type": 1,
@@ -230,7 +230,7 @@
                   "resourceType": "microsoft.resourcegraph/resources"
                 },
                 {
-                  "id": "c8cfbc49-1905-428f-8829-e73457b4b4f8",
+                  "id": "98c71a49-8b2f-4c2b-9a64-66cdeb53b602",
                   "version": "KqlParameterItem/1.0",
                   "name": "WorkspaceCustomerId",
                   "type": 1,
@@ -329,7 +329,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"ef0cb10e-393c-42fa-b7f4-cf7bd977bd71\",\"mergeType\":\"leftouter\",\"leftTable\":\"query ResourceManager - CustomTables\",\"rightTable\":\"query ResourceGraph - DcrInventory\",\"leftColumn\":\"name\",\"rightColumn\":\"name\"},{\"id\":\"abc14742-eae4-40f3-b40e-45e587f1056e\",\"mergeType\":\"leftouter\",\"leftTable\":\"query ResourceManager - CustomTables\",\"rightTable\":\"query LogAnalytics - Usage\",\"leftColumn\":\"name\",\"rightColumn\":\"DataType\"}],\"projectRename\":[{\"originalName\":\"[query ResourceManager - CustomTables].name\",\"mergedName\":\"name\",\"fromId\":\"abc14742-eae4-40f3-b40e-45e587f1056e\"},{\"originalName\":\"[query ResourceManager - CustomTables].name\",\"mergedName\":\"DcrJoinTableName\",\"fromId\":\"ef0cb10e-393c-42fa-b7f4-cf7bd977bd71\"},{\"originalName\":\"[query ResourceGraph - DcrInventory].name\",\"mergedName\":\"DcrMatchedTableName\",\"fromId\":\"ef0cb10e-393c-42fa-b7f4-cf7bd977bd71\"},{\"originalName\":\"[query LogAnalytics - Usage].DataType\",\"mergedName\":\"UsageDataType\",\"fromId\":\"abc14742-eae4-40f3-b40e-45e587f1056e\"},{\"originalName\":\"[query ResourceManager - CustomTables].tableSubType\",\"mergedName\":\"tableSubType\",\"fromId\":\"abc14742-eae4-40f3-b40e-45e587f1056e\"},{\"originalName\":\"[query ResourceGraph - DcrInventory].ExistingDcrCount\",\"mergedName\":\"ExistingDcrCount\",\"fromId\":\"ef0cb10e-393c-42fa-b7f4-cf7bd977bd71\"},{\"originalName\":\"[query ResourceGraph - DcrInventory].ExistingDcrNames\",\"mergedName\":\"ExistingDcrNames\",\"fromId\":\"ef0cb10e-393c-42fa-b7f4-cf7bd977bd71\"},{\"originalName\":\"[query ResourceManager - CustomTables].plan\",\"mergedName\":\"plan\",\"fromId\":\"abc14742-eae4-40f3-b40e-45e587f1056e\"},{\"originalName\":\"[query ResourceManager - CustomTables].retentionInDays\",\"mergedName\":\"retentionInDays\",\"fromId\":\"abc14742-eae4-40f3-b40e-45e587f1056e\"},{\"originalName\":\"[query LogAnalytics - Usage].TotalMB\",\"mergedName\":\"TotalMB\",\"fromId\":\"abc14742-eae4-40f3-b40e-45e587f1056e\"},{\"originalName\":\"[query LogAnalytics - Usage].Trend\",\"mergedName\":\"Trend\",\"fromId\":\"abc14742-eae4-40f3-b40e-45e587f1056e\"}]}",
+              "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"6adaee33-792f-454c-8176-f3ff9945f097\",\"mergeType\":\"leftouter\",\"leftTable\":\"query ResourceManager - CustomTables\",\"rightTable\":\"query ResourceGraph - DcrInventory\",\"leftColumn\":\"name\",\"rightColumn\":\"name\"},{\"id\":\"71ecb597-6771-4307-a1b1-88c3dd6765c2\",\"mergeType\":\"leftouter\",\"leftTable\":\"query ResourceManager - CustomTables\",\"rightTable\":\"query LogAnalytics - Usage\",\"leftColumn\":\"name\",\"rightColumn\":\"DataType\"}],\"projectRename\":[{\"originalName\":\"[query ResourceManager - CustomTables].name\",\"mergedName\":\"name\",\"fromId\":\"71ecb597-6771-4307-a1b1-88c3dd6765c2\"},{\"originalName\":\"[query ResourceManager - CustomTables].name\",\"mergedName\":\"DcrJoinTableName\",\"fromId\":\"6adaee33-792f-454c-8176-f3ff9945f097\"},{\"originalName\":\"[query ResourceGraph - DcrInventory].name\",\"mergedName\":\"DcrMatchedTableName\",\"fromId\":\"6adaee33-792f-454c-8176-f3ff9945f097\"},{\"originalName\":\"[query LogAnalytics - Usage].DataType\",\"mergedName\":\"UsageDataType\",\"fromId\":\"71ecb597-6771-4307-a1b1-88c3dd6765c2\"},{\"originalName\":\"[query ResourceManager - CustomTables].tableSubType\",\"mergedName\":\"tableSubType\",\"fromId\":\"71ecb597-6771-4307-a1b1-88c3dd6765c2\"},{\"originalName\":\"[query ResourceGraph - DcrInventory].ExistingDcrCount\",\"mergedName\":\"ExistingDcrCount\",\"fromId\":\"6adaee33-792f-454c-8176-f3ff9945f097\"},{\"originalName\":\"[query ResourceGraph - DcrInventory].ExistingDcrNames\",\"mergedName\":\"ExistingDcrNames\",\"fromId\":\"6adaee33-792f-454c-8176-f3ff9945f097\"},{\"originalName\":\"[query ResourceManager - CustomTables].plan\",\"mergedName\":\"plan\",\"fromId\":\"71ecb597-6771-4307-a1b1-88c3dd6765c2\"},{\"originalName\":\"[query ResourceManager - CustomTables].retentionInDays\",\"mergedName\":\"retentionInDays\",\"fromId\":\"71ecb597-6771-4307-a1b1-88c3dd6765c2\"},{\"originalName\":\"[query LogAnalytics - Usage].TotalMB\",\"mergedName\":\"TotalMB\",\"fromId\":\"71ecb597-6771-4307-a1b1-88c3dd6765c2\"},{\"originalName\":\"[query LogAnalytics - Usage].Trend\",\"mergedName\":\"Trend\",\"fromId\":\"71ecb597-6771-4307-a1b1-88c3dd6765c2\"}]}",
               "size": 1,
               "queryType": 7,
               "title": "Custom table migration inventory - select a table",
@@ -498,7 +498,7 @@
               "style": "nav",
               "links": [
                 {
-                  "id": "c27cd623-255f-48b9-80cc-574902f382ee",
+                  "id": "3c99cd97-0e3c-41e3-8181-d81e51b353e9",
                   "cellValue": "WizardStep",
                   "linkTarget": "parameter",
                   "linkLabel": "Next: migrate or verify",
@@ -545,7 +545,7 @@
               "version": "KqlParameterItem/1.0",
               "parameters": [
                 {
-                  "id": "0d599d2f-405b-4dda-83e1-792bcbc6db5d",
+                  "id": "ecf59643-4139-4c63-b9c5-07d9f3939c88",
                   "version": "KqlParameterItem/1.0",
                   "name": "SelectedTableDetails",
                   "type": 1,
@@ -554,7 +554,7 @@
                   "queryType": 12
                 },
                 {
-                  "id": "6876e45d-18ae-493c-9c11-55ba615401e7",
+                  "id": "2848e42a-18c7-4b4b-a85d-5c37651bb64a",
                   "version": "KqlParameterItem/1.0",
                   "name": "SelectedTableSubTypeLive",
                   "type": 1,
@@ -567,7 +567,7 @@
                   "resourceType": "microsoft.operationalinsights/workspaces"
                 },
                 {
-                  "id": "6cc99129-46f7-47cb-a7ed-0123d26fdec0",
+                  "id": "b0b198c1-40a7-463a-bda9-675c82ee9a6d",
                   "version": "KqlParameterItem/1.0",
                   "name": "TableDcrReady",
                   "type": 1,
@@ -623,7 +623,7 @@
               "style": "nav",
               "links": [
                 {
-                  "id": "02aa331e-03f3-44c1-9bda-1c54c4ae920d",
+                  "id": "7a2b9681-43c2-4e65-a22f-ee5ec366ce20",
                   "cellValue": "{SelectedTableName}",
                   "linkTarget": "ArmAction",
                   "linkLabel": "Migrate table to DCR-based ingestion",
@@ -692,7 +692,7 @@
               "style": "nav",
               "links": [
                 {
-                  "id": "55e58f07-4999-482c-add4-e127ae534ac3",
+                  "id": "cd070ba4-0978-4849-adfe-c1485a0ce065",
                   "cellValue": "WizardStep",
                   "linkTarget": "parameter",
                   "linkLabel": "Back: select table",
@@ -715,7 +715,7 @@
               "style": "nav",
               "links": [
                 {
-                  "id": "b5d7a154-f99a-490f-a5f0-ddd9181711e9",
+                  "id": "29306a57-82f9-4b0e-a48d-d944f44c65de",
                   "cellValue": "WizardStep",
                   "linkTarget": "parameter",
                   "linkLabel": "Next: inspect schema and DCRs",
@@ -824,7 +824,7 @@
               "version": "KqlParameterItem/1.0",
               "parameters": [
                 {
-                  "id": "c6067a1b-733f-40f2-acd2-0d306f72270f",
+                  "id": "aca4b4b4-74e8-4eb3-b546-d691b363c4db",
                   "version": "KqlParameterItem/1.0",
                   "name": "DcrArtifacts",
                   "type": 1,
@@ -837,7 +837,7 @@
                   "resourceType": "microsoft.operationalinsights/workspaces"
                 },
                 {
-                  "id": "76793445-a718-4ece-a47b-7da28a41096c",
+                  "id": "0b370498-da21-46a5-8884-c59160d98f0f",
                   "version": "KqlParameterItem/1.0",
                   "name": "HasCollisions",
                   "type": 1,
@@ -850,7 +850,7 @@
                   "resourceType": "microsoft.operationalinsights/workspaces"
                 },
                 {
-                  "id": "f221f61f-2876-44ce-b983-4d806defc41d",
+                  "id": "f0e09436-466b-4705-b9ca-aacc3f6a8857",
                   "version": "KqlParameterItem/1.0",
                   "name": "CollisionCount",
                   "type": 1,
@@ -863,7 +863,7 @@
                   "resourceType": "microsoft.operationalinsights/workspaces"
                 },
                 {
-                  "id": "5b3fdb62-a51f-4d80-8b07-ad6585365524",
+                  "id": "526b5824-43f5-4aca-8eca-622814ff1e04",
                   "version": "KqlParameterItem/1.0",
                   "name": "LegacySuffixColumnCount",
                   "type": 1,
@@ -876,7 +876,7 @@
                   "resourceType": "microsoft.operationalinsights/workspaces"
                 },
                 {
-                  "id": "e8b5c46d-69af-4789-a8f2-12a6312edd03",
+                  "id": "6bde5665-306e-4a24-97f8-4d30266032e5",
                   "version": "KqlParameterItem/1.0",
                   "name": "InputColumnsJson",
                   "type": 1,
@@ -889,7 +889,7 @@
                   "resourceType": "microsoft.operationalinsights/workspaces"
                 },
                 {
-                  "id": "1fba6dcf-5913-4587-88f2-91a4649d1bc7",
+                  "id": "1d7c6c43-c137-4b4c-b946-f559757c3b5a",
                   "version": "KqlParameterItem/1.0",
                   "name": "TransformKqlText",
                   "type": 1,
@@ -902,7 +902,7 @@
                   "resourceType": "microsoft.operationalinsights/workspaces"
                 },
                 {
-                  "id": "dd63795e-6a01-4abf-ba0d-c5fcdff4bfb0",
+                  "id": "dc638190-ceff-4fa0-a2f3-1dfb5c1089a0",
                   "version": "KqlParameterItem/1.0",
                   "name": "ConfigurationReady",
                   "type": 1,
@@ -958,7 +958,7 @@
               "version": "KqlParameterItem/1.0",
               "parameters": [
                 {
-                  "id": "074c19a0-75f6-4b67-a00e-e1b6c6e0245c",
+                  "id": "159dbd23-8ca6-4d7d-a80a-a68b37e9a240",
                   "version": "KqlParameterItem/1.0",
                   "name": "ExistingDcrCount",
                   "type": 1,
@@ -1046,7 +1046,7 @@
               "style": "nav",
               "links": [
                 {
-                  "id": "53f91982-bf68-4096-a4e5-8f417d2aa145",
+                  "id": "c8091512-ed0d-4e01-b167-331dec778354",
                   "cellValue": "WizardStep",
                   "linkTarget": "parameter",
                   "linkLabel": "Back: migration status",
@@ -1069,7 +1069,7 @@
               "style": "nav",
               "links": [
                 {
-                  "id": "35653320-fbb9-4cf2-8e02-3486ca82ec86",
+                  "id": "761f906c-b620-4645-a805-9b1a92311f23",
                   "cellValue": "WizardStep",
                   "linkTarget": "parameter",
                   "linkLabel": "Next: configure DCR",
@@ -1128,7 +1128,7 @@
               "version": "KqlParameterItem/1.0",
               "parameters": [
                 {
-                  "id": "9150634c-8642-43fb-8329-3dcb99c88860",
+                  "id": "28decc32-d93a-472f-b173-e3f148777110",
                   "version": "KqlParameterItem/1.0",
                   "name": "DcrName",
                   "label": "Data Collection Rule name",
@@ -1154,7 +1154,7 @@
                   }
                 },
                 {
-                  "id": "ceec7579-a243-45cb-af53-0f2e635396ca",
+                  "id": "326187b5-6312-4d31-8c9d-5693dbdbb532",
                   "version": "KqlParameterItem/1.0",
                   "name": "CreateNewDce",
                   "label": "Data Collection Endpoint",
@@ -1180,7 +1180,7 @@
               "version": "KqlParameterItem/1.0",
               "parameters": [
                 {
-                  "id": "571ead89-6e50-4a1b-aeab-57582eb2801d",
+                  "id": "dbc085a2-bd35-4048-9868-19b236202164",
                   "version": "KqlParameterItem/1.0",
                   "name": "DceMode",
                   "type": 1,
@@ -1205,37 +1205,7 @@
               "version": "KqlParameterItem/1.0",
               "parameters": [
                 {
-                  "id": "2c464e3d-91e1-4d58-8862-dd9711c523fa",
-                  "version": "KqlParameterItem/1.0",
-                  "name": "DeploymentReady",
-                  "type": 1,
-                  "query": "let createNew = tolower(\"{CreateNewDce}\") == \"true\";\r\nlet validDcrName = \"{DcrName}\" matches regex @'^[a-zA-Z0-9_-]{1,64}$';\r\nlet validNewDceName = \"{NewDceName}\" matches regex @'^[a-zA-Z0-9](?:[a-zA-Z0-9-]{1,42}[a-zA-Z0-9])$';\r\nlet dceReady = iif(createNew, validNewDceName, isnotempty(\"{ExistingDce}\"));\r\nprint value = tolower(tostring(\"{ConfigurationReady}\" == \"true\" and validDcrName and dceReady))",
-                  "crossComponentResources": [
-                    "{Workspace}"
-                  ],
-                  "isHiddenWhenLocked": true,
-                  "queryType": 0,
-                  "resourceType": "microsoft.operationalinsights/workspaces"
-                }
-              ],
-              "style": "pills",
-              "queryType": 0,
-              "resourceType": "microsoft.operationalinsights/workspaces"
-            },
-            "name": "parameters - Deployment Readiness",
-            "conditionalVisibility": {
-              "parameterName": "ConfigurationReady",
-              "comparison": "isEqualTo",
-              "value": "true"
-            }
-          },
-          {
-            "type": 9,
-            "content": {
-              "version": "KqlParameterItem/1.0",
-              "parameters": [
-                {
-                  "id": "04eddfc2-510b-4194-87aa-0932fc160f0c",
+                  "id": "ab6afda9-f6a0-44e2-ada2-9ef19251a3c4",
                   "version": "KqlParameterItem/1.0",
                   "name": "NewDceName",
                   "label": "New DCE name",
@@ -1259,6 +1229,19 @@
                       }
                     ]
                   }
+                },
+                {
+                  "id": "d125856f-b9ef-46d9-993d-2960ca48d826",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "NewDceDeploymentReady",
+                  "type": 1,
+                  "query": "let validDcrName = \"{DcrName}\" matches regex @'^[a-zA-Z0-9_-]{1,64}$';\r\nlet validDceName = \"{NewDceName}\" matches regex @'^[a-zA-Z0-9](?:[a-zA-Z0-9-]{1,42}[a-zA-Z0-9])$';\r\nprint value = tolower(tostring(\"{ConfigurationReady}\" == \"true\" and validDcrName and validDceName))",
+                  "crossComponentResources": [
+                    "{Workspace}"
+                  ],
+                  "isHiddenWhenLocked": true,
+                  "queryType": 0,
+                  "resourceType": "microsoft.operationalinsights/workspaces"
                 }
               ],
               "style": "pills",
@@ -1278,7 +1261,7 @@
               "version": "KqlParameterItem/1.0",
               "parameters": [
                 {
-                  "id": "39e4220a-aa0c-4577-8084-561675cdd392",
+                  "id": "68654e89-bf80-4c4e-b817-a7f17c29b6e6",
                   "version": "KqlParameterItem/1.0",
                   "name": "ExistingDce",
                   "label": "Existing DCE",
@@ -1294,6 +1277,19 @@
                   },
                   "queryType": 1,
                   "resourceType": "microsoft.resourcegraph/resources"
+                },
+                {
+                  "id": "91ead8c1-0e30-4899-a232-80028c587ef5",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "ExistingDceDeploymentReady",
+                  "type": 1,
+                  "query": "let validDcrName = \"{DcrName}\" matches regex @'^[a-zA-Z0-9_-]{1,64}$';\r\nprint value = tolower(tostring(\"{ConfigurationReady}\" == \"true\" and validDcrName and isnotempty(\"{ExistingDce}\")))",
+                  "crossComponentResources": [
+                    "{Workspace}"
+                  ],
+                  "isHiddenWhenLocked": true,
+                  "queryType": 0,
+                  "resourceType": "microsoft.operationalinsights/workspaces"
                 }
               ],
               "style": "pills",
@@ -1376,7 +1372,7 @@
               "style": "nav",
               "links": [
                 {
-                  "id": "b5712934-2403-48af-84bf-05a894a7c850",
+                  "id": "cdf535d9-0d8e-45c4-99f1-e6f9b8ec48ae",
                   "cellValue": "WizardStep",
                   "linkTarget": "parameter",
                   "linkLabel": "Back: schema and existing DCRs",
@@ -1399,7 +1395,7 @@
               "style": "nav",
               "links": [
                 {
-                  "id": "e6138a97-cb6e-4e34-abe2-ee1422e03bf7",
+                  "id": "6df4f554-be60-48d5-8006-5ab1a2051e99",
                   "cellValue": "WizardStep",
                   "linkTarget": "parameter",
                   "linkLabel": "Next: review and deploy",
@@ -1409,11 +1405,60 @@
               ]
             },
             "conditionalVisibility": {
-              "parameterName": "DeploymentReady",
+              "parameterName": "NewDceDeploymentReady",
               "comparison": "isEqualTo",
               "value": "true"
             },
-            "name": "links - Step4 Next"
+            "name": "links - Step4 Next NewDce"
+          },
+          {
+            "type": 11,
+            "content": {
+              "version": "LinkItem/1.0",
+              "style": "nav",
+              "links": [
+                {
+                  "id": "2f82bbb6-326f-4507-8d1a-cb92ec0e29ff",
+                  "cellValue": "WizardStep",
+                  "linkTarget": "parameter",
+                  "linkLabel": "Next: review and deploy",
+                  "subTarget": "5",
+                  "style": "primary"
+                }
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "ExistingDceDeploymentReady",
+              "comparison": "isEqualTo",
+              "value": "true"
+            },
+            "name": "links - Step4 Next ExistingDce"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "Complete a valid **DCR name** and **new DCE name** to continue.",
+              "style": "warning"
+            },
+            "name": "text - step4 newdce incomplete",
+            "conditionalVisibility": {
+              "parameterName": "NewDceDeploymentReady",
+              "comparison": "isEqualTo",
+              "value": "false"
+            }
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "Complete a valid **DCR name** and select an **existing DCE** to continue.",
+              "style": "warning"
+            },
+            "name": "text - step4 existingdce incomplete",
+            "conditionalVisibility": {
+              "parameterName": "ExistingDceDeploymentReady",
+              "comparison": "isEqualTo",
+              "value": "false"
+            }
           }
         ]
       },
@@ -1459,7 +1504,7 @@
               "style": "nav",
               "links": [
                 {
-                  "id": "b3e4c29e-7c00-4831-a13a-b6bc998612c9",
+                  "id": "b7c831de-ad50-4726-9786-cbef75ee4205",
                   "linkTarget": "ArmTemplate",
                   "linkLabel": "Review and Deploy Data Collection Rule",
                   "style": "primary",
@@ -1535,9 +1580,99 @@
                 }
               ]
             },
-            "name": "links - DeployDcr",
+            "name": "links - DeployDcrNewDce",
             "conditionalVisibility": {
-              "parameterName": "DeploymentReady",
+              "parameterName": "NewDceDeploymentReady",
+              "comparison": "isEqualTo",
+              "value": "true"
+            }
+          },
+          {
+            "type": 11,
+            "content": {
+              "version": "LinkItem/1.0",
+              "style": "nav",
+              "links": [
+                {
+                  "id": "a7b3807d-f153-4f44-a96e-1a77bd039cee",
+                  "linkTarget": "ArmTemplate",
+                  "linkLabel": "Review and Deploy Data Collection Rule",
+                  "style": "primary",
+                  "linkIsContextBlade": true,
+                  "templateRunContext": {
+                    "componentIdSource": "parameter",
+                    "componentId": "ResourceGroupId",
+                    "templateUriSource": "static",
+                    "templateUri": "https://raw.githubusercontent.com/TheAlistairRoss/The-Cloud-Brain-Dump/main/Toolshed/Log%20Analytics%20V1%20Table%20Workbook/azuredeploy.json",
+                    "templateParameters": [
+                      {
+                        "name": "location",
+                        "source": "parameter",
+                        "value": "WorkspaceLocation",
+                        "kind": "stringValue"
+                      },
+                      {
+                        "name": "createNewDce",
+                        "source": "parameter",
+                        "value": "CreateNewDce",
+                        "kind": "boolValue"
+                      },
+                      {
+                        "name": "newDceName",
+                        "source": "parameter",
+                        "value": "NewDceName",
+                        "kind": "stringValue"
+                      },
+                      {
+                        "name": "existingDceResourceId",
+                        "source": "parameter",
+                        "value": "ExistingDce",
+                        "kind": "stringValue"
+                      },
+                      {
+                        "name": "dcrName",
+                        "source": "parameter",
+                        "value": "DcrName",
+                        "kind": "stringValue"
+                      },
+                      {
+                        "name": "tableName",
+                        "source": "parameter",
+                        "value": "SelectedTableName",
+                        "kind": "stringValue"
+                      },
+                      {
+                        "name": "workspaceResourceId",
+                        "source": "parameter",
+                        "value": "Workspace",
+                        "kind": "stringValue"
+                      },
+                      {
+                        "name": "inputColumns",
+                        "source": "parameter",
+                        "value": "InputColumnsJson",
+                        "kind": "arrayValue"
+                      },
+                      {
+                        "name": "transformKql",
+                        "source": "parameter",
+                        "value": "TransformKqlText",
+                        "kind": "stringValue"
+                      }
+                    ],
+                    "titleSource": "static",
+                    "title": "Deploy Data Collection Rule and Endpoint",
+                    "descriptionSource": "static",
+                    "description": "The template deploys **{DcrName}** using the selected existing DCE into `{ResourceGroupId}`. Use **View template** to inspect the resources and parameter values before deployment. No changes are made to the destination schema for `{SelectedTableName}`.",
+                    "runLabelSource": "static",
+                    "runLabel": "Deploy"
+                  }
+                }
+              ]
+            },
+            "name": "links - DeployDcrExistingDce",
+            "conditionalVisibility": {
+              "parameterName": "ExistingDceDeploymentReady",
               "comparison": "isEqualTo",
               "value": "true"
             }
@@ -1550,7 +1685,7 @@
             },
             "name": "text - step5 permissions note",
             "conditionalVisibility": {
-              "parameterName": "DeploymentReady",
+              "parameterName": "ConfigurationReady",
               "comparison": "isEqualTo",
               "value": "true"
             }
@@ -1562,7 +1697,7 @@
               "style": "nav",
               "links": [
                 {
-                  "id": "5cf1799e-54d2-41d9-8084-69f4dda20cd1",
+                  "id": "e139bb7f-4fd6-4058-87fb-212e5f77f012",
                   "cellValue": "WizardStep",
                   "linkTarget": "parameter",
                   "linkLabel": "Back: configure DCR",

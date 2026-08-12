@@ -937,6 +937,22 @@ step4_params_newdce = [
             }
         ]},
     },
+    {
+        "id": g(),
+        "version": "KqlParameterItem/1.0",
+        "name": "NewDceDeploymentReady",
+        "type": 1,
+        "query": (
+            "let validDcrName = \"{DcrName}\" matches regex @'^[a-zA-Z0-9_-]{1,64}$';\r\n"
+            "let validDceName = \"{NewDceName}\" matches regex @'^[a-zA-Z0-9](?:[a-zA-Z0-9-]{1,42}[a-zA-Z0-9])$';\r\n"
+            "print value = tolower(tostring("
+            "\"{ConfigurationReady}\" == \"true\" and validDcrName and validDceName))"
+        ),
+        "crossComponentResources": ["{Workspace}"],
+        "isHiddenWhenLocked": True,
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+    },
 ]
 step4_params_existingdce = [
     {
@@ -950,6 +966,21 @@ step4_params_existingdce = [
         "typeSettings": {"additionalResourceOptions": [], "showDefault": False},
         "queryType": 1, "resourceType": "microsoft.resourcegraph/resources",
     },
+    {
+        "id": g(),
+        "version": "KqlParameterItem/1.0",
+        "name": "ExistingDceDeploymentReady",
+        "type": 1,
+        "query": (
+            "let validDcrName = \"{DcrName}\" matches regex @'^[a-zA-Z0-9_-]{1,64}$';\r\n"
+            "print value = tolower(tostring("
+            "\"{ConfigurationReady}\" == \"true\" and validDcrName and isnotempty(\"{ExistingDce}\")))"
+        ),
+        "crossComponentResources": ["{Workspace}"],
+        "isHiddenWhenLocked": True,
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+    },
 ]
 step4_state_params = [
     {
@@ -961,26 +992,6 @@ step4_state_params = [
         "resourceType": "microsoft.operationalinsights/workspaces",
     },
 ]
-deployment_readiness_item = params_item([
-    {
-        "id": g(),
-        "version": "KqlParameterItem/1.0",
-        "name": "DeploymentReady",
-        "type": 1,
-        "query": (
-            "let createNew = tolower(\"{CreateNewDce}\") == \"true\";\r\n"
-            "let validDcrName = \"{DcrName}\" matches regex @'^[a-zA-Z0-9_-]{1,64}$';\r\n"
-            "let validNewDceName = \"{NewDceName}\" matches regex @'^[a-zA-Z0-9](?:[a-zA-Z0-9-]{1,42}[a-zA-Z0-9])$';\r\n"
-            "let dceReady = iif(createNew, validNewDceName, isnotempty(\"{ExistingDce}\"));\r\n"
-            "print value = tolower(tostring("
-            "\"{ConfigurationReady}\" == \"true\" and validDcrName and dceReady))"
-        ),
-        "crossComponentResources": ["{Workspace}"],
-        "isHiddenWhenLocked": True,
-        "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-    }
-], "parameters - Deployment Readiness")
 step4_config_items = [
     text(
         "## 4. Configure the Data Collection Rule\n"
@@ -992,7 +1003,6 @@ step4_config_items = [
     ),
     params_item(step4_params, "parameters - Step4"),
     params_item(step4_state_params, "parameters - WorkflowState"),
-    deployment_readiness_item,
     params_item(
         step4_params_newdce, "parameters - Step4 NewDce",
         query_type=0
@@ -1046,9 +1056,26 @@ step4_page_items.append(wizard_nav_item(
     {"parameterName": "ConfigurationReady", "comparison": "isEqualTo", "value": "true"},
 ))
 step4_page_items.append(wizard_nav_item(
-    "Step4 Next",
+    "Step4 Next NewDce",
     [("Next: review and deploy", 5, "primary")],
-    {"parameterName": "DeploymentReady", "comparison": "isEqualTo", "value": "true"},
+    {"parameterName": "NewDceDeploymentReady", "comparison": "isEqualTo", "value": "true"},
+))
+step4_page_items.append(wizard_nav_item(
+    "Step4 Next ExistingDce",
+    [("Next: review and deploy", 5, "primary")],
+    {"parameterName": "ExistingDceDeploymentReady", "comparison": "isEqualTo", "value": "true"},
+))
+step4_page_items.append(text(
+    "Complete a valid **DCR name** and **new DCE name** to continue.",
+    "text - step4 newdce incomplete",
+    style="warning",
+    cv={"parameterName": "NewDceDeploymentReady", "comparison": "isEqualTo", "value": "false"},
+))
+step4_page_items.append(text(
+    "Complete a valid **DCR name** and select an **existing DCE** to continue.",
+    "text - step4 existingdce incomplete",
+    style="warning",
+    cv={"parameterName": "ExistingDceDeploymentReady", "comparison": "isEqualTo", "value": "false"},
 ))
 items.append(wizard_page(step4_page_items, "Configure DCR", 4))
 
@@ -1090,8 +1117,24 @@ step5_items = [
             "Use **View template** to inspect the resources and parameter values before deployment. No changes are "
             "made to the destination schema for `{SelectedTableName}`."
         ),
-        name="DeployDcr",
-    ) | {"conditionalVisibility": {"parameterName": "DeploymentReady", "comparison": "isEqualTo", "value": "true"}},
+        name="DeployDcrNewDce",
+    ) | {"conditionalVisibility": {
+        "parameterName": "NewDceDeploymentReady", "comparison": "isEqualTo", "value": "true"
+    }},
+    arm_template_item(
+        label="Review and Deploy Data Collection Rule",
+        template_uri=template_uri,
+        template_parameters=deployment_parameters,
+        title="Deploy Data Collection Rule and Endpoint",
+        description=(
+            "The template deploys **{DcrName}** using the selected existing DCE into `{ResourceGroupId}`. "
+            "Use **View template** to inspect the resources and parameter values before deployment. No changes are "
+            "made to the destination schema for `{SelectedTableName}`."
+        ),
+        name="DeployDcrExistingDce",
+    ) | {"conditionalVisibility": {
+        "parameterName": "ExistingDceDeploymentReady", "comparison": "isEqualTo", "value": "true"
+    }},
     text(
         "**Note:** You need `Microsoft.Insights/dataCollectionRules/write` (and, if creating a new DCE, "
         "`Microsoft.Insights/dataCollectionEndpoints/write`) permission on the resource group to deploy - "
@@ -1099,7 +1142,7 @@ step5_items = [
         "client to call the [Logs ingestion API](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/logs-ingestion-api-overview) "
         "against this DCR instead of the legacy HTTP Data Collector API.",
         "text - step5 permissions note", style="info",
-        cv={"parameterName": "DeploymentReady", "comparison": "isEqualTo", "value": "true"}
+        cv={"parameterName": "ConfigurationReady", "comparison": "isEqualTo", "value": "true"}
     ),
 ]
 step5_visibility = {"parameterName": "ConfigurationReady", "comparison": "isEqualTo", "value": "true"}

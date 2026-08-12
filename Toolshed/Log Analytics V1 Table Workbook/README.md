@@ -49,7 +49,8 @@ the workbook `nav` style, with each **Next** action rendered as a primary button
    generated transformation KQL. The DCE choice dynamically reveals either the new-DCE name or the
    existing-DCE picker. New DCE names are validated against Azure's 3–44 character, alphanumeric-and-hyphen
    naming rules. The multiline transformation is passed safely to the hosted ARM template as a typed string
-   parameter.
+   parameter. Readiness is calculated independently for new-DCE and existing-DCE modes, so an unset field from
+   the inactive mode can't suppress the **Next** button. A visible prompt identifies any incomplete active path.
 5. **Step 5 — Review & deploy**: Opens Azure's native ARM deployment experience using the hosted
    [azuredeploy.json](./azuredeploy.json) template. Workbook values are passed as typed deployment parameters,
    including the generated input-column array and transformation. Select **View template** in the deployment
