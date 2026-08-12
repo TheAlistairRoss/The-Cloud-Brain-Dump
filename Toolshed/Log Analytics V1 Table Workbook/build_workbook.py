@@ -436,12 +436,15 @@ q_inventory_merge = (
     "\"leftTable\":\"query ResourceManager - CustomTables\",\"rightTable\":\"query LogAnalytics - Usage\","
     "\"leftColumn\":\"name\",\"rightColumn\":\"DataType\"}],"
     "\"projectRename\":["
-    "{\"originalName\":\"[query ResourceManager - CustomTables].name\",\"mergedName\":\"name\",\"fromId\":\"" + dcr_merge_id + "\"},"
-    "{\"originalName\":\"[query ResourceManager - CustomTables].tableSubType\",\"mergedName\":\"tableSubType\",\"fromId\":\"" + dcr_merge_id + "\"},"
+    "{\"originalName\":\"[query ResourceManager - CustomTables].name\",\"mergedName\":\"DcrJoinTableName\",\"fromId\":\"" + dcr_merge_id + "\"},"
+    "{\"originalName\":\"[query ResourceGraph - DcrInventory].name\",\"mergedName\":\"DcrMatchedTableName\",\"fromId\":\"" + dcr_merge_id + "\"},"
+    "{\"originalName\":\"[query ResourceManager - CustomTables].name\",\"mergedName\":\"name\",\"fromId\":\"" + usage_merge_id + "\"},"
+    "{\"originalName\":\"[query LogAnalytics - Usage].DataType\",\"mergedName\":\"UsageDataType\",\"fromId\":\"" + usage_merge_id + "\"},"
+    "{\"originalName\":\"[query ResourceManager - CustomTables].tableSubType\",\"mergedName\":\"tableSubType\",\"fromId\":\"" + usage_merge_id + "\"},"
     "{\"originalName\":\"[query ResourceGraph - DcrInventory].ExistingDcrCount\",\"mergedName\":\"ExistingDcrCount\",\"fromId\":\"" + dcr_merge_id + "\"},"
     "{\"originalName\":\"[query ResourceGraph - DcrInventory].ExistingDcrNames\",\"mergedName\":\"ExistingDcrNames\",\"fromId\":\"" + dcr_merge_id + "\"},"
-    "{\"originalName\":\"[query ResourceManager - CustomTables].plan\",\"mergedName\":\"plan\",\"fromId\":\"" + dcr_merge_id + "\"},"
-    "{\"originalName\":\"[query ResourceManager - CustomTables].retentionInDays\",\"mergedName\":\"retentionInDays\",\"fromId\":\"" + dcr_merge_id + "\"},"
+    "{\"originalName\":\"[query ResourceManager - CustomTables].plan\",\"mergedName\":\"plan\",\"fromId\":\"" + usage_merge_id + "\"},"
+    "{\"originalName\":\"[query ResourceManager - CustomTables].retentionInDays\",\"mergedName\":\"retentionInDays\",\"fromId\":\"" + usage_merge_id + "\"},"
     "{\"originalName\":\"[query LogAnalytics - Usage].TotalMB\",\"mergedName\":\"TotalMB\",\"fromId\":\"" + usage_merge_id + "\"},"
     "{\"originalName\":\"[query LogAnalytics - Usage].Trend\",\"mergedName\":\"Trend\",\"fromId\":\"" + usage_merge_id + "\"}"
     "]}"
@@ -476,6 +479,9 @@ step1_items.append(query_item(
              }},
             {"columnMatch": "Trend", "formatter": 21,
              "formatOptions": {"palette": "blue"}},
+            {"columnMatch": "DcrJoinTableName", "formatter": 5},
+            {"columnMatch": "DcrMatchedTableName", "formatter": 5},
+            {"columnMatch": "UsageDataType", "formatter": 5},
         ],
         "labelSettings": [
             {"columnId": "name", "label": "Table name"},
