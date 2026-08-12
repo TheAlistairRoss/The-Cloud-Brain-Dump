@@ -157,13 +157,13 @@ def wizard_nav_item(name, links, cv):
             "links": [
                 {
                     "id": g(),
-                    "cellValue": "WizardStep",
+                    "cellValue": parameter_name,
                     "linkTarget": "parameter",
                     "linkLabel": label,
-                    "subTarget": str(target),
+                    "subTarget": "true",
                     "style": style,
                 }
-                for label, target, style in links
+                for label, parameter_name, style in links
             ],
         },
         "conditionalVisibility": cv,
@@ -171,8 +171,8 @@ def wizard_nav_item(name, links, cv):
     }
 
 
-def wizard_page(items, name, step):
-    return {
+def wizard_page(items, name, reveal_parameter=None):
+    page = {
         "type": 12,
         "content": {
             "version": "NotebookGroup/1.0",
@@ -181,13 +181,15 @@ def wizard_page(items, name, step):
             "exportParameters": True,
             "items": items,
         },
-        "conditionalVisibility": {
-            "parameterName": "WizardStep",
-            "comparison": "isEqualTo",
-            "value": str(step),
-        },
         "name": f"page - {name}",
     }
+    if reveal_parameter:
+        page["conditionalVisibility"] = {
+            "parameterName": reveal_parameter,
+            "comparison": "isEqualTo",
+            "value": "true",
+        }
+    return page
 
 
 items = []
@@ -274,17 +276,18 @@ global_params = [
             {"criteriaContext": {"operator": "Default", "resultValType": "static", "resultVal": "2025-07-01"}}
         ],
     },
-    {
+]
+for reveal_parameter in ("RevealStep2", "RevealStep3", "RevealStep4", "RevealStep5"):
+    global_params.append({
         "id": g(),
         "version": "KqlParameterItem/1.0",
-        "name": "WizardStep",
+        "name": reveal_parameter,
         "type": 1,
         "isHiddenWhenLocked": True,
         "criteriaData": [
-            {"criteriaContext": {"operator": "Default", "resultValType": "static", "resultVal": "1"}}
+            {"criteriaContext": {"operator": "Default", "resultValType": "static", "resultVal": "false"}}
         ],
-    },
-]
+    })
 items.append(params_item(global_params, "parameters - Global"))
 
 # ---------------------------------------------------------------------------
@@ -524,10 +527,10 @@ step1_page_items = [text(
 step1_page_items.extend(step1_items)
 step1_page_items.append(wizard_nav_item(
     "Step1 Next",
-    [("Next: migrate or verify", 2, "primary")],
+    [("Next: reveal migrate or verify below", "RevealStep2", "primary")],
     {"parameterName": "SelectedTableName", "comparison": "isNotEqualTo", "value": ""},
 ))
-items.append(wizard_page(step1_page_items, "Select table", 1))
+items.append(wizard_page(step1_page_items, "Select table"))
 
 # ---------------------------------------------------------------------------
 # STEP 2: Migrate or verify table readiness
@@ -647,16 +650,11 @@ for item in step2_items:
         item["conditionalVisibility"] = step2_visibility
 step2_page_items.extend(step2_items)
 step2_page_items.append(wizard_nav_item(
-    "Step2 Back",
-    [("Back: select table", 1, "link")],
-    {"parameterName": "SelectedTableName", "comparison": "isNotEqualTo", "value": ""},
-))
-step2_page_items.append(wizard_nav_item(
     "Step2 Next",
-    [("Next: inspect schema and DCRs", 3, "primary")],
+    [("Next: reveal schema and existing DCRs below", "RevealStep3", "primary")],
     {"parameterName": "TableDcrReady", "comparison": "isEqualTo", "value": "true"},
 ))
-items.append(wizard_page(step2_page_items, "Migrate or verify", 2))
+items.append(wizard_page(step2_page_items, "Migrate or verify", "RevealStep2"))
 
 # ---------------------------------------------------------------------------
 # STEP 3: Inspect schema, discover DCRs, compute artifacts
@@ -895,16 +893,11 @@ for item in step3_schema_items:
         item["conditionalVisibility"] = step3_schema_visibility
 step3_page_items.extend(step3_schema_items)
 step3_page_items.append(wizard_nav_item(
-    "Step3 Back",
-    [("Back: migration status", 2, "link")],
-    {"parameterName": "TableDcrReady", "comparison": "isEqualTo", "value": "true"},
-))
-step3_page_items.append(wizard_nav_item(
     "Step3 Next",
-    [("Next: configure DCR", 4, "primary")],
+    [("Next: reveal DCR configuration below", "RevealStep4", "primary")],
     {"parameterName": "ConfigurationReady", "comparison": "isEqualTo", "value": "true"},
 ))
-items.append(wizard_page(step3_page_items, "Inspect schema and DCRs", 3))
+items.append(wizard_page(step3_page_items, "Inspect schema and DCRs", "RevealStep3"))
 
 # ---------------------------------------------------------------------------
 # STEP 4: Configure the DCR
@@ -1051,18 +1044,13 @@ for item in step4_config_items:
         item["conditionalVisibility"] = step4_config_visibility
 step4_page_items.extend(step4_config_items)
 step4_page_items.append(wizard_nav_item(
-    "Step4 Back",
-    [("Back: schema and existing DCRs", 3, "link")],
-    {"parameterName": "ConfigurationReady", "comparison": "isEqualTo", "value": "true"},
-))
-step4_page_items.append(wizard_nav_item(
     "Step4 Next NewDce",
-    [("Next: review and deploy", 5, "primary")],
+    [("Next: reveal review and deployment below", "RevealStep5", "primary")],
     {"parameterName": "NewDceDeploymentReady", "comparison": "isEqualTo", "value": "true"},
 ))
 step4_page_items.append(wizard_nav_item(
     "Step4 Next ExistingDce",
-    [("Next: review and deploy", 5, "primary")],
+    [("Next: reveal review and deployment below", "RevealStep5", "primary")],
     {"parameterName": "ExistingDceDeploymentReady", "comparison": "isEqualTo", "value": "true"},
 ))
 step4_page_items.append(text(
@@ -1077,7 +1065,7 @@ step4_page_items.append(text(
     style="warning",
     cv={"parameterName": "ExistingDceDeploymentReady", "comparison": "isEqualTo", "value": "false"},
 ))
-items.append(wizard_page(step4_page_items, "Configure DCR", 4))
+items.append(wizard_page(step4_page_items, "Configure DCR", "RevealStep4"))
 
 # ---------------------------------------------------------------------------
 # STEP 5: Review and deploy
@@ -1087,16 +1075,22 @@ template_uri = (
     "Toolshed/Log%20Analytics%20V1%20Table%20Workbook/azuredeploy.json"
 )
 
-deployment_parameters = [
+deployment_parameters_common = [
     {"name": "location", "source": "parameter", "value": "WorkspaceLocation", "kind": "stringValue"},
     {"name": "createNewDce", "source": "parameter", "value": "CreateNewDce", "kind": "boolValue"},
-    {"name": "newDceName", "source": "parameter", "value": "NewDceName", "kind": "stringValue"},
-    {"name": "existingDceResourceId", "source": "parameter", "value": "ExistingDce", "kind": "stringValue"},
     {"name": "dcrName", "source": "parameter", "value": "DcrName", "kind": "stringValue"},
     {"name": "tableName", "source": "parameter", "value": "SelectedTableName", "kind": "stringValue"},
     {"name": "workspaceResourceId", "source": "parameter", "value": "Workspace", "kind": "stringValue"},
     {"name": "inputColumns", "source": "parameter", "value": "InputColumnsJson", "kind": "arrayValue"},
     {"name": "transformKql", "source": "parameter", "value": "TransformKqlText", "kind": "stringValue"},
+]
+deployment_parameters_new_dce = deployment_parameters_common + [
+    {"name": "newDceName", "source": "parameter", "value": "NewDceName", "kind": "stringValue"},
+    {"name": "existingDceResourceId", "source": "static", "value": "", "kind": "stringValue"},
+]
+deployment_parameters_existing_dce = deployment_parameters_common + [
+    {"name": "newDceName", "source": "static", "value": "unused-dce", "kind": "stringValue"},
+    {"name": "existingDceResourceId", "source": "parameter", "value": "ExistingDce", "kind": "stringValue"},
 ]
 
 step5_items = [
@@ -1110,7 +1104,7 @@ step5_items = [
     arm_template_item(
         label="Review and Deploy Data Collection Rule",
         template_uri=template_uri,
-        template_parameters=deployment_parameters,
+        template_parameters=deployment_parameters_new_dce,
         title="Deploy Data Collection Rule and Endpoint",
         description=(
             "The template deploys **{DcrName}** and, when requested, **{NewDceName}** into `{ResourceGroupId}`. "
@@ -1124,7 +1118,7 @@ step5_items = [
     arm_template_item(
         label="Review and Deploy Data Collection Rule",
         template_uri=template_uri,
-        template_parameters=deployment_parameters,
+        template_parameters=deployment_parameters_existing_dce,
         title="Deploy Data Collection Rule and Endpoint",
         description=(
             "The template deploys **{DcrName}** using the selected existing DCE into `{ResourceGroupId}`. "
@@ -1156,12 +1150,7 @@ for item in step5_items:
     if "conditionalVisibility" not in item:
         item["conditionalVisibility"] = step5_visibility
 step5_page_items.extend(step5_items)
-step5_page_items.append(wizard_nav_item(
-    "Step5 Back",
-    [("Back: configure DCR", 4, "link")],
-    {"parameterName": "ConfigurationReady", "comparison": "isEqualTo", "value": "true"},
-))
-items.append(wizard_page(step5_page_items, "Review and deploy", 5))
+items.append(wizard_page(step5_page_items, "Review and deploy", "RevealStep5"))
 
 workbook = {
     "version": "Notebook/1.0",

@@ -20,10 +20,10 @@ compatibility mode. The **output stream** always targets the table's existing, u
 
 ## What it does
 
-The workbook uses five **untitled, always-loaded wizard pages**. Only the current page is visible, and explicit
-**Back/Next** controls change the page. The underlying groups have no displayed title or collapse control, use
-`loadType: always`, and export their parameters, so navigation doesn't discard wizard state. Navigation uses
-the workbook `nav` style, with each **Next** action rendered as a primary button.
+The workbook uses five **untitled, always-loaded wizard sections**. Each primary **Next** button reveals the next
+section below while retaining all completed sections above it; the label explicitly tells users to continue
+down the page. There are no Back controls. The underlying groups have no displayed title or collapse control,
+use `loadType: always`, and export their parameters, so progressive disclosure doesn't discard wizard state.
 
 1. **Step 1 — Discover & monitor**: Lists all custom log tables from the
    [Tables API](https://learn.microsoft.com/en-us/rest/api/loganalytics/tables), including both `Classic` and
