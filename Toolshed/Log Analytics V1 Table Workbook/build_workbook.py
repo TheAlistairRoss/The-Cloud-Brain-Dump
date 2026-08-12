@@ -192,6 +192,25 @@ def wizard_page(items, name, reveal_parameter=None):
     return page
 
 
+def mode_group(items, name, value):
+    return {
+        "type": 12,
+        "content": {
+            "version": "NotebookGroup/1.0",
+            "groupType": "editable",
+            "loadType": "always",
+            "exportParameters": True,
+            "items": items,
+        },
+        "conditionalVisibility": {
+            "parameterName": "DceMode",
+            "comparison": "isEqualTo",
+            "value": value,
+        },
+        "name": f"group - {name}",
+    }
+
+
 items = []
 
 # ---------------------------------------------------------------------------
@@ -1043,28 +1062,32 @@ for item in step4_config_items:
     if item["name"] != "parameters - WorkflowState" and "conditionalVisibility" not in item:
         item["conditionalVisibility"] = step4_config_visibility
 step4_page_items.extend(step4_config_items)
-step4_page_items.append(wizard_nav_item(
-    "Step4 Next NewDce",
-    [("Next: reveal review and deployment below", "RevealStep5", "primary")],
-    {"parameterName": "NewDceDeploymentReady", "comparison": "isEqualTo", "value": "true"},
-))
-step4_page_items.append(wizard_nav_item(
-    "Step4 Next ExistingDce",
-    [("Next: reveal review and deployment below", "RevealStep5", "primary")],
-    {"parameterName": "ExistingDceDeploymentReady", "comparison": "isEqualTo", "value": "true"},
-))
-step4_page_items.append(text(
-    "Complete a valid **DCR name** and **new DCE name** to continue.",
-    "text - step4 newdce incomplete",
-    style="warning",
-    cv={"parameterName": "NewDceDeploymentReady", "comparison": "isEqualTo", "value": "false"},
-))
-step4_page_items.append(text(
-    "Complete a valid **DCR name** and select an **existing DCE** to continue.",
-    "text - step4 existingdce incomplete",
-    style="warning",
-    cv={"parameterName": "ExistingDceDeploymentReady", "comparison": "isEqualTo", "value": "false"},
-))
+step4_page_items.append(mode_group([
+    wizard_nav_item(
+        "Step4 Next NewDce",
+        [("Next: reveal review and deployment below", "RevealStep5", "primary")],
+        {"parameterName": "NewDceDeploymentReady", "comparison": "isEqualTo", "value": "true"},
+    ),
+    text(
+        "Complete a valid **DCR name** and **new DCE name** to continue.",
+        "text - step4 newdce incomplete",
+        style="warning",
+        cv={"parameterName": "NewDceDeploymentReady", "comparison": "isEqualTo", "value": "false"},
+    ),
+], "Step4 NewDce Actions", "true"))
+step4_page_items.append(mode_group([
+    wizard_nav_item(
+        "Step4 Next ExistingDce",
+        [("Next: reveal review and deployment below", "RevealStep5", "primary")],
+        {"parameterName": "ExistingDceDeploymentReady", "comparison": "isEqualTo", "value": "true"},
+    ),
+    text(
+        "Complete a valid **DCR name** and select an **existing DCE** to continue.",
+        "text - step4 existingdce incomplete",
+        style="warning",
+        cv={"parameterName": "ExistingDceDeploymentReady", "comparison": "isEqualTo", "value": "false"},
+    ),
+], "Step4 ExistingDce Actions", "false"))
 items.append(wizard_page(step4_page_items, "Configure DCR", "RevealStep4"))
 
 # ---------------------------------------------------------------------------
@@ -1101,34 +1124,38 @@ step5_items = [
         "Collection Rule and, if selected, a new Data Collection Endpoint.",
         "text - step5 intro"
     ),
-    arm_template_item(
-        label="Review and Deploy Data Collection Rule",
-        template_uri=template_uri,
-        template_parameters=deployment_parameters_new_dce,
-        title="Deploy Data Collection Rule and Endpoint",
-        description=(
-            "The template deploys **{DcrName}** and, when requested, **{NewDceName}** into `{ResourceGroupId}`. "
-            "Use **View template** to inspect the resources and parameter values before deployment. No changes are "
-            "made to the destination schema for `{SelectedTableName}`."
-        ),
-        name="DeployDcrNewDce",
-    ) | {"conditionalVisibility": {
-        "parameterName": "NewDceDeploymentReady", "comparison": "isEqualTo", "value": "true"
-    }},
-    arm_template_item(
-        label="Review and Deploy Data Collection Rule",
-        template_uri=template_uri,
-        template_parameters=deployment_parameters_existing_dce,
-        title="Deploy Data Collection Rule and Endpoint",
-        description=(
-            "The template deploys **{DcrName}** using the selected existing DCE into `{ResourceGroupId}`. "
-            "Use **View template** to inspect the resources and parameter values before deployment. No changes are "
-            "made to the destination schema for `{SelectedTableName}`."
-        ),
-        name="DeployDcrExistingDce",
-    ) | {"conditionalVisibility": {
-        "parameterName": "ExistingDceDeploymentReady", "comparison": "isEqualTo", "value": "true"
-    }},
+    mode_group([
+        arm_template_item(
+            label="Review and Deploy Data Collection Rule",
+            template_uri=template_uri,
+            template_parameters=deployment_parameters_new_dce,
+            title="Deploy Data Collection Rule and Endpoint",
+            description=(
+                "The template deploys **{DcrName}** and, when requested, **{NewDceName}** into `{ResourceGroupId}`. "
+                "Use **View template** to inspect the resources and parameter values before deployment. No changes are "
+                "made to the destination schema for `{SelectedTableName}`."
+            ),
+            name="DeployDcrNewDce",
+        ) | {"conditionalVisibility": {
+            "parameterName": "NewDceDeploymentReady", "comparison": "isEqualTo", "value": "true"
+        }},
+    ], "Step5 NewDce Deployment", "true"),
+    mode_group([
+        arm_template_item(
+            label="Review and Deploy Data Collection Rule",
+            template_uri=template_uri,
+            template_parameters=deployment_parameters_existing_dce,
+            title="Deploy Data Collection Rule and Endpoint",
+            description=(
+                "The template deploys **{DcrName}** using the selected existing DCE into `{ResourceGroupId}`. "
+                "Use **View template** to inspect the resources and parameter values before deployment. No changes are "
+                "made to the destination schema for `{SelectedTableName}`."
+            ),
+            name="DeployDcrExistingDce",
+        ) | {"conditionalVisibility": {
+            "parameterName": "ExistingDceDeploymentReady", "comparison": "isEqualTo", "value": "true"
+        }},
+    ], "Step5 ExistingDce Deployment", "false"),
     text(
         "**Note:** You need `Microsoft.Insights/dataCollectionRules/write` (and, if creating a new DCE, "
         "`Microsoft.Insights/dataCollectionEndpoints/write`) permission on the resource group to deploy - "
