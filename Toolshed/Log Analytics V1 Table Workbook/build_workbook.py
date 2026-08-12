@@ -764,7 +764,7 @@ kql_build_artifacts = (
     "    | summarize Txt = strcat_array(make_list(RenameEntry), \",\\n    \")\r\n"
     "    | project Txt);\r\n"
     "let renameKql = iif(isempty(renameText), \"source\", strcat(\"source\\n| project-rename\\n    \", renameText));\r\n"
-    "let transformKql = strcat(renameKql, \"\\n| extend TimeGenerated = coalesce(todatetime(TimeGenerated), now())\");\r\n"
+    "let transformKql = strcat(renameKql, \"\\n| extend TimeGenerated = now()\");\r\n"
     "print value = tostring(bag_pack("
     "\"HasCollisions\", tolower(tostring(collisionCount > 0)), "
     "\"CollisionCount\", tostring(collisionCount), "

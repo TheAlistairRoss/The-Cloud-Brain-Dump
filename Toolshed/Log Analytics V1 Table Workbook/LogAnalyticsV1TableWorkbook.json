@@ -30,7 +30,7 @@
         "version": "KqlParameterItem/1.0",
         "parameters": [
           {
-            "id": "af65c9fd-4884-4679-8e28-aa7d8e3193a7",
+            "id": "33cfdd15-fc2e-47aa-97db-8ba86d2a8b77",
             "version": "KqlParameterItem/1.0",
             "name": "ShowHelp",
             "label": "Show Help",
@@ -43,7 +43,7 @@
             "jsonData": "[\r\n    {\"value\":\"true\", \"label\": \"Yes\", \"selected\": true},\r\n    {\"value\":\"false\", \"label\": \"No\", \"selected\": false}\r\n]"
           },
           {
-            "id": "e0f224ec-5538-4aa5-8098-1dd0baec15d9",
+            "id": "43156586-2af8-43e5-b089-db2591948253",
             "version": "KqlParameterItem/1.0",
             "name": "ApiVersion",
             "type": 1,
@@ -59,7 +59,7 @@
             ]
           },
           {
-            "id": "9ac7b29a-227e-425d-9db6-a1c670e6d097",
+            "id": "b76408f3-2d65-4838-8daa-064922bbb0fd",
             "version": "KqlParameterItem/1.0",
             "name": "MigrateApiVersion",
             "type": 1,
@@ -75,7 +75,7 @@
             ]
           },
           {
-            "id": "74df24b5-a14e-4cdb-8780-11444df882f2",
+            "id": "d23ab1b7-02df-433c-a83d-621327b78b32",
             "version": "KqlParameterItem/1.0",
             "name": "RevealStep2",
             "type": 1,
@@ -91,7 +91,7 @@
             ]
           },
           {
-            "id": "12cb7180-311f-4264-8486-505cdf60e5c5",
+            "id": "d4676b71-009f-409b-9aac-ae1f4951dc89",
             "version": "KqlParameterItem/1.0",
             "name": "RevealStep3",
             "type": 1,
@@ -107,7 +107,7 @@
             ]
           },
           {
-            "id": "baca2b61-9cb7-4c17-92dd-b91f866c684a",
+            "id": "ec3397a8-723e-40d0-9e6d-09441d020452",
             "version": "KqlParameterItem/1.0",
             "name": "RevealStep4",
             "type": 1,
@@ -123,7 +123,7 @@
             ]
           },
           {
-            "id": "877cb67b-afd0-4107-b34b-99fc4b3b5b4d",
+            "id": "14d60e3e-f786-46ac-b5ea-0e3845ddf444",
             "version": "KqlParameterItem/1.0",
             "name": "RevealStep5",
             "type": 1,
@@ -179,7 +179,7 @@
               "version": "KqlParameterItem/1.0",
               "parameters": [
                 {
-                  "id": "3fab5864-e844-46fe-a983-4abd08ccae57",
+                  "id": "ac16627a-658f-438d-ba1e-90d64321d6a5",
                   "version": "KqlParameterItem/1.0",
                   "name": "Subscriptions",
                   "type": 6,
@@ -201,7 +201,7 @@
                   "resourceType": "microsoft.resourcegraph/resources"
                 },
                 {
-                  "id": "019591f6-be07-4a6e-af1b-b0577cd8e0e5",
+                  "id": "e7592a7a-3f71-4316-b184-a0387f3d87cf",
                   "version": "KqlParameterItem/1.0",
                   "name": "Workspace",
                   "type": 5,
@@ -218,7 +218,7 @@
                   "resourceType": "microsoft.resourcegraph/resources"
                 },
                 {
-                  "id": "7b66f04b-48b2-468c-851c-f1a23f58eba3",
+                  "id": "6823fd6b-f497-48e6-8d05-e9f4ee43c553",
                   "version": "KqlParameterItem/1.0",
                   "name": "TimeRange",
                   "label": "Time Range",
@@ -252,7 +252,7 @@
                   }
                 },
                 {
-                  "id": "7db48158-0605-4de7-bc9d-4435636f4e65",
+                  "id": "13e89b26-32cf-41c3-ac42-ce46b3daa85c",
                   "version": "KqlParameterItem/1.0",
                   "name": "ResourceGroupId",
                   "type": 1,
@@ -265,7 +265,7 @@
                   "resourceType": "microsoft.resourcegraph/resources"
                 },
                 {
-                  "id": "5d37418c-04ed-45e6-a043-52e2cb2c968d",
+                  "id": "d3fb4651-e5ca-4dd0-a953-a893b023270e",
                   "version": "KqlParameterItem/1.0",
                   "name": "WorkspaceLocation",
                   "type": 1,
@@ -278,7 +278,7 @@
                   "resourceType": "microsoft.resourcegraph/resources"
                 },
                 {
-                  "id": "6f4857fa-81cb-4c91-b8b9-3dbd7a5ff501",
+                  "id": "3f8b1c07-828d-4363-83db-c480ebff4815",
                   "version": "KqlParameterItem/1.0",
                   "name": "WorkspaceCustomerId",
                   "type": 1,
@@ -377,7 +377,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"511138a7-3af5-4715-971a-09c9b57f9688\",\"mergeType\":\"leftouter\",\"leftTable\":\"query ResourceManager - CustomTables\",\"rightTable\":\"query ResourceGraph - DcrInventory\",\"leftColumn\":\"name\",\"rightColumn\":\"name\"},{\"id\":\"eda7df11-ce9d-44b3-9459-3f7c816562ff\",\"mergeType\":\"leftouter\",\"leftTable\":\"query ResourceManager - CustomTables\",\"rightTable\":\"query LogAnalytics - Usage\",\"leftColumn\":\"name\",\"rightColumn\":\"DataType\"}],\"projectRename\":[{\"originalName\":\"[query ResourceManager - CustomTables].name\",\"mergedName\":\"name\",\"fromId\":\"eda7df11-ce9d-44b3-9459-3f7c816562ff\"},{\"originalName\":\"[query ResourceManager - CustomTables].name\",\"mergedName\":\"DcrJoinTableName\",\"fromId\":\"511138a7-3af5-4715-971a-09c9b57f9688\"},{\"originalName\":\"[query ResourceGraph - DcrInventory].name\",\"mergedName\":\"DcrMatchedTableName\",\"fromId\":\"511138a7-3af5-4715-971a-09c9b57f9688\"},{\"originalName\":\"[query LogAnalytics - Usage].DataType\",\"mergedName\":\"UsageDataType\",\"fromId\":\"eda7df11-ce9d-44b3-9459-3f7c816562ff\"},{\"originalName\":\"[query ResourceManager - CustomTables].tableSubType\",\"mergedName\":\"tableSubType\",\"fromId\":\"eda7df11-ce9d-44b3-9459-3f7c816562ff\"},{\"originalName\":\"[query ResourceGraph - DcrInventory].ExistingDcrCount\",\"mergedName\":\"ExistingDcrCount\",\"fromId\":\"511138a7-3af5-4715-971a-09c9b57f9688\"},{\"originalName\":\"[query ResourceGraph - DcrInventory].ExistingDcrNames\",\"mergedName\":\"ExistingDcrNames\",\"fromId\":\"511138a7-3af5-4715-971a-09c9b57f9688\"},{\"originalName\":\"[query ResourceManager - CustomTables].plan\",\"mergedName\":\"plan\",\"fromId\":\"eda7df11-ce9d-44b3-9459-3f7c816562ff\"},{\"originalName\":\"[query ResourceManager - CustomTables].retentionInDays\",\"mergedName\":\"retentionInDays\",\"fromId\":\"eda7df11-ce9d-44b3-9459-3f7c816562ff\"},{\"originalName\":\"[query LogAnalytics - Usage].TotalMB\",\"mergedName\":\"TotalMB\",\"fromId\":\"eda7df11-ce9d-44b3-9459-3f7c816562ff\"},{\"originalName\":\"[query LogAnalytics - Usage].Trend\",\"mergedName\":\"Trend\",\"fromId\":\"eda7df11-ce9d-44b3-9459-3f7c816562ff\"}]}",
+              "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"29a0bb77-3e11-4b87-ad3e-ae07e025e408\",\"mergeType\":\"leftouter\",\"leftTable\":\"query ResourceManager - CustomTables\",\"rightTable\":\"query ResourceGraph - DcrInventory\",\"leftColumn\":\"name\",\"rightColumn\":\"name\"},{\"id\":\"0e759c68-8054-4533-9fe8-5802645a5ae5\",\"mergeType\":\"leftouter\",\"leftTable\":\"query ResourceManager - CustomTables\",\"rightTable\":\"query LogAnalytics - Usage\",\"leftColumn\":\"name\",\"rightColumn\":\"DataType\"}],\"projectRename\":[{\"originalName\":\"[query ResourceManager - CustomTables].name\",\"mergedName\":\"name\",\"fromId\":\"0e759c68-8054-4533-9fe8-5802645a5ae5\"},{\"originalName\":\"[query ResourceManager - CustomTables].name\",\"mergedName\":\"DcrJoinTableName\",\"fromId\":\"29a0bb77-3e11-4b87-ad3e-ae07e025e408\"},{\"originalName\":\"[query ResourceGraph - DcrInventory].name\",\"mergedName\":\"DcrMatchedTableName\",\"fromId\":\"29a0bb77-3e11-4b87-ad3e-ae07e025e408\"},{\"originalName\":\"[query LogAnalytics - Usage].DataType\",\"mergedName\":\"UsageDataType\",\"fromId\":\"0e759c68-8054-4533-9fe8-5802645a5ae5\"},{\"originalName\":\"[query ResourceManager - CustomTables].tableSubType\",\"mergedName\":\"tableSubType\",\"fromId\":\"0e759c68-8054-4533-9fe8-5802645a5ae5\"},{\"originalName\":\"[query ResourceGraph - DcrInventory].ExistingDcrCount\",\"mergedName\":\"ExistingDcrCount\",\"fromId\":\"29a0bb77-3e11-4b87-ad3e-ae07e025e408\"},{\"originalName\":\"[query ResourceGraph - DcrInventory].ExistingDcrNames\",\"mergedName\":\"ExistingDcrNames\",\"fromId\":\"29a0bb77-3e11-4b87-ad3e-ae07e025e408\"},{\"originalName\":\"[query ResourceManager - CustomTables].plan\",\"mergedName\":\"plan\",\"fromId\":\"0e759c68-8054-4533-9fe8-5802645a5ae5\"},{\"originalName\":\"[query ResourceManager - CustomTables].retentionInDays\",\"mergedName\":\"retentionInDays\",\"fromId\":\"0e759c68-8054-4533-9fe8-5802645a5ae5\"},{\"originalName\":\"[query LogAnalytics - Usage].TotalMB\",\"mergedName\":\"TotalMB\",\"fromId\":\"0e759c68-8054-4533-9fe8-5802645a5ae5\"},{\"originalName\":\"[query LogAnalytics - Usage].Trend\",\"mergedName\":\"Trend\",\"fromId\":\"0e759c68-8054-4533-9fe8-5802645a5ae5\"}]}",
               "size": 1,
               "queryType": 7,
               "title": "Custom table migration inventory - select a table",
@@ -546,7 +546,7 @@
               "style": "nav",
               "links": [
                 {
-                  "id": "17fa0753-e93d-4a4e-bc37-f1854e5a9d40",
+                  "id": "04d71efa-0110-4ef7-9feb-3aa2ffccc6c5",
                   "cellValue": "RevealStep2",
                   "linkTarget": "parameter",
                   "linkLabel": "Next: reveal migrate or verify below",
@@ -588,7 +588,7 @@
               "version": "KqlParameterItem/1.0",
               "parameters": [
                 {
-                  "id": "1ed5421d-6f60-4716-a385-c459221b76d8",
+                  "id": "6c7df2f2-2a07-43e9-8c00-67654c666cf1",
                   "version": "KqlParameterItem/1.0",
                   "name": "SelectedTableDetails",
                   "type": 1,
@@ -597,7 +597,7 @@
                   "queryType": 12
                 },
                 {
-                  "id": "896f961c-9f52-4439-86f5-9b1eb7494010",
+                  "id": "218e7ce4-2b3c-4e36-bc35-67c2377617f4",
                   "version": "KqlParameterItem/1.0",
                   "name": "SelectedTableSubTypeLive",
                   "type": 1,
@@ -610,7 +610,7 @@
                   "resourceType": "microsoft.operationalinsights/workspaces"
                 },
                 {
-                  "id": "9494192b-1483-4920-9ce5-de59b2d99e0b",
+                  "id": "36af055b-02bc-4df6-b27f-92d88b834931",
                   "version": "KqlParameterItem/1.0",
                   "name": "TableDcrReady",
                   "type": 1,
@@ -666,7 +666,7 @@
               "style": "nav",
               "links": [
                 {
-                  "id": "e5b728ae-1eff-4498-916a-4343f6f983fa",
+                  "id": "25925f6f-024b-4df8-9ebc-38f552474dea",
                   "cellValue": "{SelectedTableName}",
                   "linkTarget": "ArmAction",
                   "linkLabel": "Migrate table to DCR-based ingestion",
@@ -735,7 +735,7 @@
               "style": "nav",
               "links": [
                 {
-                  "id": "67c2ea37-f011-4906-a082-cb9252d6ebc4",
+                  "id": "91798ed8-f0f0-4fa5-8747-fc1bb1d296b0",
                   "cellValue": "RevealStep3",
                   "linkTarget": "parameter",
                   "linkLabel": "Next: reveal schema and existing DCRs below",
@@ -844,11 +844,11 @@
               "version": "KqlParameterItem/1.0",
               "parameters": [
                 {
-                  "id": "482bc702-5bbf-49b2-8700-2911b5faf10d",
+                  "id": "10c9fcd7-28d0-433c-963a-886fb706827d",
                   "version": "KqlParameterItem/1.0",
                   "name": "DcrArtifacts",
                   "type": 1,
-                  "query": "let tableDetails = todynamic(base64_decode_tostring(\"{SelectedTableDetails:base64}\"));\r\nlet cols = tableDetails.properties.schema.columns;\r\nlet reserved = dynamic([\"_ResourceId\",\"id\",\"_SubscriptionId\",\"TenantId\",\"Type\",\"UniqueId\",\"Title\",\"RawData\",\"tenant\",\"MG\",\"ManagementGroupName\",\"SourceSystem\"]);\r\nlet tableColumns = print col = cols\r\n    | mv-expand col\r\n    | project Name = tostring(col.name), Type = tostring(col.type);\r\nlet base = union tableColumns, (\r\n    print Name = \"TimeGenerated\", Type = \"datetime\"\r\n    | where toscalar(tableColumns | where Name =~ \"TimeGenerated\" | count) == 0)\r\n    | where Name !in~ (reserved)\r\n    | extend Suffix = extract(@'_(s|d|b|g|t)$', 1, Name)\r\n    | extend Base = extract(@'^(.*)_(?:s|d|b|g|t)$', 1, Name)\r\n    | extend CleanName = iif(isempty(Base), Name, Base)\r\n    | extend MappedType = case(Suffix == \"s\", \"string\", Suffix == \"d\", \"real\", Suffix == \"b\", \"boolean\", Suffix == \"g\", \"string\", Suffix == \"t\", \"datetime\", Type =~ \"datetime\", \"datetime\", Type =~ \"guid\", \"string\", tolower(Type));\r\nlet collisionCount = toscalar(base | summarize Cnt = count() by CleanName | where Cnt > 1 | summarize TotalCollisions = count());\r\nlet mapped = base | extend InputName = iif(collisionCount > 0, Name, CleanName);\r\nlet inputColumnsJson = toscalar(\r\n    mapped\r\n    | extend ColJson = strcat('{\"name\":\"', InputName, '\",\"type\":\"', MappedType, '\"}')\r\n    | summarize Json = strcat(\"[\", strcat_array(make_list(ColJson), \",\"), \"]\")\r\n    | project Json);\r\nlet renameText = toscalar(\r\n    mapped\r\n    | where InputName != Name\r\n    | extend RenameEntry = strcat(Name, \" = \", InputName)\r\n    | summarize Txt = strcat_array(make_list(RenameEntry), \",\\n    \")\r\n    | project Txt);\r\nlet renameKql = iif(isempty(renameText), \"source\", strcat(\"source\\n| project-rename\\n    \", renameText));\r\nlet transformKql = strcat(renameKql, \"\\n| extend TimeGenerated = coalesce(todatetime(TimeGenerated), now())\");\r\nprint value = tostring(bag_pack(\"HasCollisions\", tolower(tostring(collisionCount > 0)), \"CollisionCount\", tostring(collisionCount), \"LegacySuffixColumnCount\", tostring(toscalar(base | summarize countif(isnotempty(Suffix)))), \"InputColumnsJson\", inputColumnsJson, \"TransformKqlText\", transformKql))",
+                  "query": "let tableDetails = todynamic(base64_decode_tostring(\"{SelectedTableDetails:base64}\"));\r\nlet cols = tableDetails.properties.schema.columns;\r\nlet reserved = dynamic([\"_ResourceId\",\"id\",\"_SubscriptionId\",\"TenantId\",\"Type\",\"UniqueId\",\"Title\",\"RawData\",\"tenant\",\"MG\",\"ManagementGroupName\",\"SourceSystem\"]);\r\nlet tableColumns = print col = cols\r\n    | mv-expand col\r\n    | project Name = tostring(col.name), Type = tostring(col.type);\r\nlet base = union tableColumns, (\r\n    print Name = \"TimeGenerated\", Type = \"datetime\"\r\n    | where toscalar(tableColumns | where Name =~ \"TimeGenerated\" | count) == 0)\r\n    | where Name !in~ (reserved)\r\n    | extend Suffix = extract(@'_(s|d|b|g|t)$', 1, Name)\r\n    | extend Base = extract(@'^(.*)_(?:s|d|b|g|t)$', 1, Name)\r\n    | extend CleanName = iif(isempty(Base), Name, Base)\r\n    | extend MappedType = case(Suffix == \"s\", \"string\", Suffix == \"d\", \"real\", Suffix == \"b\", \"boolean\", Suffix == \"g\", \"string\", Suffix == \"t\", \"datetime\", Type =~ \"datetime\", \"datetime\", Type =~ \"guid\", \"string\", tolower(Type));\r\nlet collisionCount = toscalar(base | summarize Cnt = count() by CleanName | where Cnt > 1 | summarize TotalCollisions = count());\r\nlet mapped = base | extend InputName = iif(collisionCount > 0, Name, CleanName);\r\nlet inputColumnsJson = toscalar(\r\n    mapped\r\n    | extend ColJson = strcat('{\"name\":\"', InputName, '\",\"type\":\"', MappedType, '\"}')\r\n    | summarize Json = strcat(\"[\", strcat_array(make_list(ColJson), \",\"), \"]\")\r\n    | project Json);\r\nlet renameText = toscalar(\r\n    mapped\r\n    | where InputName != Name\r\n    | extend RenameEntry = strcat(Name, \" = \", InputName)\r\n    | summarize Txt = strcat_array(make_list(RenameEntry), \",\\n    \")\r\n    | project Txt);\r\nlet renameKql = iif(isempty(renameText), \"source\", strcat(\"source\\n| project-rename\\n    \", renameText));\r\nlet transformKql = strcat(renameKql, \"\\n| extend TimeGenerated = now()\");\r\nprint value = tostring(bag_pack(\"HasCollisions\", tolower(tostring(collisionCount > 0)), \"CollisionCount\", tostring(collisionCount), \"LegacySuffixColumnCount\", tostring(toscalar(base | summarize countif(isnotempty(Suffix)))), \"InputColumnsJson\", inputColumnsJson, \"TransformKqlText\", transformKql))",
                   "crossComponentResources": [
                     "{Workspace}"
                   ],
@@ -857,7 +857,7 @@
                   "resourceType": "microsoft.operationalinsights/workspaces"
                 },
                 {
-                  "id": "5a8090f3-5bda-4b83-9401-84f3b093f969",
+                  "id": "8415cf36-a2b3-47c6-a460-6f158d030e68",
                   "version": "KqlParameterItem/1.0",
                   "name": "HasCollisions",
                   "type": 1,
@@ -870,7 +870,7 @@
                   "resourceType": "microsoft.operationalinsights/workspaces"
                 },
                 {
-                  "id": "bee08281-f0f6-43ea-a822-d393045ae614",
+                  "id": "162dfb58-8ad6-4490-b7ed-dbfe4d7b7249",
                   "version": "KqlParameterItem/1.0",
                   "name": "CollisionCount",
                   "type": 1,
@@ -883,7 +883,7 @@
                   "resourceType": "microsoft.operationalinsights/workspaces"
                 },
                 {
-                  "id": "cf3d8d49-259e-4049-91bf-ebaed7c983d3",
+                  "id": "bf7c7c28-984f-4b35-abd3-b526b22c1894",
                   "version": "KqlParameterItem/1.0",
                   "name": "LegacySuffixColumnCount",
                   "type": 1,
@@ -896,7 +896,7 @@
                   "resourceType": "microsoft.operationalinsights/workspaces"
                 },
                 {
-                  "id": "385d242b-a8e0-4786-93dd-8165a3bb7bf4",
+                  "id": "2976cde9-e736-4a98-8c72-b5c87153a82a",
                   "version": "KqlParameterItem/1.0",
                   "name": "InputColumnsJson",
                   "type": 1,
@@ -909,7 +909,7 @@
                   "resourceType": "microsoft.operationalinsights/workspaces"
                 },
                 {
-                  "id": "2b5ec691-e754-4e23-9607-533df63e1baa",
+                  "id": "08c0e66a-ef61-4496-a205-5598e5e48e77",
                   "version": "KqlParameterItem/1.0",
                   "name": "TransformKqlText",
                   "type": 1,
@@ -922,7 +922,7 @@
                   "resourceType": "microsoft.operationalinsights/workspaces"
                 },
                 {
-                  "id": "003197c8-b98e-483c-87a9-0fe53983ee4f",
+                  "id": "d4e91de3-dfd7-4081-94d8-24d31ddab447",
                   "version": "KqlParameterItem/1.0",
                   "name": "ConfigurationReady",
                   "type": 1,
@@ -978,7 +978,7 @@
               "version": "KqlParameterItem/1.0",
               "parameters": [
                 {
-                  "id": "7abfef56-76a8-48ae-807e-455bdf598d51",
+                  "id": "d4c89226-5993-4846-b6eb-898900115f53",
                   "version": "KqlParameterItem/1.0",
                   "name": "ExistingDcrCount",
                   "type": 1,
@@ -1066,7 +1066,7 @@
               "style": "nav",
               "links": [
                 {
-                  "id": "d26a7bdf-0353-4f1b-9728-d2d881480b2a",
+                  "id": "f5907cf1-2e46-4aa6-a45b-1dbea1a2f990",
                   "cellValue": "RevealStep4",
                   "linkTarget": "parameter",
                   "linkLabel": "Next: reveal DCR configuration below",
@@ -1125,7 +1125,7 @@
               "version": "KqlParameterItem/1.0",
               "parameters": [
                 {
-                  "id": "8b942cc3-bbb8-44ca-801b-e2544138275e",
+                  "id": "f4c0d547-7341-484a-b690-7a7559854b4e",
                   "version": "KqlParameterItem/1.0",
                   "name": "DcrName",
                   "label": "Data Collection Rule name",
@@ -1151,7 +1151,7 @@
                   }
                 },
                 {
-                  "id": "b6069769-f4fe-4dae-a5da-9110039d4d57",
+                  "id": "f17c8e0f-25a1-48aa-a2b3-482f645cf8b3",
                   "version": "KqlParameterItem/1.0",
                   "name": "CreateNewDce",
                   "label": "Data Collection Endpoint",
@@ -1177,7 +1177,7 @@
               "version": "KqlParameterItem/1.0",
               "parameters": [
                 {
-                  "id": "e4277701-2de6-4ac4-aa42-b95c09d201f8",
+                  "id": "9a5aa81a-579d-4aa2-9115-973e8a562118",
                   "version": "KqlParameterItem/1.0",
                   "name": "DceMode",
                   "type": 1,
@@ -1202,7 +1202,7 @@
               "version": "KqlParameterItem/1.0",
               "parameters": [
                 {
-                  "id": "a9b2c362-62cc-4a13-ad3f-29a237a3d1c1",
+                  "id": "57888d26-3ef1-4bf4-8ffd-e9da1e52cf71",
                   "version": "KqlParameterItem/1.0",
                   "name": "NewDceName",
                   "label": "New DCE name",
@@ -1228,7 +1228,7 @@
                   }
                 },
                 {
-                  "id": "8fdeb56d-9286-40fd-9e6a-29676ea35c1e",
+                  "id": "a6c80485-0444-4023-bd8f-0a07446ecc08",
                   "version": "KqlParameterItem/1.0",
                   "name": "NewDceDeploymentReady",
                   "type": 1,
@@ -1258,7 +1258,7 @@
               "version": "KqlParameterItem/1.0",
               "parameters": [
                 {
-                  "id": "aae9f2b5-399b-411c-bb5b-0f6bbf91b893",
+                  "id": "19847eeb-02b5-4137-9500-22c3c8164e90",
                   "version": "KqlParameterItem/1.0",
                   "name": "ExistingDce",
                   "label": "Existing DCE",
@@ -1276,7 +1276,7 @@
                   "resourceType": "microsoft.resourcegraph/resources"
                 },
                 {
-                  "id": "60c0e728-4869-464e-9a6a-ee525a7ac87d",
+                  "id": "f8468fc2-78ec-48e7-9382-7eb76aabec85",
                   "version": "KqlParameterItem/1.0",
                   "name": "ExistingDceDeploymentReady",
                   "type": 1,
@@ -1377,7 +1377,7 @@
                     "style": "nav",
                     "links": [
                       {
-                        "id": "e7aa5cff-1d02-48ab-bade-7221bac92d94",
+                        "id": "4e039415-9de1-4025-8569-911a6730b9cb",
                         "cellValue": "RevealStep5",
                         "linkTarget": "parameter",
                         "linkLabel": "Next: reveal review and deployment below",
@@ -1430,7 +1430,7 @@
                     "style": "nav",
                     "links": [
                       {
-                        "id": "0f116722-8fcf-431a-91d5-5600cdc3849e",
+                        "id": "f2524ba9-36bb-459a-8bbd-be5047818f71",
                         "cellValue": "RevealStep5",
                         "linkTarget": "parameter",
                         "linkLabel": "Next: reveal review and deployment below",
@@ -1520,7 +1520,7 @@
                     "style": "nav",
                     "links": [
                       {
-                        "id": "6d06601e-89e9-4259-a0d2-6ba39ccd0fb1",
+                        "id": "3c37243b-c3d4-4ee3-91bd-e4fb627e8baf",
                         "linkTarget": "ArmTemplate",
                         "linkLabel": "Review and Deploy Data Collection Rule",
                         "style": "primary",
@@ -1627,7 +1627,7 @@
                     "style": "nav",
                     "links": [
                       {
-                        "id": "35fedaa0-9990-4781-a39a-1157724a6796",
+                        "id": "6f2c16aa-29fa-4483-86a6-7f5a5033cfec",
                         "linkTarget": "ArmTemplate",
                         "linkLabel": "Review and Deploy Data Collection Rule",
                         "style": "primary",

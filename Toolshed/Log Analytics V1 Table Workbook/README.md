@@ -68,8 +68,8 @@ use `loadType: always`, and export their parameters, so progressive disclosure d
 
 Columns with no recognized suffix pass through unchanged. The generated stream always declares
 `TimeGenerated` as `datetime`, even when the Tables API omits it from the returned custom-column list.
-The transformation preserves a valid supplied timestamp and otherwise uses ingestion time (`now()`), ensuring
-the output always satisfies the destination table's required schema. Reserved/system columns
+The transformation assigns ingestion time with Azure Monitor's supported `now()` pattern, ensuring the output
+always satisfies the destination table's required schema. Reserved/system columns
 (`_ResourceId`, `_SubscriptionId`, `TenantId`, `Type`, `UniqueId`, `Title`, `RawData`, `tenant`, `MG`,
 `ManagementGroupName`, `SourceSystem`) are excluded from the generated input stream automatically.
 
