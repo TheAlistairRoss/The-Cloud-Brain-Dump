@@ -153,7 +153,7 @@ def wizard_nav_item(name, links, cv):
         "type": 11,
         "content": {
             "version": "LinkItem/1.0",
-            "style": "toolbar",
+            "style": "nav",
             "links": [
                 {
                     "id": g(),
