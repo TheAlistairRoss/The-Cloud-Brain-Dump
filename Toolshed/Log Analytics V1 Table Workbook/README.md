@@ -31,8 +31,9 @@ the workbook `nav` style, with each **Next** action rendered as a primary button
    workspace destination. Migrated tables therefore remain visible after their subtype changes. The visible
    inventory owns both merge operations directly; source queries stay hidden without relying on a hidden
    intermediate merge that might not execute. The displayed table name is anchored to the usage left-outer
-   branch, while all duplicate internal join keys are hidden. This keeps Classic and DCR-based tables in one
-   consistent **Table name** column. Tables without a matching DCR display a count of `0`.
+   branch and placed first in the merge projection, while the DCR-right and Usage-right keys are hidden. This
+   portal-tested ordering keeps Classic and DCR-based tables in one consistent **Table Name** column. Tables
+   without a matching DCR display a count of `0`.
 2. **Step 2 — Migrate or verify**: Reads the selected table's live subtype. For Classic tables, it presents
    the one-way migration impact and invokes the Tables `migrate` action. After migration, refresh the Step 1
    inventory and reselect the table. DCR-based tables continue immediately.
