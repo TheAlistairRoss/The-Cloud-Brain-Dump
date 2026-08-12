@@ -67,9 +67,10 @@ use `loadType: always`, and export their parameters, so progressive disclosure d
 | `_t`   | datetime        | `datetime`     |
 
 Columns with no recognized suffix pass through unchanged. The transformation uses
-`column_ifexists("TimeGenerated", now())` to preserve `TimeGenerated` when the Tables API includes it in the
+`columnifexists("TimeGenerated", now())` to preserve `TimeGenerated` when the Tables API includes it in the
 input schema and assign ingestion time when it does not. This ensures the output always includes the required
-`datetime` column without forcing it into every input payload. Reserved/system columns
+`datetime` column without forcing it into every input payload. Azure Monitor's transformation compiler requires
+the legacy `columnifexists` spelling rather than the general KQL `column_ifexists` spelling. Reserved/system columns
 (`_ResourceId`, `_SubscriptionId`, `TenantId`, `Type`, `UniqueId`, `Title`, `RawData`, `tenant`, `MG`,
 `ManagementGroupName`, `SourceSystem`) are excluded from the generated input stream automatically.
 
