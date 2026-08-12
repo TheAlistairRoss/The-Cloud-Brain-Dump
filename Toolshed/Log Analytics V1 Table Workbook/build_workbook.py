@@ -458,11 +458,15 @@ step1_items.append(query_item(
                  {"operator": "==", "thresholdValue": "Classic", "representation": "redBright", "text": "{0}{1}"},
                  {"operator": "Default", "thresholdValue": None, "representation": "green", "text": "{0}{1}"},
              ]}},
-            {"columnMatch": "ExistingDcrCount", "formatter": 18,
-             "formatOptions": {"thresholdsOptions": "colors", "thresholdsGrid": [
-                {"operator": ">", "thresholdValue": "0", "representation": "green", "text": "{0}{1}"},
-                {"operator": "Default", "thresholdValue": None, "representation": "yellow", "text": "{0}{1}"},
-             ]}},
+            {
+                "columnMatch": "ExistingDcrCount",
+                "formatter": 0,
+                "numberFormat": {
+                   "unit": 0,
+                   "options": {"style": "decimal"},
+                   "emptyValCustomText": "0",
+                },
+            },
             {"columnMatch": "TotalMB", "formatter": 4,
              "formatOptions": {"palette": "blue"},
              "numberFormat": {
