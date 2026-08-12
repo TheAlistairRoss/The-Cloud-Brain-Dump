@@ -66,6 +66,10 @@ use `loadType: always`, and export their parameters, so progressive disclosure d
 | `_g`   | guid            | `string`       |
 | `_t`   | datetime        | `datetime`     |
 
+GUID inputs are declared as `string`, as required by the Logs Ingestion API. After any clean-name renames, the
+generated transformation uses `toguid()` to restore each GUID destination column to the existing table's
+`Guid` output type.
+
 Columns with no recognized suffix pass through unchanged. The transformation uses
 `columnifexists("TimeGenerated", now())` to preserve `TimeGenerated` when the Tables API includes it in the
 input schema and assign ingestion time when it does not. This ensures the output always includes the required
