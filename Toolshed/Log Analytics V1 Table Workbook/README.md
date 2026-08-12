@@ -27,7 +27,9 @@ The workbook uses five **untitled, always-loaded wizard pages**. Only the curren
 1. **Step 1 — Discover & monitor**: Lists all custom log tables from the
    [Tables API](https://learn.microsoft.com/en-us/rest/api/loganalytics/tables), including both `Classic` and
    DCR-based tables. It adds ingestion volume/trend and correlates existing DCRs by output stream and selected
-   workspace destination. Migrated tables therefore remain visible after their subtype changes.
+   workspace destination. Migrated tables therefore remain visible after their subtype changes. The visible
+   inventory owns both merge operations directly; source queries stay hidden without relying on a hidden
+   intermediate merge that might not execute.
 2. **Step 2 — Migrate or verify**: Reads the selected table's live subtype. For Classic tables, it presents
    the one-way migration impact and invokes the Tables `migrate` action. After migration, refresh the Step 1
    inventory and reselect the table. DCR-based tables continue immediately.

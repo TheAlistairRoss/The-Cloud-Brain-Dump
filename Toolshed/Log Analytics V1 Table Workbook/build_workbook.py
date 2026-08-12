@@ -422,40 +422,26 @@ step1_items.append(query_item(
     visualization="table"
 ) | {"conditionalVisibility": {"parameterName": "true", "comparison": "isEqualTo", "value": "false"}})
 
-# Query D: Add existing DCR counts without dropping tables that have no DCR.
+# Query D: The visible inventory performs both left-outer joins directly.
+# Merge items only execute reliably when rendered, so there must be no hidden
+# intermediate Merge item in this dependency chain.
 dcr_merge_id = g()
-q_dcr_merge = (
-    "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"" + dcr_merge_id + "\",\"mergeType\":\"leftouter\","
+usage_merge_id = g()
+q_inventory_merge = (
+    "{\"version\":\"Merge/1.0\",\"merges\":["
+    "{\"id\":\"" + dcr_merge_id + "\",\"mergeType\":\"leftouter\","
     "\"leftTable\":\"query ResourceManager - CustomTables\",\"rightTable\":\"query ResourceGraph - DcrInventory\","
-    "\"leftColumn\":\"name\",\"rightColumn\":\"name\"}],"
+    "\"leftColumn\":\"name\",\"rightColumn\":\"name\"},"
+    "{\"id\":\"" + usage_merge_id + "\",\"mergeType\":\"leftouter\","
+    "\"leftTable\":\"query ResourceManager - CustomTables\",\"rightTable\":\"query LogAnalytics - Usage\","
+    "\"leftColumn\":\"name\",\"rightColumn\":\"DataType\"}],"
     "\"projectRename\":["
     "{\"originalName\":\"[query ResourceManager - CustomTables].name\",\"mergedName\":\"name\",\"fromId\":\"unknown\"},"
     "{\"originalName\":\"[query ResourceManager - CustomTables].tableSubType\",\"mergedName\":\"tableSubType\",\"fromId\":\"unknown\"},"
+    "{\"originalName\":\"[query ResourceGraph - DcrInventory].ExistingDcrCount\",\"mergedName\":\"ExistingDcrCount\",\"fromId\":\"" + dcr_merge_id + "\"},"
+    "{\"originalName\":\"[query ResourceGraph - DcrInventory].ExistingDcrNames\",\"mergedName\":\"ExistingDcrNames\",\"fromId\":\"" + dcr_merge_id + "\"},"
     "{\"originalName\":\"[query ResourceManager - CustomTables].plan\",\"mergedName\":\"plan\",\"fromId\":\"unknown\"},"
     "{\"originalName\":\"[query ResourceManager - CustomTables].retentionInDays\",\"mergedName\":\"retentionInDays\",\"fromId\":\"unknown\"},"
-    "{\"originalName\":\"[query ResourceGraph - DcrInventory].ExistingDcrCount\",\"mergedName\":\"ExistingDcrCount\",\"fromId\":\"" + dcr_merge_id + "\"},"
-    "{\"originalName\":\"[query ResourceGraph - DcrInventory].ExistingDcrNames\",\"mergedName\":\"ExistingDcrNames\",\"fromId\":\"" + dcr_merge_id + "\"}"
-    "]}"
-)
-step1_items.append(query_item(
-    q_dcr_merge, "query Merge - CustomTablesWithDcrs", query_type=7, size=0,
-    title="Custom table and DCR lookup (hidden helper)",
-    grid_settings={"rowLimit": 1000}
-) | {"conditionalVisibility": {"parameterName": "true", "comparison": "isEqualTo", "value": "false"}})
-
-# Query E: Add usage to the unified inventory.
-usage_merge_id = g()
-q_inventory_merge = (
-    "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"" + usage_merge_id + "\",\"mergeType\":\"leftouter\","
-    "\"leftTable\":\"query Merge - CustomTablesWithDcrs\",\"rightTable\":\"query LogAnalytics - Usage\","
-    "\"leftColumn\":\"name\",\"rightColumn\":\"DataType\"}],"
-    "\"projectRename\":["
-    "{\"originalName\":\"[query Merge - CustomTablesWithDcrs].name\",\"mergedName\":\"name\",\"fromId\":\"unknown\"},"
-    "{\"originalName\":\"[query Merge - CustomTablesWithDcrs].tableSubType\",\"mergedName\":\"tableSubType\",\"fromId\":\"unknown\"},"
-    "{\"originalName\":\"[query Merge - CustomTablesWithDcrs].ExistingDcrCount\",\"mergedName\":\"ExistingDcrCount\",\"fromId\":\"unknown\"},"
-    "{\"originalName\":\"[query Merge - CustomTablesWithDcrs].ExistingDcrNames\",\"mergedName\":\"ExistingDcrNames\",\"fromId\":\"unknown\"},"
-    "{\"originalName\":\"[query Merge - CustomTablesWithDcrs].plan\",\"mergedName\":\"plan\",\"fromId\":\"unknown\"},"
-    "{\"originalName\":\"[query Merge - CustomTablesWithDcrs].retentionInDays\",\"mergedName\":\"retentionInDays\",\"fromId\":\"unknown\"},"
     "{\"originalName\":\"[query LogAnalytics - Usage].TotalMB\",\"mergedName\":\"TotalMB\",\"fromId\":\"" + usage_merge_id + "\"},"
     "{\"originalName\":\"[query LogAnalytics - Usage].Trend\",\"mergedName\":\"Trend\",\"fromId\":\"" + usage_merge_id + "\"}"
     "]}"
