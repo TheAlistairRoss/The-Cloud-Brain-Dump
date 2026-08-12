@@ -66,7 +66,10 @@ use `loadType: always`, and export their parameters, so progressive disclosure d
 | `_g`   | guid            | `string`       |
 | `_t`   | datetime        | `datetime`     |
 
-Columns with no recognized suffix (e.g. `TimeGenerated`) pass through unchanged. Reserved/system columns
+Columns with no recognized suffix pass through unchanged. The generated stream always declares
+`TimeGenerated` as `datetime`, even when the Tables API omits it from the returned custom-column list.
+The transformation preserves a valid supplied timestamp and otherwise uses ingestion time (`now()`), ensuring
+the output always satisfies the destination table's required schema. Reserved/system columns
 (`_ResourceId`, `_SubscriptionId`, `TenantId`, `Type`, `UniqueId`, `Title`, `RawData`, `tenant`, `MG`,
 `ManagementGroupName`, `SourceSystem`) are excluded from the generated input stream automatically.
 
@@ -103,7 +106,7 @@ The deployment button expects the workbook files to be published at:
   historical `SourceSystem == "RestAPI"` records, existing matching DCRs, and the tags added by this workbook
   are evidence rather than proof.
 - DCRs created by this workbook are tagged with `ManagedBy`, `MigrationSource`, and `SourceTable` provenance.
-- To restart or change direction, use **Back** to return to Step 1 and select another table.
+- To restart or change direction, select another table in Step 1; the revealed sections refresh from that selection.
 - If source columns collide after suffix removal, the entire input stream uses original column names for
   consistency and uniqueness. Logs Ingestion API payloads must use those original suffixed names. If clean
   payload names are required, resolve the ambiguity in the sending application before ingestion.
